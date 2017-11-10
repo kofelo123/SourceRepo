@@ -1,0 +1,65 @@
+<button type="submit" class="btn btn-primary" id="replyAddBtn">댓글 등록</button>
+
+$(document).ready(function(){
+	
+	var formObj = $("form[role='form']");
+	
+	console.log(formObj);
+	
+	$("#modifyBtn").on("click", function(){
+		formObj.attr("action", "/sboard/modifyPage/${category}");
+		formObj.attr("method", "get");		
+		formObj.submit();
+	});
+	
+
+ <input type="button" value="아이디 비밀번호 찾기" class="submit"
+                 onclick="location='/member/find_id_form'">
+				 
+				 
+
+				 ---
+				 
+				 @RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"file:src/main/webapp/WEB-INF/spring/**/*.xml"})
+public class LoginTest {
+	
+	@Inject
+	private MemberDAO dao;
+	
+	private static final Logger logger=LoggerFactory.getLogger(LoginTest.class);
+	
+	@Test
+	public void testLogin() throws Exception{
+		MemberVO mvo = new MemberVO();
+		mvo.setId("kofelo123");
+		mvo.setPwd("gj0123");
+		MemberVO vo =dao.login(mvo);
+	}
+
+}
+
+ ---
+ 
+@RequestMapping(value = "login" , method = RequestMethod.POST)
+	public String login(Model model,MemberVO vo,HttpServletRequest request){//로그인 여부에 따라서 수정할것
+		MemberVO mvo = service.login(vo); 
+		if(mvo == null)
+			return "/member/login_fail";
+		
+		HttpSession session = request.getSession();
+		session.setAttribute("loginUser", mvo);
+		return "redirect:/";
+	}
+	 
+
+
+<c:when test="${empty sessionScope.loginUser}">
+
+--
+    HttpSession session=request.getSession(false);
+    if(session!=null){
+      session.invalidate();
+    }    
+    
+	
