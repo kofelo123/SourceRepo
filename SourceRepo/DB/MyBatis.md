@@ -1,4 +1,4 @@
-여러파라미터를 Map에 담아서 
+여러파라미터를 Map에 담아서 보내기
  
   	@Override
 	public List<OrderVO> listOrderById(String id, String result, int oseq) {
