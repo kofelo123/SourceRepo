@@ -2,7 +2,7 @@
 - [라디오로 체크 여부 검사하는 코드](#라디오로 체크 여부 검사하는 코드.)
   
 ### 라디오로 체크 여부 검사하는 코드.
-
+ 
 ```html
   <div style="text-align: center;">
       <input type="radio" name="okon1" checked> 동의함 &nbsp; &nbsp; &nbsp;
