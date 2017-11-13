@@ -1,8 +1,8 @@
 ## javaAny
-- [replaceAll](#.replaceall)
+- [replaceAll](#replaceall)
 
-### .repaceAll
-> //¸ðµç \nÀ» <br/>À¸·Î º¯°æÇÑ´Ù.(textarea¿¡¼­ °³Çà½Ã \nÀ¸·Î µÇ´Â°ÍÀ» º¯È¯ÇÏ´Â ÄÚµå¿¡¼­)  
+### repaceAll
+> //ëª¨ë“  \nì„ '<br/>'ìœ¼ë¡œ ë³€ê²½í•œë‹¤.(textareaì—ì„œ ê°œí–‰ì‹œ \nìœ¼ë¡œ ë˜ëŠ”ê²ƒì„ ë³€í™˜í•˜ëŠ” ì½”ë“œì—ì„œ)  
 
 ```html
 stringvar.replaceAll("\n", "<br/>")
