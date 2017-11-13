@@ -1,5 +1,5 @@
 ## mybatis - oracle
-- [Like 연산자](#like-Operator)
+- [Like Operator](#like-Operator)
 
 
 '''html
@@ -69,6 +69,6 @@ Presentations are written using HTML or Markdown but there's also an online edit
 ## Instructions
 
 
-## Like 연산자
+## Like Operator
 
 like 연산이 mybatis 에서는 사용법이 달라진다.(dbms 종류에 따라서도)
