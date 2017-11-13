@@ -1,5 +1,5 @@
 ## mybatis - oracle
-- [Like Operator](#like-Operator)
+- [Like Operator](#like-operator)
 
 
 '''html
