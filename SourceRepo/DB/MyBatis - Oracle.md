@@ -1,5 +1,5 @@
 ## mybatis - oracle
-- [Like 연산자] (#like 연산자)  
+- [Like 연산자](#like 연산자)  
 
 ### like 연산자
 
