@@ -1,8 +1,12 @@
-  //¶óµğ¿À·Î Ã¼Å© ¿©ºÎ °Ë»çÇÏ´Â ÄÚµå.
+## JS ì—¬ëŸ¬ê°€ì§€
+- [ë¼ë””ì˜¤ë¡œ ì²´í¬ ì—¬ë¶€ ê²€ì‚¬í•˜ëŠ” ì½”ë“œ](#radio-check)
   
+### radio check
+ 
+```html
   <div style="text-align: center;">
-      <input type="radio" name="okon1" checked> µ¿ÀÇÇÔ &nbsp; &nbsp; &nbsp;
-      <input type="radio" name="okon1" checked> µ¿ÀÇ¾ÈÇÔ
+      <input type="radio" name="okon1" checked> ë™ì˜í•¨ &nbsp; &nbsp; &nbsp;
+      <input type="radio" name="okon1" checked> ë™ì˜ì•ˆí•¨
       </div>
       <input type="button" value="Next" class="submit"  onclick="go_next()" style="float: right;"> 
     </form>
@@ -13,6 +17,7 @@ function go_next() {
     document.formm.action = "/member/join_form";
     document.formm.submit();
   } else if (document.formm.okon1[1].checked == true) {
-    alert('¾à°ü¿¡ µ¿ÀÇÇÏ¼Å¾ß¸¸ ÇÕ´Ï´Ù.');
+    alert('ì•½ê´€ì— ë™ì˜í•˜ì…”ì•¼ë§Œ í•©ë‹ˆë‹¤.');
   }
 }
+```
