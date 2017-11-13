@@ -1,4 +1,9 @@
-여러파라미터를 Map에 담아서 보내기
+## MySQL
+
+- [여러파라미터를 Map에 담아서 보내기](#map)
+
+### map
+
 
 ```html
 @Override
@@ -11,13 +16,3 @@ public List<OrderVO> listOrderById(String id, String result, int oseq) {
 return session.selectList(namespace + ".listOrderById", paramMap) ;
 }
 ```
-
-## Table of contents
-- [Online Editor](#online-editor)
-	- [Markup](#markup)
-	
-	
-
-
-
-## Online Editor
