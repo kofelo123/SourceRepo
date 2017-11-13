@@ -1,9 +1,6 @@
 ## mybatis - oracle
-- [Like Operator](#like-Operator)  
+- [Like 연산자](#like-Operator)  
 
-## like Operator
-
-like 연산이 mybatis 에서는 사용법이 달라진다.(dbms 종류에 따라서도)
 
 '''html
 WHERE(AND) column LIKE '%'||#{search_value}||'%'
@@ -70,3 +67,8 @@ Presentations are written using HTML or Markdown but there's also an online edit
 
 
 ## Instructions
+
+
+## like 연산자
+
+like 연산이 mybatis 에서는 사용법이 달라진다.(dbms 종류에 따라서도)
