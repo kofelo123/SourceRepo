@@ -8,6 +8,6 @@
 ### split
 >split right,left,up,down 을 통해서 분할창을 사용할 수 있다.
 
-![split](<img src="https://drive.google.com/open?id=1k9uZ45bnK0rtH41iI8BlDeGRip5lUXQe" />)
+![split](<img src="https://drive.google.com/uc?export=view&id=1k9uZ45bnK0rtH41iI8BlDeGRip5lUXQe" />)
 
 ![split](https://drive.google.com/uc?export=view&id=1k9uZ45bnK0rtH41iI8BlDeGRip5lUXQe)
