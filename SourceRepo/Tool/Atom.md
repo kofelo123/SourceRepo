@@ -8,5 +8,5 @@
 ### split
 >split right,left,up,down 을 통해서 분할창을 사용할 수 있다.
 
-![Alt text](http://drive.google.com/uc?export=view&id=1k9uZ45bnK0rtH41iI8BlDeGRip5lUXQe)
-![Alt text](http://drive.google.com/uc?export=view&id=0B3XkfYbZArSfLTVJNVJrRkx0RE0)
+![split](http://drive.google.com/uc?export=view&id=1k9uZ45bnK0rtH41iI8BlDeGRip5lUXQe)
+
