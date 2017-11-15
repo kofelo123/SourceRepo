@@ -32,7 +32,7 @@ interface를 사용하게 되면, implements를 구현하는 부분에서 extend
 
 이러이러한 메소드가 있지만 가져다 쓰거나 오버라이드 하거나, abstract가 붙은 메소드는 반드시 구현하면 되는게 abstract class이다.
 
------------
+---
 
 ### 스프링의 장점
 
