@@ -1,7 +1,7 @@
-- [Have p.p](#have-p.p)
+- [Have p.p](#have-pp)
 - [Have been p.p](#have-been-p.p)
 - [Have been ~ing](#have-been-~ing)
-### have p.p
+### have pp
 
 능동태로서 '~했다.' 라는 현재완료 시점
 
