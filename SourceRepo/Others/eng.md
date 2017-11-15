@@ -1,13 +1,13 @@
 - [Have p.p](#have-pp)
-- [Have been p.p](#have-been-p.p)
-- [Have been ~ing](#have-been-~ing)
+- [Have been p.p](#have-been-pp)
+- [Have been ~ing](#have-been-ing)
 ### have pp
 
 능동태로서 '~했다.' 라는 현재완료 시점
 
  
 
-### Have been p.p
+### Have been pp
 
 수동태로서 '~되어졌다.' 라는 현재완료 시점
 
@@ -22,7 +22,7 @@
 즉, 단순 과거(능동)나 Be + p.p(수동)와는 약간의 차이가 있다는 점이다.
 
  
-### Have been ~ing
+### Have been ing
 
 
 능동태로서 '~해 오고 있다.' 라는 현재완료 진행형으로
