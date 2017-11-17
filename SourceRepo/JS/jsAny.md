@@ -1,7 +1,8 @@
 ## JS 여러가지
 - [라디오로 체크 여부 검사하는 코드](#radio-check)
 - [체크박스 처리 테이블](#check-box-table)
-
+- [기타]
+  - [onclick submit](#onclick-submit)
 ### radio check
 
 ```html
@@ -80,6 +81,7 @@ function go_next() {
 
 ```
 
+### Onclick Submit
 ```html
 <input type="button" value="아이디 비밀번호 찾기" class="submit"
                 onclick="location='/member/find_id_form'">
