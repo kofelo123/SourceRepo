@@ -5,6 +5,9 @@
     - [endPage 구하기](#end-page)
     - [startPage 구하기](#start-page)
     - [totalCount와 endPage의 재계산](#totalcount-endpage)
+    - [prev와 next의 계산](#prev-next)
+  - [페이징 처리용 클래스 설계하기](#paging-class)
+
 ### Paging
 
 파라미터를 직접 입력 받는 방법 / 객체로 받는 방법
@@ -153,3 +156,67 @@ startPage = (endPage - displayPageNum) + 1;
 
 
 ### TotalCount Endpage
+
+> endPage는 실제 데이터의 개수와 관련이 있기 때문에 다시 한 번 계산할 필요가 있다.
+
+- totalCount : 전체 데이터 개수
+- perPageNum : 한 번에 보여지는 데이터 개수
+
+
+```java
+//(10개씨기 보여주는 default의 경우 endPage가 10이 되겠지만, 20개씩 보여주는 경우 endPage가 5가 될 수 있다.)
+//이전에 구한 endPage 값과 계산된 결과를 비교해서,계산된 결과가 작은 경우에는 실제 endPage는 최종 게산 결과로 한다.
+int tempEndPage = (int) (Math.ceil(totalCount / (double)cri.getPerPageNum()));
+
+if(endPage > tempEndPage){
+  endPage = tempEndPage;
+}
+
+```
+
+### prev next
+
+
+#### prev
+
+> prev의 경우 startPage가 1이 아닌지를 검사하는 것으로 충분하다. 삼항 연산자로 처리 1이면 false 아닌경우는 true를 받도록 처리
+
+```
+// 결과가 true(1일경우) false 처리한것.
+prev = startPage ==1 ? false : true;
+
+```
+
+#### next
+
+> next의 경우 뒤에 더 데이터가 남아 있는지에 대한 처리이므로, endPage * perPageNum이 totalCount보다 작은지를 확인해 줘야 한다.
+
+```
+ex)perPageNum이 10이고, endPage가 10인 상황에서 totalCount가 101이라면 next는 true가 되어야 한다.
+
+next = endPage * cri.getPerPageNum() >= totalCount ? false : true;
+
+```
+---
+### Paging Class
+**페이징 처리용 클래스 설계하기**
+> 페이징의 계산을 jsp에서 처리할 수 도 있지만, 편리함을 위해서는 별도의 클래스를 설계해서 처리하는 것이 좋다.
+
+
+**필요한 데이터**
+
+- 외부에서 입력되는 데이터(Criteria에 이미 존재)
+  - page: 현재 조회하는 페이지의 번호
+  - perPageNum: 한 페이지당 출력하는 데이터의 개수
+
+- DB에서 계산되는 데이터
+  - totalCount: SQL의 결과로 나온 데이터의 전체 개수
+
+- 계산을 통해서 만들어지는 데이터
+  - startPage
+  - endPage
+  - prev
+  - next
+
+반드시 필요한 데이터는 Criteria와 totalCount.
+이를 통해서 클래스 PageMaker를 만든다.
