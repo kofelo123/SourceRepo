@@ -2,9 +2,9 @@
   - [Limit](#limit)
   - [DAO 처리를 도와줄 Criteria , 페이지계산](#criteria)
   - [화면 하단의 페이징 처리](#paging-button)
-    -[endPage 구하기](#end-page)
-    -[startPage 구하기](#start-page)
-    -[totalCount와 endPage의 재계산](#totalcount&endpage)
+    - [endPage 구하기](#end-page)
+    - [startPage 구하기](#start-page)
+    - [totalCount와 endPage의 재계산](#totalcount&endpage)
 ### Paging
 
 파라미터를 직접 입력 받는 방법 / 객체로 받는 방법
