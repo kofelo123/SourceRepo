@@ -179,7 +179,7 @@ if(endPage > tempEndPage){
 
 #### prev
 
-> prev의 경우 startPage가 1이 아닌지를 검사하는 것으로 충분하다. 삼항 연산자로 처리 1이면 false 아닌경우는 true를 받도록 처리
+> prev의 경우 startPage가 1이 아닌지를 검사하는 것으로 충분하다.  삼항 연산자로 처리 1이면 false 아닌경우는 true를 받도록 처리
 
 ```
 // 결과가 true(1일경우) false 처리한것.
@@ -218,5 +218,5 @@ next = endPage * cri.getPerPageNum() >= totalCount ? false : true;
   - prev
   - next
 
-반드시 필요한 데이터는 Criteria와 totalCount.
+반드시 필요한 데이터는 Criteria와 totalCount.  
 이를 통해서 클래스 PageMaker를 만든다.
