@@ -1,10 +1,10 @@
-- [페이징](#Paging)
+- [페이징](#paging)
   - [Limit](#limit)
   - [DAO 처리를 도와줄 Criteria , 페이지계산](#criteria)
   - [화면 하단의 페이징 처리](#paging-button)
     - [endPage 구하기](#end-page)
     - [startPage 구하기](#start-page)
-    - [totalCount와 endPage의 재계산](#totalcount&endpage)
+    - [totalCount와 endPage의 재계산](#totalcount,endpage)
 ### Paging
 
 파라미터를 직접 입력 받는 방법 / 객체로 받는 방법
@@ -125,7 +125,7 @@ ex) 한 번에 10개 데이터 출력 , totalCount가 122 개 일경우
 - page가 11인 경우
   startPage는 11, endPage는 13, next는 false, prev는 true
 
-### endPage
+### end Page
 
 > startPage 보다 endPage를 먼저 구하는 것이 산술적인 계산이 더 편할 수 있다. 현재 페이지 번호를 기준으로 계산한다.
 
@@ -152,4 +152,4 @@ startPage = (endPage - displayPageNum) + 1;
 ```
 
 
-### TotalCount&Endpage
+### TotalCount,Endpage
