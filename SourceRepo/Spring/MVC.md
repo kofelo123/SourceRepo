@@ -7,7 +7,7 @@
     - [totalCount와 endPage의 재계산](#totalcount-endpage)
     - [prev와 next의 계산](#prev-next)
   - [페이징 처리용 클래스 설계하기](#paging-class)
-
+  - [BoardController와 뷰 처리](#boardcontroller-view)
 ### Paging
 
 파라미터를 직접 입력 받는 방법 / 객체로 받는 방법
@@ -220,3 +220,52 @@ next = endPage * cri.getPerPageNum() >= totalCount ? false : true;
 
 반드시 필요한 데이터는 Criteria와 totalCount.  
 이를 통해서 클래스 PageMaker를 만든다.
+
+```java
+public class PageMaker{
+
+  private int totalCount;
+  private int startPage;
+  private int endPage;
+  private boolean prev;
+  private boolean next;
+
+  private int displayPageNum = 10;
+
+  private Criteria cri;
+
+  public void setCri(Criteria cri){
+    this.cri = cri;
+  }
+
+//totalCount가 설정 되는 시점에 calcdata()를 실행해서 계산한다.
+  public void setTotalCount(int totalCount){
+    this.totalCount = totalCount;
+
+    calcData();
+  }
+
+  private void calcData(){
+
+    endPage = (int) (Math.ceil(cri.getPage() / (double) displayPageNum) * displayPageNum);
+
+    startPage = (endPage - displayPageNum) + 1;
+
+    int tempEndPage = (int) (Math.ceil(totalCount / (double) cri.getPerPageNum()));
+
+    if (endPage > tempEndPage){
+      endPage = tempEndPage;
+    }
+
+    prev = startPage == 1 ? false : true;
+
+    next = endPage * cri.getPerPageNum() >= totalCount ? false : true;
+
+  }
+
+  이하 getter/setter , toString () 생략
+
+}
+```
+
+### boardcontroller view
