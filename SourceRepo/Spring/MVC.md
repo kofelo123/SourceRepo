@@ -8,6 +8,10 @@
     - [prev와 next의 계산](#prev-next)
   - [페이징 처리용 클래스 설계하기](#paging-class)
   - [BoardController와 뷰 처리](#boardcontroller-view)
+  - [페이징 처리의 파라미터 처리](#paging-parameter)
+    - [스프링 MVC의 UriComponentsBuilder를 이용하는 방식](#uricomponentsbuilder)
+    - [JavaScript를 이용하는 링크의 처리](#javascript-use-makelink)
+    - [목록 페이지와 정보 유지하기](#link-inform-keep)
 ### Paging
 
 파라미터를 직접 입력 받는 방법 / 객체로 받는 방법
@@ -263,9 +267,183 @@ public class PageMaker{
 
   }
 
-  이하 getter/setter , toString () 생략
+  //이하 getter/setter() , toString() 생략
 
 }
 ```
 
 ### boardcontroller view
+
+**listPage.jsp**
+```html
+<!-- 후에 pageMaker의 makeQuery메소드 생성한후 코드가  약간 바뀐다. -->
+<div class="text-center">
+  <ul class=pagenation">
+
+    <c:if test="${pageMaker.prev}"> //boolean
+      <li><a href="listPage?page=${pageMaker.startPage - 1}">&laquo;</a></li>//'이전 링크 버튼일건데 어떻게 html class코드없이 버튼모양을 식별하는지? laquo 이부분일지도 모르겠다.'
+    </c:if>
+
+    <c:forEach begin="${pageMaker.startPage }" //'items 없이 var와 begin, end로 이루어진 forEach.. 생소하다.'
+      end="${pageMaker.endPage }" var="idx">
+      <li
+        <c:out value="${pageMaker.cri.page == idx?' class =active':''}"/>> // '생각해보니.. 이게 시작에서 끝까지 인덱스로 비교후 현재 페이지인지 찾아서 현재 페이지 표시를 하는 부분인것 같다.'
+      </li>
+    </c:forEach>
+
+    <c:if test="${pageMaker.next && pageMaker.endPage > 0}">
+      <li><a href="listPage?page=${pageMaker.endPage +1}">&raquo;</a></li>
+    </c:if>
+  </ul>
+</div>
+
+
+```
+
+### paging parameter
+
+**페이징 처리의 개선을 위한 Tip**
+
+1.단순히 페이지 번호(page)만 전달 - <a href='listPage?page=3>
+
+2.페이지 번호(page)와 페이지에서 보여지는 데이터의 수(perPageNum) 전달 - <a href='listPage?page=3&perPageNum=20>
+
+2번과 같은 처리를 위해서는
+1.JSP에서 직접 수정
+2.PageMaker에서 필요한 링크를 생성 *
+3.JavaScript를 이용해서 처리하는 방법
+
+### UriComponentsBuilder
+
+스프링 MVC org.springframework.web.util 클래스 중 하나.
+URI 작성시 도움이 되는 클래스이다.
+
+```java
+//사용예시
+@test
+public void testURI()throws Exception{
+
+  UriComponents uriComponents = UriComponentsBuilder.newInstance()
+  .path("/board/read")
+  .queryParam("bno",12)
+  .queryParam("perPageNum",20)
+  .build();
+
+  logger.info(uriComponents.toString());
+}
+
+// 콘솔결과 -  INFO : org.zerock.test.BoardTest - /board/read?bno=12&perPageNum=20
+```
+```java
+//실제사용(PageMaker.class)
+
+public String makeQuery(int page){
+
+  UriComponents uriComponents = UriComponentsBuilder.newInstance()
+                                .queryParam("page",page)
+                                .queryParam("perPageNum", cri.getPerPageNum())
+                                .build();
+  return uriComponents.toUriString();
+
+}
+```
+```html
+<!--활용(listPage.jsp)-->
+<c:forEach items="${list}" var="boardVO">
+
+  <tr>
+    <td>${boardVO.bno}</td>
+    <td>
+      <a href='/board/readPage${pageMaker.makeQuery(pageMaker.cri.page)}&bno=${boardVO.bno}'>${boardVO.title}</a>
+    </td>
+    <td>${boardVO.writer}</td>
+    <td><fmt:formatDate pattern="yyyy-MM-dd HH:mm" value="${boardVO.regdate}" /></td>
+    <td><span class="badge bg-red">${boardVO.viewcnt }</span></td>
+  </tr>
+
+</c:forEach>
+<!-- 결과: <a href="/board/readPage?page=19&perPageNum=10&bno=123059">-->
+```
+
+```html
+<div class="text-center">
+  <ul class=pagenation">
+
+    <c:if test="${pageMaker.prev}">
+      <li><a href="listPage?page=${pageMaker.makeQuery(pageMaker.startPage - 1) }">&laquo;</a></li>
+    </c:if>
+
+    <c:forEach begin="${pageMaker.startPage }"
+      end="${pageMaker.endPage }" var="idx">
+      <li
+        <c:out value="${pageMaker.cri.page == idx?' class =active':''}"/>>
+        <a href="listPage${pageMaker.makeQuery(idx)}">${idx}></a>
+      </li>
+    </c:forEach>
+
+    <c:if test="${pageMaker.next && pageMaker.endPage > 0}">
+      <li><a href="listPage?page=${pageMaker.makeQuery(pageMaker.endPage +1)}">&raquo;</a></li>
+    </c:if>
+  </ul>
+</div>
+
+
+```
+
+### javascript use makelink
+
+**JavaScript를 이용하는 링크의 처리**
+
+>링크 처리하는 다른 방법으로 Javascript를 이용한다. 클릭했을떄의 이벤트를 제어하는 방식이다.
+>이를 위해 <a> 태그의 href 속성들이 단순히 페이지 번호만을 의미하도록 만들어 주어야 한다.
+
+```html
+  <ul class="pagination">
+    <li>
+      <a href="1">1</a>
+    </li>
+    <li>
+      <a href="2">2</a>
+    </li>
+    <li>
+      <a href="3">3</a>
+    </li>
+    <li class="active">...</li>
+  </ul>
+
+```
+>링크에는 단순히 페이지번호만을 넣고, 모든 것은 <form>과 JavaScript를 이용해서 처리한다.
+
+**<form> 태그처리**
+```html
+<form id="jobForm">
+  <input type='hidden' name="page" value=${pageMaker.cri.perPageNum}>
+  <input type='hidden' name="perPageNum" value=${pageMaker.cri.perPageNum}>
+</form>
+
+```
+
+**javascript처리**
+```javascript
+
+$(".pagination li a").on("click", function(event){
+
+  event.preventDefault();
+
+  var targetPage = $(this).attr("href");
+
+  var jobForm = $("#jobForm");
+  jobForm.find("[name='page']").val(targetPage);
+  jobForm.attr("action","/board/listPage").attr("method","get");
+  jobForm.submit();
+
+});
+
+```
+> PageMaker나 JavaScript를 사용하여 처리하는 방식은  JSP 내에서 직접 링크를 생성하는 방법보다 복잡하지만, 반복적 개발이 많을때 적은양의
+코드로 개발이 가능하다.
+
+
+### link inform keep
+
+> 목록보기를 통해 기존에 자신이 보던 목록 페이지로 전환 -> history.go(-1)방식 처리도 하기도 하지만, 리스트가 프레임이나 <iframe>내부에 있을 경우는 사용할 수 없다.
