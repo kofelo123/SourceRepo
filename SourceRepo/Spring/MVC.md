@@ -12,6 +12,7 @@
     - [스프링 MVC의 UriComponentsBuilder를 이용하는 방식](#uricomponentsbuilder)
     - [JavaScript를 이용하는 링크의 처리](#javascript-use-makelink)
     - [목록 페이지와 정보 유지하기](#link-inform-keep)
+  - [오라클 페이징기법](#oraclepaging)
 ### Paging
 
 파라미터를 직접 입력 받는 방법 / 객체로 받는 방법
@@ -287,12 +288,12 @@ public class PageMaker{
     <c:forEach begin="${pageMaker.startPage }" //'items 없이 var와 begin, end로 이루어진 forEach.. 생소하다.'
       end="${pageMaker.endPage }" var="idx">
       <li
-        <c:out value="${pageMaker.cri.page == idx?' class =active':''}"/>> // '생각해보니.. 이게 시작에서 끝까지 인덱스로 비교후 현재 페이지인지 찾아서 현재 페이지 표시를 하는 부분인것 같다.'
+        <c:out value="${pageMaker.cri.page == idx?' class =active':''}"/>> // '생각해보니.. 이게 시작에서 끝까지 인덱스로 비교후 현재 페이지인지 찾아서 현재 페이지 표시를 하는 부분인것 같다.'(삼항연산자 사용)
       </li>
     </c:forEach>
 
     <c:if test="${pageMaker.next && pageMaker.endPage > 0}">
-      <li><a href="listPage?page=${pageMaker.endPage +1}">&raquo;</a></li>
+      <li><a href="listPage?page=${pageMaker.endPage +1}">&raquo;</a></li>  //'&raquo가 다음페이지 버튼'
     </c:if>
   </ul>
 </div>
@@ -446,4 +447,101 @@ $(".pagination li a").on("click", function(event){
 
 ### link inform keep
 
-> 목록보기를 통해 기존에 자신이 보던 목록 페이지로 전환 -> history.go(-1)방식 처리도 하기도 하지만, 리스트가 프레임이나 <iframe>내부에 있을 경우는 사용할 수 없다.
+> 목록보기를 통해 기존에 자신이 보던 목록 페이지로 전환 -> history.go(-1)방식 처리도 하기도 하지만, 리스트가 프레임이나 <iframe>내부에 있을 경우는 사용할 수 없기 때문에 직접 처리하는게 좋다.
+
+**조회페이지에서 다시 목록 페이지로 가기 위해 필요한 정보**
+
+- 현재 목록 페이지의 페이지 번호(page)
+- 현재 목록 페이지의 페이지당 데이터수(perPageNum)
+
+page와 perPageNum파라미터의 경우 Criteria 타입으로 처리한다.
+
+```html
+<!-- readPage.jsp -->
+
+...
+<form role="form" action="modifyPage" method="post">
+  <input type='hidden' name='bno' value="${boardVO.bno}">
+  <input type='hidden' name='page' value="${cri.page}">
+  <input type='hidden' name='perPageNum' value ="${cri.perPageNum}">
+</form>
+
+
+```
+
+### OraclePaging
+
+**오라클 페이징 기법-(zerock)**
+
+오라클 페이징은 MySQL과 같이 간단하게 처리되지 못하고 rownum을 활용해주어야 한다.
+
+쿼리 실행시 primary key와 관련된 조건을 주면 이를 활용하는 '실행 계획(Execution Plan)'을 생성하게 된다.
+
+```sql
+ex)
+select * from tbl_board
+where bno > 0
+order by bno desc;
+
+```
+위를 수행시, 실행계획을 보면 내부적으로 primary key로 지정한 PK_BOARD를 이용해서 TBL_BOARD를 접근한다. -> 이때 DESCENDING이 적용되면서 접근하기 때문에 결과는 최근 데이터가 가장 먼저 나오게 된다.
+
+order by 의 경우 join등을 할 때 내부적으로 최적화된 방법을 찾기 때문에 항상 게시물의 역순으로 데이터를 검색한다는 보장은 없다.
+이를 위해서 오라클에서는 개발자가 직접 실행계획을 유도하는 '흰트(Hint)'라는 것을 이용한다.
+
+```sql
+select
+/*+INDEX_DESC(tbl_board pk_board) */
+*
+from tbl_board
+where bno > 0;
+
+```
+
+위의 SQL은 오라클의 흰트를 이용해서 강제로 primary key의 역순으로 데이터를 검색하도록 한다.
+
+
+실행된 결과물을 페이징 처리하기 위해서 필요한 또 다른 개념은 **'ROWNUM'** 이다.
+
+ROWNUM은 쿼리의 처리가 끝나고 최종적으로 출력될 때 각 레코드에 붙는 일종의 일련 번호 이다.
+
+```SQL
+select
+/*+INDEX_DESC(tbl_board pk_board) */
+rownum rn,bno,title,content,writer,regdate,viewcnt
+from tbl_board
+where bno > 0;
+```
+
+위의 쿼리를 실행하면 출력되면서 번호가 붙는 것을 확인 할 수있다.
+![paging](https://drive.google.com/uc?export=view&id=1Xis6dHcPgmIx2Unn4mtFNbdEVLxYjCmU)
+
+오라클 페이징은 이렇게 실행 결과의 ROWNUM 값을 이용해서 페이지에 해당하는 데이터를 걸러내는 방식을 이용한다.
+
+주의점은 ROWNUM 조건은 반드시 1이 포함되어야 한다는 점이다.
+ROWNUM은 마지막에 데이터가 출력되면서 붙는 번호이기 때문에 where 조건에 1이 포함되지 않으면 매번 새로운 데이터가 1번이 되면서 아무런 데이터가 출력되지 않는문제가 생긴다.
+
+이를 해결하기 위해 'in-line view' 기법을 이용한다.
+
+in-line view는 쉽게 말해서 실행된 SQL문을 하나의 테이블처럼 간주해서 사용하는 방법
+
+만약 10개씩 화면에 내용을 출력하는 경우 2페이지의 데이터는 우선 20개의 레코드를 가져온 후에 다시 rownum으로 생성된 번호를 이용해서 최신 10개의 데이터를 배제하는 방식이다.
+
+```sql
+
+select
+*
+from
+ (
+   select
+   /*+INDEX_DESC(tbl_board pk_board)*/
+   rownum rn, bno, title, content, writer, regdate, viewcnt
+   from tbl_board
+   where bno > 0
+   and rownum <= 20 )
+   where rn > 10;
+
+ )
+
+```
+![image](https://drive.google.com/uc?export=view&id=17kBBJdScrp1_ZjXm0KsbL_zVzmiQpImd)
