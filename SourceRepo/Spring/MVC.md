@@ -544,4 +544,6 @@ from
  )
 
 ```
+쿼리의 실행결과는 아래와 같다.
+
 ![img](https://drive.google.com/uc?export=view&id=1pWuB_af0v9Lp57xmby9Hb0_5bQZ43Kpu)

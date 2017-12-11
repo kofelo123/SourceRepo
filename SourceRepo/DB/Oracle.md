@@ -6,7 +6,7 @@
 ### RowNum
 
 > 오라클에서는 mysql처럼 limit가 없기 때문에 Rownum을 사용해야 한다.
-
+> zerock오라클 코드를 참조하자, rownum은 limit와 다른개념으로 인덱스를 새겨서 사용하는 개념이다. [페이징-rownum사용](https://github.com/kofelo123/SourceRepo/blob/master/SourceRepo/Spring/MVC.md#oraclepaging)
 ```sql
 ex) mysql에서 20개 가져오기
 SELECT * FROM 테이블 LIMIT 20;
