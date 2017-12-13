@@ -491,7 +491,7 @@ order by 의 경우 join등을 할 때 내부적으로 최적화된 방법을 �
 
 ```sql
 select
-/*+INDEX_DESC(tbl_board pk_board) */
+/*+INDEX_DESC(tbl_board pk_board) */  --참고로 이 pk_board는 pk칼럼명이 아니라 제약조건이름이어야 한다.
 *
 from tbl_board
 where bno > 0;
@@ -538,12 +538,38 @@ from
    rownum rn, bno, title, content, writer, regdate, viewcnt
    from tbl_board
    where bno > 0
-   and rownum <= 20 )
-   where rn > 10;
-
- )
+   and rownum <= 20 )   
+where rn > 10;
 
 ```
 쿼리의 실행결과는 아래와 같다.
 
 ![img](https://drive.google.com/uc?export=view&id=1pWuB_af0v9Lp57xmby9Hb0_5bQZ43Kpu)
+
+실행 결과는 RN 컬럼이 ROWNUM 번호를 의미하고, bno가 역순으로 정렬된것을 볼 수 있다.
+
+실행계획을 보면 rownum <= 20 조건 실행 -> 실행된 결과 내에서 rn > 10 조건을 이용하므로 2페이지 데이터를 출력하게 된다.
+
+**최종적인SQL**
+
+```sql
+
+<select id="listPage" resultType="org.zerock.domain.BoardVO">
+  <![CDATA[
+    select
+      bno, title, content, writer, viewcont, regdate
+    from
+      (
+        select
+          /*+INDEX_DESC(tbl_board, pk_board)*/
+          rownum rn, bno, title, content, writer, viewcnt, regdate
+        from tbl_board
+        where rownum <= #{page} *#{perPageNum} --1. 1~해당페이징의 최대값까지 출력가능한지(rownum특성상 1부터 뽑아야되서 1차적으로 1~필요한 데이터까지)
+        and bno > 0
+      )
+      where rn > (#{page}-1)*#{perPageNum} -- 2. 해당페이징의 최소값보다 큰것까지(1번 데이터중에 필요한 최소값보다 큰것까지 골라옴)
+  ]]>
+</select>
+
+
+```

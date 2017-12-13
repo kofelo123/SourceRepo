@@ -2,7 +2,7 @@
 
 - [rownum](#rownum)
 - [concat](#concat)
-
+- [PK생성과 제약조건 이름변경](#pkconstraintrename)
 ### RowNum
 
 > 오라클에서는 mysql처럼 limit가 없기 때문에 Rownum을 사용해야 한다.
@@ -62,3 +62,35 @@ select * from product where name like CONCAT('%',CONCAT('조청','%'));--성공(
 select * from product where name like '%'||'조청'||'%'; --이렇게 써도된다.(mysql에서는 이렇게 쓰면 모든 데이터가 출력되었다.(concat써야할듯))
 ```
 ---
+
+
+
+### PKConstraintRename
+
+**PK생성과 제약조건 이름변경**
+
+Primary Key생성에 있어서
+
+1.테이블생성시에 바로 primary key 라고 선언하는 방법이 있고
+
+2.테이블생성후에 alter table 테이블명 add constraint pk이름(제약조건이름) primary key(칼럼명) 이런식으로 하는 방법이 있다.
+
+오라클의 흰트를 사용하던중  ~~제약조건 이름~~(인덱스이름)이 필요했는데, 위의 1번방법으로 pk가 이미 만들어졌을떄,
+
+제약조건(및 인덱스이름)의 이름을 따로 추가해야한다고 생각 했으나, 그게 아니라 미지정시 default로 특정값이 들어가 있게된다.
+
+gui에서 볼수있으며, 아마 그것을 보는 쿼리가 있을것이다. 그리고 수정하면된다.
+
+```sql
+~~alter table 테이블명 rename constraint PK to PK1;~~
+--제약조건이름 변경과 힌트와 상관없음을 후에 알게됨(인덱스이름과 관련있음, 아래)
+```
+
+
+>현재 테스트 해본결과 이름 변경은 되었는데, hint 적용이 안된다. 기존의 default로 정해진값으로만 적용이되는 현상..
+>indexname의 변경이 필요한것이다. 제약조건이름과 상관없이 hint는 index이름으로 ..
+
+```sql
+alter index 인덱스이름 rename to NEW_INDEX;     
+
+```
