@@ -13,6 +13,10 @@
     - [JavaScript를 이용하는 링크의 처리](#javascript-use-makelink)
     - [목록 페이지와 정보 유지하기](#link-inform-keep)
   - [오라클 페이징기법](#oraclepaging)
+- [업로드](#upload)
+  -[UploadController에서 Ajax 처리하기](#uploadcontrollerajax)
+  -[파일업로드용 클래스 설계](#fileuploadclass)
+  -[썸네일 이미지 생성코드](#thumnail)
 ### Paging
 
 파라미터를 직접 입력 받는 방법 / 객체로 받는 방법
@@ -573,3 +577,437 @@ where rn > 10;
 
 
 ```
+### upload
+
+**<iframe>을 이용한 파일 업로드의 결과 처리**
+
+파일을 필요할 때마다 추가하는 형태로 처리하기위해 , 업로드 된 결과 역시 현재의 창에서 바로 사용할 수 이도록 하는 것이 좋다.
+
+<form> 태그의 경우 기본이 브라우저의 창에서 전송이 일어나기 때문에 화면 전환을 피할 수 없다는 점인데, <form> 태그에 tartget 속성을 주고,
+
+<ifrmae>을 이용하면 화면 전환을 없앨 수 있다.
+
+1.<form>태그의 전송은 화면에 포함된 <iframe>으로 전송
+2.결과 페이지는 <iframe> 내에 포함되므로 화면의 변화 없음
+3.결과 페이지에서 다시 바깥쪽(parent)의 javascript 함수 호출
+
+```html
+
+//uploadResult.jsp
+
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@page session="false"%>
+
+<script>
+var result = '${savedName}';
+parent.addFilePath(result);
+</script>
+
+//uploadForm.jsp
+
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+
+<style>
+iframe {
+	width: 0px;
+	height: 0px;
+	border: 0px
+}
+</style>
+</head>
+<body>
+
+
+	<form id='form1' action="uploadForm" method="post"
+		enctype="multipart/form-data" target="zeroFrame">
+		<input type='file' name='file'> <input type='submit'>
+	</form>
+
+	<iframe name="zeroFrame"></iframe>
+
+	<script>
+		function addFilePath(msg) {
+			alert(msg);
+			document.getElementById("form1").reset();
+		}
+	</script>
+
+
+	<!-- 	<form id='form1' action="uploadForm" method="post"
+		enctype="multipart/form-data">
+		<input type='file' name='file'> <input type='submit'>
+	</form>
+ -->
+</body>
+</html>
+
+
+//uploadAjax.jsp
+
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+
+<style>
+.fileDrop {
+	width: 100%;
+	height: 200px;
+	border: 1px dotted blue;
+}
+small {
+	margin-left: 3px;
+	font-weight: bold;
+	color: gray;
+}
+</style>
+</head>
+<body>
+
+	<h3>Ajax File Upload</h3>
+	<div class='fileDrop'></div>
+
+	<div class='uploadedList'></div>
+
+	<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+	<script>
+		$(".fileDrop").on("dragenter dragover", function(event) {//dragenter는 드래그해서 대상에 들어오는순간, dragover는 올려놓는동안 계속
+			event.preventDefault();//이거 없으면 드래그시 화면이 넘어가버린다.
+		});
+		$(".fileDrop").on("drop", function(event){
+			event.preventDefault();
+
+      //jQuery를 이용하는 경우 순수한 DOM 이벤트가 아니기 때문에, event.originalEvent를 이용해서 순수한 원래의 DOM 이벤트를 가져온다.
+      //event.dataTransfer는 이벤트와 같이 전달된 데이터를 의미하고, 그 안에 포함된 파일데이터를 찾기위해 dataTransger.files를 이용한다.
+			var files = event.originalEvent.dataTransfer.files;
+
+			var file = files[0];
+			//console.log(file);
+
+      //Ajax는 전통적인 form 태그와는 다르기 때문에 과거는 주로 문자열 전송시에만 사용했지만, html5의 FormData 객체를 사용하면
+      //form태그로 만든 데이터의 전송 방식과 동일하게 파일 데이터를 전송할 수있다.
+			var formData = new FormData();
+
+			formData.append("file", file);
+
+
+      //Ajax를 POST 방식으로 이용하지만, $.post()를 사용하지않고 굳이 $.ajax()를 이용해서 여러 가지 옵션을 지정한다.
+      //jQuery의 $.jax()를 이용해서 FormData 객체에 있는 파일 데이터를 전송하기 위해서는 위 코드에 나와있는 'processData'와 contentType옵션을
+      //반드시 flase로 지정해야만 한다. 이 두개옵션은 form을 사용한 파일업로드와 동일하게 해주는 역할을 한다.
+
+			$.ajax({
+				  url: '/uploadAjax',
+				  data: formData,
+				  dataType:'text',
+				  processData: false, //데이터를 일반적인 query String 으로 변환할 것인지를 결정. 기본은 true, 다른형식으로 보내기 위할떄는 false
+				  contentType: false, //기본값은 application / x-www-form-unlencoded , 파일의 경우 multipart/form-data로 전송하기 위해 false로 지정
+				  type: 'POST',
+				  success: function(data){
+
+					  var str ="";
+
+					  if(checkImageType(data)){
+						  str ="<div><a href=displayFile?fileName="+getImageLink(data)+">"
+								  +"<img src='displayFile?fileName="+data+"'/>"
+								  +"</a><small data-src="+data+">X</small></div>";
+					  }else{
+						  str = "<div><a href='displayFile?fileName="+data+"'>"
+								  + getOriginalName(data)+"</a>"
+								  +"<small data-src="+data+">X</small></div></div>";
+					  }
+
+					  $(".uploadedList").append(str);
+				  }
+				});
+		});
+		$(".uploadedList").on("click", "small", function(event){
+
+				 var that = $(this);
+
+			   $.ajax({
+				   url:"deleteFile",
+				   type:"post",
+				   data: {fileName:$(this).attr("data-src")},
+				   dataType:"text",
+				   success:function(result){
+					   if(result == 'deleted'){
+						   that.parent("div").remove();
+					   }
+				   }
+			   });
+		});
+
+
+/* 		
+$(".fileDrop").on("drop", function(event) {
+	event.preventDefault();
+
+	var files = event.originalEvent.dataTransfer.files;
+
+	var file = files[0];
+	//console.log(file);
+	var formData = new FormData();
+
+	formData.append("file", file);
+
+	$.ajax({
+		  url: '/uploadAjax',
+		  data: formData,
+		  dataType:'text',
+		  processData: false,
+		  contentType: false,
+		  type: 'POST',
+		  success: function(data){
+
+			  var str ="";
+
+			  console.log(data);
+			  console.log(checkImageType(data));
+
+			  if(checkImageType(data)){
+				  str ="<div><a href='displayFile?fileName="+getImageLink(data)+"'>"
+						  +"<img src='displayFile?fileName="+data+"'/></a>"
+						  +data +"</div>";
+			  }else{
+				  str = "<div><a href='displayFile?fileName="+data+"'>"
+						  + getOriginalName(data)+"</a></div>";
+			  }
+
+			  $(".uploadedList").append(str);
+		  }
+		});			
+});	 */
+function getOriginalName(fileName){
+	if(checkImageType(fileName)){
+		return;
+	}
+
+	var idx = fileName.indexOf("_") + 1 ;
+	return fileName.substr(idx);
+
+}
+function getImageLink(fileName){
+
+	if(!checkImageType(fileName)){
+		return;
+	}
+	var front = fileName.substr(0,12);
+	var end = fileName.substr(14);
+
+	return front + end;
+
+}
+/* 		$(".fileDrop").on("drop", function(event) {
+			event.preventDefault();
+
+			var files = event.originalEvent.dataTransfer.files;
+
+			var file = files[0];
+			//console.log(file);
+			var formData = new FormData();
+
+			formData.append("file", file);
+
+			$.ajax({
+				  url: '/uploadAjax',
+				  data: formData,
+				  dataType:'text',
+				  processData: false,
+				  contentType: false,
+				  type: 'POST',
+				  success: function(data){
+
+					  alert(data);
+
+				  }
+				});
+
+		}); */
+
+	function checkImageType(fileName){
+
+		var pattern = /jpg|gif|png|jpeg/i;
+
+		return fileName.match(pattern);
+
+	}
+
+
+	</script>
+
+</body>
+</html>
+
+```
+### uploadcontrollerajax
+
+```java
+
+//UploadController.java의 일부
+
+@ResponseBody
+ @RequestMapping(value ="/uploadAjax", method=RequestMethod.POST,
+                 produces = "text/plain;charset=UTF-8")// 한국어를 정상적으로 전송하기 위한 간단한 설정.
+ public ResponseEntity<String> uploadAjax(MultipartFile file)throws Exception{
+
+   logger.info("originalName: " + file.getOriginalFilename());
+
+
+   return
+     new ResponseEntity<>(
+         UploadFileUtils.uploadFile(uploadPath,
+               file.getOriginalFilename(),
+               file.getBytes()),
+         HttpStatus.CREATED);
+ }
+```
+### fileuploadclass
+
+static 기능을 호출해서 파일을 업로드 할 수 있도록 하는 UploadFileUtils 클래스를 설계한다.
+
+파일저장경로(uploadPath)
+원본 파일의 이름(originalName)
+파일 데이터(byte[])
+
+3개의 데이터를 파라미터로 전송받는 uploadFile()함수를 작성한다.
+
+과정
+1.UUID - 고유값생성
+2.UUID와 결합한 업로드 파일이름 생성
+3.파일이 저장될 '/년/월/일' 정보 생성
+4.업로드 기본경로(uploadPath)와 /년/월/일 폴더 생성
+5.기본경로 + 폴더경로 + 파일이름으로 파일저장
+
+폴더생성부분의 함수
+
+```java
+private static String calcPath(String uploadPath){
+
+   Calendar cal = Calendar.getInstance();
+   //  /년도
+   String yearPath = File.separator+cal.get(Calendar.YEAR);//File.separator는 윈도우에서는 \ 유닉스계열은 /이 된다.경로 구분자.
+ // /년도/몇월
+   String monthPath = yearPath +
+       File.separator +
+       new DecimalFormat("00").format(cal.get(Calendar.MONTH)+1); //달을 두자리수로 포맷
+// /몇월/몇일
+   String datePath = monthPath +
+       File.separator +
+       new DecimalFormat("00").format(cal.get(Calendar.DATE));
+
+   makeDir(uploadPath, yearPath,monthPath,datePath);
+
+   logger.info(datePath);
+
+   return datePath;
+ }
+
+ private static void makeDir(String uploadPath, String... paths){// ...은 동일타입 다중파라미터받는 ellipsis라는 녀석이다.
+
+   if(new File(paths[paths.length-1]).exists()){ //.exists는 파일이 실제로 존재하는지 여부를 확인한다.
+     return;
+   }
+
+   for (String path : paths) {
+
+     File dirPath = new File(uploadPath + path);
+
+     if(! dirPath.exists() ){ //존재하면 인듯.
+       dirPath.mkdir();//폴더생성
+     }
+   }
+ }
+```
+### thumnail
+
+```java
+//UploadFileUtils.java 의 일부
+
+  private static  String makeThumbnail(
+              String uploadPath, //기본경로
+              String path, //년/월/일 폴더
+              String fileName)throws Exception{ // 업로드된 파일이름
+
+                // BufferdImage는 실제 이미지가 아닌 메모리상의 이미지를 의미하는 객체다.
+                // 원본파일을 메모리상으로 로딩하고, 정해진 크기에 맞게 작은 이미지 파일에 원본 이미지를 복사한다.
+
+      //파일읽기      
+    BufferedImage sourceImg =
+        ImageIO.read(new File(uploadPath + path, fileName));
+        //리사이즈
+    BufferedImage destImg =
+        Scalr.resize(sourceImg,
+            Scalr.Method.AUTOMATIC,
+            Scalr.Mode.FIT_TO_HEIGHT,100);
+            //썸네일 파일이름
+    String thumbnailName =
+        uploadPath + path + File.separator +"s_"+ fileName;
+
+    File newFile = new File(thumbnailName);
+    //.이후에 확장자명 string 자르기(확장자명만 뽑기)
+    String formatName =
+        fileName.substring(fileName.lastIndexOf(".")+1);
+
+//확장자명을 대문자로 변경하고 쓴다.
+    ImageIO.write(destImg, formatName.toUpperCase(), newFile);
+    return thumbnailName.substring(
+        uploadPath.length()).replace(File.separatorChar, '/'); //치환하는 이유는 브라우저에서 윈도우의 경로로 사ㅛㅇ하는 \문자가 정상적인 경로로 인식되지 않기 때문에 '/'로 치환해준다.
+  }
+
+
+```
+
+```java
+//MediaUtils.java
+
+//MediaUtils는 확장자를 가지고 이미지 타입인지를 판단해 주는 역할을 하는데, 별도 클래스로 있는 이유는 다운or이미지보여주기 를 결정하기 위해서ㅓ
+public class MediaUtils {
+
+	private static Map<String, MediaType> mediaMap;
+
+	static{
+
+		mediaMap = new HashMap<String, MediaType>();		
+		mediaMap.put("JPG", MediaType.IMAGE_JPEG);
+		mediaMap.put("GIF", MediaType.IMAGE_GIF);
+		mediaMap.put("PNG", MediaType.IMAGE_PNG);
+	}
+
+	public static MediaType getMediaType(String type){
+
+		return mediaMap.get(type.toUpperCase());
+	}
+}
+
+//
+
+public class MediaUtils{
+
+  private static Map<String,MediaType> mediaMap;
+
+  static{
+
+    mediaMap = new HashMap<String, MediaType>();
+    mediaMap.put("JPG", MediaType.IMAGE_JPEG);
+    mediaMap.put("GIF", MediaType.IMAGE_GIF);
+    mediaMap.put("PNG", MediaType.IMAGE_PNG);
+  }
+
+  public static MediaType getMediaType(String type){
+    return mediaMap.get(type.toUpperCase());  
+  }
+}
+```
+---

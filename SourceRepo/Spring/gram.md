@@ -2,7 +2,7 @@
 
 - [@RequestParam이 Null일떄](#requestparam)
 - [@ModelAttibue()](#modelattribute)
-
+- [logger](#logger)
 
 ### @RequestParam
 
@@ -38,3 +38,9 @@ public String listPage(@ModelAttribute("cri") SearchCriteria cri, ...) throws Ex
 ```
 
 ---
+
+### logger
+
+```java
+private static final Logger logger = LoggerFactory.getLogger(현재클래스.class);
+```
