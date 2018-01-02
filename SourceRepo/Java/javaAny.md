@@ -144,4 +144,4 @@ a string derived from this string by replacing every occurrence of oldChar with 
 
 문자열.substring(index) 문자열의 index부터 뒤의 문자를 잘라서 반환한다.
 
-![image](https://drive.google.com/uc?export=view&id=19mW_6wKgogzLhcya39eLvZSawkMoW7kO)
+![substring](https://drive.google.com/uc?export=view&id=1OPZZiOIVlWbQplZy2R8wwNBOLfZu6co_)
