@@ -1,8 +1,10 @@
 ## JS 여러가지
 - [라디오로 체크 여부 검사하는 코드](#radio-check)
 - [체크박스 처리 테이블](#check-box-table)
+- [match함수(+getElementById,innerHTML)](#match)
 - [기타]
   - [onclick submit](#onclick-submit)
+
 ### radio check
 
 ```html
@@ -86,3 +88,32 @@ function go_next() {
 <input type="button" value="아이디 비밀번호 찾기" class="submit"
                 onclick="location='/member/find_id_form'">
 ```    
+
+---
+
+### match
+
+>문자열에서 특정 단어등을 검색한다
+
+```html
+<!DOCTYPE html>
+<html>
+<body>
+
+<p>Click the button to perfom a global search for the letters "ain" in a string, and display the matches.</p>
+
+<button onclick="myFunction()">Try it</button>
+
+<p id="demo"></p>
+
+<script>
+function myFunction() {
+    var str = "The rain in SPAIN stays mainly in the plain";
+    **var res = str.match(/ain/g);**
+    **document.getElementById("demo").innerHTML = res;**
+}
+</script>
+
+</body>
+</html>
+```

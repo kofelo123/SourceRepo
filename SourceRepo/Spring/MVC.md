@@ -17,6 +17,9 @@
   -[UploadController에서 Ajax 처리하기](#uploadcontrollerajax)
   -[파일업로드용 클래스 설계](#fileuploadclass)
   -[썸네일 이미지 생성코드](#thumnail)
+  -[UploadController의 재구성](#uploadcontroller)
+  -[JSP에서 파일출력하기](#jspfileoutput)
+  -[UploadController의 삭제처리](#uploadcontrollerdelete)
 ### Paging
 
 파라미터를 직접 입력 받는 방법 / 객체로 받는 방법
@@ -704,8 +707,8 @@ small {
 
 
       //Ajax를 POST 방식으로 이용하지만, $.post()를 사용하지않고 굳이 $.ajax()를 이용해서 여러 가지 옵션을 지정한다.
-      //jQuery의 $.jax()를 이용해서 FormData 객체에 있는 파일 데이터를 전송하기 위해서는 위 코드에 나와있는 'processData'와 contentType옵션을
-      //반드시 flase로 지정해야만 한다. 이 두개옵션은 form을 사용한 파일업로드와 동일하게 해주는 역할을 한다.
+      //jQuery의 $.ajax()를 이용해서 FormData 객체에 있는 파일 데이터를 전송하기 위해서는 위 코드에 나와있는 'processData'와 contentType옵션을
+      //반드시 false로 지정해야만 한다. 이 두개옵션은 form을 사용한 파일업로드와 동일하게 해주는 역할을 한다.
 
 			$.ajax({
 				  url: '/uploadAjax',
@@ -991,23 +994,216 @@ public class MediaUtils {
 	}
 }
 
-//
+// 최종적으로 파일을 업로드 처리하는 코드
+//UploadFileUtils.java 의 일부
 
-public class MediaUtils{
+public static String uploadFile(String uploadPath,
+                             String originalName,
+                             byte[] fileData)throws Exception{
 
-  private static Map<String,MediaType> mediaMap;
+   UUID uid = UUID.randomUUID();
 
-  static{
+   String savedName = uid.toString() +"_"+originalName;
 
-    mediaMap = new HashMap<String, MediaType>();
-    mediaMap.put("JPG", MediaType.IMAGE_JPEG);
-    mediaMap.put("GIF", MediaType.IMAGE_GIF);
-    mediaMap.put("PNG", MediaType.IMAGE_PNG);
-  }
+   String savedPath = calcPath(uploadPath);
 
-  public static MediaType getMediaType(String type){
-    return mediaMap.get(type.toUpperCase());  
-  }
-}
+   File target = new File(uploadPath +savedPath,savedName);
+
+   FileCopyUtils.copy(fileData, target);
+
+   String formatName = originalName.substring(originalName.lastIndexOf(".")+1);
+
+   String uploadedFileName = null;
+
+   if(MediaUtils.getMediaType(formatName) != null){
+     uploadedFileName = makeThumbnail(uploadPath, savedPath, savedName);
+   }else{
+     uploadedFileName = makeIcon(uploadPath, savedPath, savedName);
+   }
+
+   return uploadedFileName;
+
+ }
+
+    private static  String makeIcon(String uploadPath,
+          String path,
+          String fileName)throws Exception{
+
+        String iconName =
+            uploadPath + path + File.separator+ fileName;
+
+        return iconName.substring(
+            uploadPath.length()).replace(File.separatorChar, '/');
+      }
+
+
 ```
 ---
+
+### uploadcontroller
+
+```java
+
+//UploadController.java 의 일부
+//드래그앤 드롭시 호출되어 파일업로드 하고 이름을 리턴하는 메소드
+@RequestBody
+@RequestMapping(value = "/uploadAjax", method=RequestMethod.POST, produces = "text/plain; charset=UTF-8")
+public ResponseEntity<String> uploadAjax(MultipartFile file)throws Exception{
+  logger.info("originalName: " + file.getOriginalFilename());
+
+  return
+    new ResponseEntity<>(
+      UploadFileUtils.uploadFile(uploadPath,file.getOriginalFilename(),
+                                            file.getBytes()),
+      HttpStatus.CREATED);
+
+}
+
+//
+//1.파일이름->태그만들기
+//2.파일데이터전송->MIME타입(이미지,일반파일)
+
+@ResponseBody
+@Requestmapping("/displayFile") //localhost:8080/displayFile?filaName=/년/월/일/파일명
+public ResponseEntity<byte[]> displayFile(String fileName)throws Exception{
+
+  InputStream in = null;
+  ResponseEntity<byte[]> entity = null;
+
+  logger.info("FILE NAME : " + fileName);
+
+  try{
+    String formatName = fileName.substring(fileName.lastIndexOf(".")+1);
+
+    MediaType mType = MediaUtils.getMediaType(formatName); //JPG,PNG,GIF
+
+    HttpHeaders headers = new HttpHeaders();
+
+    in = new FileInputStream(uploadPath+fileName);
+
+    if(mType != null){ //Image
+      headers.setContentType(mType);
+    }else{ //Image가 아닐떄
+      fileName = fileName.substring(filaName.indexOf("_")+1);
+      headers.setContentType(MediaType.APPLICATION_OCTET_STREAM); //이 MIME타입으로 다운로드창을 연다
+      headers.add("Content-Disposition", "attachment; filename=\""+ new String(fileName.getBytes("UTF-8"), "ISO-8859-1")+"\"");
+    }
+
+      entity = new ResponseEntity<byte[]>(IOUtils.toByteArray(in), //실제로 데이터를 읽는 부분이 IOUTils.toByteArray(in)-> 데이터전송+상태코드+헤더
+        headers,
+        HttpStatus.CREATED);
+
+  }catch(Exception e){
+    e.printStackTrace();
+    entity = new ResponseEntity<byte[]>(HttpStatus.BAD_REQUEST);
+  }finally{
+    in.close();
+  }
+  return entity;
+}
+
+
+```
+---
+### jspfileoutput
+
+Ajax로 호출된 결과를 이미지나 파일의 링크로 생성하여 업로드한 파일을 다운로드 하거나 확인한다.
+
+1.Ajax의 결과로 전송된 파일이 이미지 타입의 파일인지 구분
+2.이미지 타입인 경우 <img> 태그를 생성한다. 만들어진 <img> 태그를 원하는 요소에 넣어준다.
+3.이미지 타입이 아닌 경우 <div> 태그와 <a> 태그를 이용해서 처리한다.
+
+```html
+ <!-- uploadAjax.jsp 의 일부  -->
+
+ function checkImageType(fileName){ <!-- 전송받은 문자열이 이미지 파일인지 확인하는 함수 -->
+
+   var pattern = /jpg$|gif$|png$|jpeg$/i; <!-- i의 의미는 대,소문자의 구분없음. -->
+
+   return fileName.match(pattern);
+
+ }
+
+
+ $(".fileDrop").on("drop", function(event){
+			event.preventDefault();
+
+			<!-- var files = event.originalEvent.dataTransfer.files;
+
+			var file = files[0];
+			console.log(file);
+
+			var formData = new FormData();
+
+			formData.append("file", file); -->
+
+			$.ajax({
+				  url: '/uploadAjax',
+				  data: formData,
+				  dataType:'text',
+				  processData: false,
+				  contentType: false,
+				  type: 'POST',
+				  success: function(data){
+
+					  var str ="";
+
+					  if(checkImageType(data)){
+						  str ="<div><a href=displayFile?fileName="+getImageLink(data)+">"
+								  +"<img src='displayFile?fileName="+data+"'/>"
+								  +"</a><small data-src="+data+">X</small></div>";<!--  삭제버튼(x표시) -->
+					  }else{
+						  str = "<div><a href='displayFile?fileName="+data+"'>"
+								  + getOriginalName(data)+"</a>"
+								  +"<small data-src="+data+">X</small></div></div>";
+					  }
+
+					  $(".uploadedList").append(str);
+				  }
+				});
+		});
+
+     <!-- 일반 파일이름 길게 출력되는것을 줄이기 위한 기능작성 -->
+
+     function getOriginalName(fileName){
+       if(checkImageType(fileName)){
+         return;
+       }
+
+       var idx = fileName.indexOf("_")+1;
+       return fileName.substr(idx);
+     }
+
+     <!-- 이미지파일 원본 링크 찾기  
+          (이미지인경우 다운로드가 아닌 실제 원본 이미지 데이터를 가져와야만 해서, 현재 보여지는 이미지인 썸네일에서 s_경로를 제거해서 원래의 이미지 파일을 가져온다.)
+  -->
+
+   function getImageLink(fileName){
+
+     if(!checkImageType(fileName)){<!-- 이미지 파일이 아니면 return -->
+       return;
+     }
+<!-- 12,13 부분이 s_(썸네일 부부분일것) -->
+     var front = fileName.substr(0,12);
+     var end = fileName.substr(14);
+
+     return front + end;
+
+   }
+```
+---
+
+### uploadcontrollerdelete
+
+>이미지 파일이 확인되면 원본 파일을 먼저 삭제하고, 이후에 파일을 삭제하는 방식으로 작성한다.
+
+```java
+@ResponseBody
+@RequestMapping(value="/deleteFile", method=RequestMethod.POST)
+public ResponseEntity<String> deleteFile(STring fileName){
+
+  logger.info("delete file: " + fileName);
+
+  String formatName = fileName.substring(fileName.lastIndexOf(".")+1);
+}
+```

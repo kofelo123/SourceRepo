@@ -21,7 +21,7 @@ org.springframework.web.bind.MissingServletRequestParameterException: Required i
 ---
 
 ### ModelAttribute
-
+``
 >컨트롤러 파라미터에 @ModelAttribute 를 사용할 경우, 직접 메소드내에 model.addAttribute 하지않아도 자동으로 view단으로 전달된다.
 
 ```java
