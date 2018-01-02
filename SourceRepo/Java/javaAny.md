@@ -131,7 +131,7 @@ Examples:
          returns "the way of bayonets"
  "sparring with a purple porpoise".replace('p', 't')
          returns "starring with a turtle tortoise"
- "JonL".replace('q', 'x') returns "JonL" (no change) <!-- 바꿀것이 없을떄 -->
+ "JonL".replace('q', 'x') returns "JonL" (no change) //바꿀것이 없을떄
 
 Parameters:
 oldChar - the old character.
@@ -144,4 +144,4 @@ a string derived from this string by replacing every occurrence of oldChar with 
 
 문자열.substring(index) 문자열의 index부터 뒤의 문자를 잘라서 반환한다.
 
-![substring](https://drive.google.com/uc?export=view&id=19mW_6wKgogzLhcya39eLvZSawkMoW7kO)
+![image](https://drive.google.com/uc?export=view&id=19mW_6wKgogzLhcya39eLvZSawkMoW7kO)
