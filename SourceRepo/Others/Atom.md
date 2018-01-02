@@ -13,7 +13,7 @@ packages - autocomplete-plus 중지시켜놨다.
 ### ImageLink
 
 ```
-![](https://drive.google.com/uc?export=view&id=)
+<!-- ![](https://drive.google.com/uc?export=view&id=) -->
 ```
 ![](https://drive.google.com/uc?export=view&id=1gTBg4CMFx2qbECzwWPHe4KxkDWPoHEyu)
 
@@ -43,4 +43,4 @@ setting > editor > soft wrap at preffred line length 체크해제
 **md주석처리에대해**
 
 마크다운의 경우 그냥 주석으로 처리하면 브라우저(깃허브)에서 볼때 주석이 숨김처리 되기때문에 감안하고
-html의 주석이 아닌 // 이런식으로 하던지, 마크다운 문법에 대한 주석의 경우 코드뷰(``` ``` )안에 넣는게 좋다 
+html의 주석이 아닌 // 이런식으로 하던지, 마크다운 문법에 대한 주석의 경우 코드뷰(``` ``` )안에 넣는게 좋다
