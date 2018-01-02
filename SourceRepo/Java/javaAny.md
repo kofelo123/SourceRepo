@@ -144,19 +144,4 @@ a string derived from this string by replacing every occurrence of oldChar with 
 
 문자열.substring(index) 문자열의 index부터 뒤의 문자를 잘라서 반환한다.
 
-substring
-
-public String substring​(int beginIndex)
-Returns a string that is a substring of this string. The substring begins with the character at the specified index and extends to the end of this string.
-Examples:
-
- "unhappy".substring(2) returns "happy"
- "Harbison".substring(3) returns "bison"
- "emptiness".substring(9) returns "" (an empty string)
-
-Parameters:
-beginIndex - the beginning index, inclusive.
-Returns:
-the specified substring.
-Throws:
-IndexOutOfBoundsException - if beginIndex is negative or larger than the length of this String object.
+![substring](https://drive.google.com/uc?export=view&id=19mW_6wKgogzLhcya39eLvZSawkMoW7kO)
