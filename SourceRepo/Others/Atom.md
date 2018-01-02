@@ -1,7 +1,7 @@
 - [아톰자동완성설정](#autocomplete)
-- [마크다운](#)
-  -[이미지 링크](#imagelink)
-  -[링크](#link)
+- [마크다운]
+  - [이미지 링크](#imagelink)
+  - [링크](#link)
 - [자동줄바꿈관련설정](#softwrap)
 ### AutoComplete
 
