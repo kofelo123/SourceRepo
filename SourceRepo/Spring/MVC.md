@@ -20,6 +20,7 @@
   -[UploadController의 재구성](#uploadcontroller)
   -[JSP에서 파일출력하기](#jspfileoutput)
   -[UploadController의 삭제처리](#uploadcontrollerdelete)
+  -[JSP에서 첨부파일 삭제처리](#jspdelete)
 ### Paging
 
 파라미터를 직접 입력 받는 방법 / 객체로 받는 방법
@@ -1198,6 +1199,7 @@ Ajax로 호출된 결과를 이미지나 파일의 링크로 생성하여 업로
 >이미지 파일이 확인되면 원본 파일을 먼저 삭제하고, 이후에 파일을 삭제하는 방식으로 작성한다.
 
 ```java
+//파일이름 -> 확장자분리 -> 미디어타입검사(이미지인지)
 @ResponseBody
 @RequestMapping(value="/deleteFile", method=RequestMethod.POST)
 public ResponseEntity<String> deleteFile(STring fileName){
@@ -1205,5 +1207,24 @@ public ResponseEntity<String> deleteFile(STring fileName){
   logger.info("delete file: " + fileName);
 
   String formatName = fileName.substring(fileName.lastIndexOf(".")+1);
+
+  MediaType mType = MediaUtils.getMediaType(formatName);
+
+  if(mType != null){ //이미지 타입 일떄
+    String front = filaName.substring(0,12);
+    String end = fileName.substring(14);
+    new File(uploadPath + (front+end).replace('/', File.separatorChar)).delete();
+  }
+
+  new File(uploadPath + fileName.replace('/', File.separatorChar)).delete();
 }
+```
+
+### jspdelete
+
+JSP에서 Ajax를 사용해서 파일의 이름을 컨트롤러에 전달해야 한다.
+
+
+```html
+<!-- 주석 -->
 ```
