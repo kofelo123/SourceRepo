@@ -2,9 +2,11 @@
 - [라디오로 체크 여부 검사하는 코드](#radio-check)
 - [체크박스 처리 테이블](#check-box-table)
 - [match함수(+getElementById,innerHTML)](#match)
+- [html()과 append() 차이](#htmlappend)
 - [기타]
   - [onclick submit](#onclick-submit)
-
+- [replace정규표현식조건](#replaceregex)
+- [.addclass()](#addclass)
 ### radio check
 
 ```html
@@ -116,4 +118,58 @@ function myFunction() {
 
 </body>
 </html>
+
+
+function checkImageType(fileName){
+
+	var pattern = /jpg|gif|png|jpeg/i;   //i의 의미는 대,소문자 구분없음.
+
+	return fileName.match(pattern);
+
+}
 ```
+---
+
+## replaceregex
+```js
+
+.replace(/[^0-9]/g, '')는 숫자가 아닌값을 null값 처리한다. 아래는 예
+
+// 8자리 이하인 숫자인지 Check 하는 Function
+// 사용자가 Key를 입력할 때마다 Function이 호출되도록 구현하였습니다.
+function checkNumber (data) {  
+    // 사용자가 입력한 값을 Check를 위해 변수에 넣습니다.
+    var checkData = data.value;
+    // 입력한 값이 8자리가 넘어가는지 Check를 합니다.
+    if ( checkData.length > 8 ) {
+        // 8자리가 넘어가면 8자리까지만 표현하고 나머지는 제외합니다.
+        data.value = checkData.substring(0,8);
+    } else {
+        // 8자리 이하일 경우
+        // Number형이 아닌값이 입력되면 입력값을 null값으로 대체합니다.
+        data.value = checkData.replace(/[^0-9]/g, '');
+    }
+}
+```
+---
+## addclass
+
+The addClass() method adds one or more class names to the selected elements.
+
+This method does not remove existing class attributes, it only adds one or more class names to the class attribute.
+
+Tip: To add more than one class, separate the class names with spaces.
+
+addClass () 메소드는 선택된 요소에 하나 이상의 클래스 이름을 추가한다.
+
+이 메소드는 기존 클래스 속성을 제거하지 않고 하나 이상의 클래스 이름 만 class 속성에 추가한다
+
+팁 : 둘 이상의 클래스를 추가하려면 클래스 이름을 공백으로 구분해야함
+
+```
+$("button").click(function(){
+    $("p:first").addClass("intro");
+});
+//첫번째p에 intro 클래스를 적용한다.
+```
+[w3school](https://www.w3schools.com/jquery/html_addclass.asp)

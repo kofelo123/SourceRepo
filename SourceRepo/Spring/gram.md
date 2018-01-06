@@ -44,3 +44,23 @@ public String listPage(@ModelAttribute("cri") SearchCriteria cri, ...) throws Ex
 ```java
 private static final Logger logger = LoggerFactory.getLogger(현재클래스.class);
 ```
+
+---
+
+## htmlappend
+```html
+$('#').html() will completely replace the content inside the tag that the selector corresponds to. $('#').append() will just append to the end of the content inside the tag.
+
+ex.
+
+$('#foo').html("New content here!");
+
+before: <span id="foo">Old content here!</span>
+after: <span id="foo">New content here!</span>
+and with append
+
+ $('#foo').append("New content here!");
+
+before: <span id="foo">Old content here!</span>
+after: <span id="foo">Old content here!New content here!</span>
+```

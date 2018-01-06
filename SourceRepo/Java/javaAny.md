@@ -117,20 +117,9 @@ public void method(Int... args) {}
 
 
 이하 레퍼런스 참조
-![replace](https://drive.google.com/uc?export=view&id=1ZEfgvu2HSUhgxti-S8npxOiF5EiJcLqE)
-
----
-
-### substring
-
-1.문자열.substring(index) 문자열의 index부터 뒤의 문자를 잘라서 반환한다.
-2.문자열.substring(index1,index2)  인덱스1부터 인덱스2까지를 잘라서 반환한다.
-
-
-![substring](https://drive.google.com/uc?export=view&id=1OPZZiOIVlWbQplZy2R8wwNBOLfZu6co_)
-
 ```
 replace
+
 public String replace​(char oldChar,
                       char newChar)
 Returns a string resulting from replacing all occurrences of oldChar in this string with newChar.
@@ -151,4 +140,45 @@ oldChar - the old character.
 newChar - the new character.
 Returns:
 a string derived from this string by replacing every occurrence of oldChar with newChar.
+```
+---
+
+### substring
+
+1.문자열.substring(index) 문자열의 index부터 뒤의 문자를 잘라서 반환한다.
+```
+substring
+public String substring​(int beginIndex)
+Returns a string that is a substring of this string. The substring begins with the character at the specified index and extends to the end of this string.
+Examples:
+
+ "unhappy".substring(2) returns "happy"
+ "Harbison".substring(3) returns "bison"
+ "emptiness".substring(9) returns "" (an empty string)
+
+Parameters:
+beginIndex - the beginning index, inclusive.
+Returns:
+the specified substring.
+Throws:
+IndexOutOfBoundsException - if beginIndex is negative or larger than the length of this String object.
+```
+2.문자열.substring(index1,index2)  인덱스1부터 인덱스2까지를 잘라서 반환한다.
+```
+substring
+public String substring​(int beginIndex,
+                        int endIndex)
+Returns a string that is a substring of this string. The substring begins at the specified beginIndex and extends to the character at index endIndex - 1. Thus the length of the substring is endIndex-beginIndex.
+Examples:
+
+ "hamburger".substring(4, 8) returns "urge"
+ "smiles".substring(1, 5) returns "mile"
+
+Parameters:
+beginIndex - the beginning index, inclusive.
+endIndex - the ending index, exclusive.
+Returns:
+the specified substring.
+Throws:
+IndexOutOfBoundsException - if the beginIndex is negative, or endIndex is larger than the length of this String object, or beginIndex is larger than endIndex.
 ```

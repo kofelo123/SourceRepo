@@ -14,13 +14,17 @@
     - [목록 페이지와 정보 유지하기](#link-inform-keep)
   - [오라클 페이징기법](#oraclepaging)
 - [업로드](#upload)
-  -[UploadController에서 Ajax 처리하기](#uploadcontrollerajax)
-  -[파일업로드용 클래스 설계](#fileuploadclass)
-  -[썸네일 이미지 생성코드](#thumnail)
-  -[UploadController의 재구성](#uploadcontroller)
-  -[JSP에서 파일출력하기](#jspfileoutput)
-  -[UploadController의 삭제처리](#uploadcontrollerdelete)
-  -[JSP에서 첨부파일 삭제처리](#jspdelete)
+  - [UploadController에서 Ajax 처리하기](#uploadcontrollerajax)
+  - [파일업로드용 클래스 설계](#fileuploadclass)
+  - [썸네일 이미지 생성코드](#thumnail)
+  - [UploadController의 재구성](#uploadcontroller)
+  - [JSP에서 파일출력하기](#jspfileoutput)
+  - [UploadController의 삭제처리](#uploadcontrollerdelete)
+  - [JSP에서 첨부파일 삭제처리](#jspdelete)
+  - [게시물등록과 파일업로드](#boardfileupload)
+  - [첨부파일용 템플릿 추가하기](#template)
+  - [조회 페이지와 파일 업로드](#readpagefileupload)
+  - [게시물의 수정, 삭제 작업의 파일업로드](#boardupload)
 ### Paging
 
 파라미터를 직접 입력 받는 방법 / 객체로 받는 방법
@@ -1217,6 +1221,8 @@ public ResponseEntity<String> deleteFile(STring fileName){
   }
 
   new File(uploadPath + fileName.replace('/', File.separatorChar)).delete();
+
+  return new ResponseEntity<String>("deleted", HttpStatus.OK);
 }
 ```
 
@@ -1225,6 +1231,430 @@ public ResponseEntity<String> deleteFile(STring fileName){
 JSP에서 Ajax를 사용해서 파일의 이름을 컨트롤러에 전달해야 한다.
 
 
+```js
+<!-- uploadAjax.jsp의 일부 -->
+
+$(".uploadedList").on("click", "small" , function(event){
+
+  var that = $(this); //jquery의 $(this)는 이벤트 발생요소를 말한다.
+
+  $.ajax({
+    url:"deleteFile",
+    type:"post"
+    data: {fileName:$(this).attr("data-src")},
+    dataType:"text",
+    success:function(result){
+      if(result == 'deleted'){
+        that.parent("div").remove(); //첨부파일의 실제 파일삭제후 화면에서의 div를 삭제
+      }
+    }
+  })
+
+})
+```
+
+### boardfileupload
+
+**게시물 등록의 파일 업로드**
+
+```sql
+create table tbl_attach(
+  fullName varchar(150) not null,
+  bno int not null,
+  regdate timestamp default now(),
+  primary key(fullName)
+);
+
+//모든 첨부파일 정보는 특정 게시물과 관련이 있으므로, bno 칼럼을 생성하고 이는 외래키(foregin key)로 참조해서 사용한다.
+alter table tbl_attach add constraint fk_board_attach foreign key (bno) references tbl_board (bno);
+```
+
+>등록 작업에도 트랜잭션 처리가 필요해진다. 게시물등록시 tbl_board 의 insert와 tbl_attach에도 어떤 첨부파일을 사용하게 되는지를 저장해야하기 때문.
+
+**BoardDAO의 변화**
+
+tbl_attach 테이블에 첨부파일 추가 하는 기능이 추가되는데 **주의점** 은
+
+새롭게 생성된 게시물의 번호가 필요하다는 점이다.
+
+즉 **등록작업은 한 번에 게시물의 테이블인 tbl_board 테이블에 내용이 추가되는것 + tbl_attach 테이블에도 게시물번호를 같이 저장하게 된다.**
+
+문제는 tbl_board 테이블의 설계는 게시물의 번호인 bno 칼럼이 'auto_increment'로 설계되어서 게시물의 등록 시점에 게시물 번호가 생성된다는 점이다.
+
+```
+//note
+오라클의 경우 시퀀스를 사용하기 때문에 시퀀스명.currval을 이용하면 되지만,
+MYSQL의 auto_increment의 경우는 데이터가 등록될 때 칼럼의 값이 생성되므로 처리 방식을 달리해야만 한다. MySQL 의경우 바로 이전의 등록된 번호는
+LAST_INSERT_ID()를 이용할 수 있다.
+(실제 파일업로드는 드래그앤드롭 즉시 이루어지지만, DB작업은 regist메소드에 트랜잭션으로 게시판작업과 업로드작업이 함께 순서대로 이루어짐)
+```
+
+```java
+//BoardServiceImpl의 일부
+@Transactional
+  @Override
+  public void regist(BoardVO board) throws Exception{
+
+    dao.create(board);
+
+    String[] files = board.getFiles();
+
+    if(files == null) { return; }
+
+    for (String fileName : files){
+      dao.addAttach(fileName);
+    }
+  }
+````
+
+### template
+**첨부파일용 템플릿 추가하기**
+
+첨부파일을 보여주는 HTML 코드는 조금 복잡하기 때문에 handlebars를 이용해서 템플릿으로 작성한다.(이미지파일,일반파일)
+
 ```html
-<!-- 주석 -->
+<!-- register.jsp 의 일부-->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
+
+<script id="template" type="text/x-handlebars-template">
+  <li>
+    <span class="mailbox-attachment-icon has-img"><img src="{{imgsrc}}"alt="Attachment"></span>
+    <div class="mailbox-attachment info">
+      <a href="{{getLink}}" class="mailbox-attachment-name">{{fileName}}</a>
+      <a href="{{fullName}}" class="btn btn-default btn-xs pull-right delbtn"><i class="fa fa-fw fa-remove"></i></a>
+    </div>
+  </li>
+</script>
+
+```
+>처리과정: Drop-> 서버에 업로드된 파일의 이름 -> getFIleInfo()를 통한 정보추출- JavaScript 객체생성-> handlebars 적용 -> html 생성 -> 화면적용
+
+```js
+//register.jsp의 일부
+
+var template = Handlebars.compile($("#template").html()); //template를 뽑아와서 틀을 세팅해놓는것이다. 위의 형식에 맞게.. 그리고 이후에 메소드호출에 파라미터 넘겨서 사용.
+
+$(".fileDrop").on("dragenter dragover", function(event){
+	event.preventDefault();
+});
+
+
+$(".fileDrop").on("drop", function(event){
+	event.preventDefault();
+
+  //drop시 들어온 이벤트-파일추출-form객체에 파일추가
+	var files = event.originalEvent.dataTransfer.files;
+
+	var file = files[0];
+	var formData = new FormData();
+
+	formData.append("file", file);
+
+
+	$.ajax({
+		  url: '/uploadAjax',
+		  data: formData,
+		  dataType:'text',
+		  processData: false,
+		  contentType: false,
+		  type: 'POST',
+		  success: function(data){
+
+        //upload.js에 있는 메소드로 템플릿에 필요한 객체를 생성하여 리턴한다.
+			  var fileInfo = getFileInfo(data);
+
+			  var html = template(fileInfo);
+
+			  $(".uploadedList").append(html);
+		  }
+		});
+});
+
+//upload.js의 일부
+//템플릿에 필요한 객체를 생성하여 리턴한다.
+function getFileInfo(fullName){ //data파라미터가 넘어온 file정보일건데 '년/월/일(s_)UUID_파일명.확장자' 일것이다.
+
+  //fileName:파일명.확장자 / imgsrc:보여질썸네일경로(이미지,일반파일다름) / getLink:실제파일경로(원본이미지,실제파일)
+	var fileName,imgsrc, getLink;
+  //fileLink:UUID_파일명.확장자
+	var fileLink;
+
+	if(checkImageType(fullName)){//이미지여부체크
+		imgsrc = "/displayFile?fileName="+fullName;
+		fileLink = fullName.substr(14);//UUID_파일명.확장자
+
+		var front = fullName.substr(0,12); // /2015/07/01/
+		var end = fullName.substr(14);//UUID_파일명.확장자
+
+		getLink = "/displayFile?fileName="+front + end;
+
+	}else{
+		imgsrc ="/resources/dist/img/file.png";
+		fileLink = fullName.substr(12);//UUID_파일명.확장자
+		getLink = "/displayFile?fileName="+fullName;
+	}
+	fileName = fileLink.substr(fileLink.indexOf("_")+1);//파일명.확장자(파일링크에서 UUID부분을 지움)
+
+	return  {fileName:fileName, imgsrc:imgsrc, getLink:getLink, fullName:fullName};
+
+}
+
+```
+**<form> 태그의 submit 처리**
+
+> - [ ] (1.Drop->fileupload) (파일업로드는 게시물과는 별도로 따로 일어남)
+> - [x] (2.submit->board register)(참고로 DB에 등록될떄는 게시물의 등록과 파일업로드정보가 함께 일어남(한로직에))
+
+최종적인 submit이 일어나게 되면, 서버에는 사용자가 업로드 한 파일의 정보를 같이 전송해 줘야 한다. 이에 대한 처리는 업로드 된 파일의 이름을
+<form> 태그의 내부로 포함시켜서 전송하는 방식을 이용한다.
+
+```js
+//register.js의 일부
+$("#registerForm").submit(function(event){
+  event.preventDefault();
+
+  var that = $(this);
+
+  var str = "";
+
+  $(".uploadedList .delbtn").each(function(index){//조상 자손 선택자 -> uploadedList안에 있는 모든 delbtn요소들
+    str += "<input type='hidden' name='files["+index+"]' value='"+$(this).attr("href") +"'>"; //attr(요소):href값을 뽑아옴
+  });
+
+  that.append(str);
+
+  that.get(0).submit();
+
+});
+
+```
+
+## readpagefileupload
+
+**조회 페이지와 파일 업로드**
+
+조회페이지 - 삭제관련기능은 없애고, 등록된 파일을 다운로드 하거나 원본 파일을 볼 수 있는 기능이 제공되야.
+
+게시물이 보여진 후 , Ajax를 이용해서 첨부파일의 정보를 가져오고, 화면에 출력하는 형태로 작성.
+
+(자세한건 생략)
+```sql
+select fullname from tbl_attach where bno = #{bno} order by regdate
+```
+
+```java
+//SearchBoardController의 일부
+//Ajax로 호출되는 특정 게시물의 첨부파일 처리
+@RequestMapping("/getAttach/{bno}")
+  @ResponseBody
+  public List<String> getAttach(@PathVariable("bno")Integer bno)throws Exception{
+    return service.getAttach(bno);
+  }
+```
+
+```js
+
+// readPage.jsp의 일부
+var bno = ${boardVO.bno};
+var template = Handlebars.compile($("#templateAttach").html());
+
+$.getJSON("/sboard/getAttach/"+bno, function(list)){// 게시판 url과 별개로 비동기식으로 controller 요청해서 데이터를 뽑아온다.
+  $(list).each(function(){
+
+    var fileInfo = getFileInfo(this);
+
+    var html = template(fileInfo);
+
+    $(".uploadedList").append(html);
+
+  })
+});
+
+
+//조회페이지의 템플릿은 삭제버튼에 대한 코드가 없다.
+<script id="templateAttach" type="text/x-handlebars-template">
+<li data-src='{{fullName}}'>
+  <span class="mailbox-attachment-icon has-img"><img src="{{imgsrc}}" alt="Attachment"></span>
+  <div class="mailbox-attachment-info">
+	<a href="{{getLink}}" class="mailbox-attachment-name">{{fileName}}</a>
+	</span>
+  </div>
+</li>                
+</script>  
+
+
+```
+
+**원본 이미지의 조회와 다운로드 처리**
+
+조회 화면은 업로드한 파일을 원본 그대로 확인하거나, 다운로드 할 수 있게 처리를 해야 한다.
+일반 파일의 경우 컨트롤러에서 자동으로 MIME 타입을 다운로드 하기 때문에 처리할 것이 없지만,
+이미지의 경우 현재 화면이 전환되면서 이미지가 보여지기 떄문에 이벤트 처리가 필요. -> css를 이용해서 화면의 맨 앞쪽으로 보여지게 처리, 화면상에 숨겨져 있는 <div>를 작성하고, 클릭하면 큰 크기로 보여주게 한다.
+
+```html
+//readPage.jsp의 일부(이미지 파일일때 처리)
+
+//숨겨져 있는<div>(썸네일 클릭시 원본을 보여줄 div)
+<div class='popup back' style="display:none;"></div>
+  <div id="popup_front" class='popup front' style="display:none;">
+  <img id="popup_img">
+</div>
+
+<style type="text/css">
+  .popup {position: absolute;}
+  .back {background-color: gray; opacity:0.5; width: 100%; height: 300%; overflow:hidden; z-index:1101;}
+  .front{z-index:1110; opacity:1; boarder:1px; margin: auto;}
+  .show{position:relative; max-width: 1200px; max-height:800px; overflow:auto;}
+</style>
+
+//클릭 -> 이벤트의 href추출 -> 이미지여부체크 -> 숨겨진 div에 src추가 -> show 처리
+// uploadedList < - / (template처리해서 전달) < - mailbox-attach-info a / #popup_img  숨겨진 div의 이미지 부분
+$(".uploadedList").on("click", ".mailbox-attachment-info a", function(event){
+
+    var fileLink = $(this).attr("href");
+
+    if(checkImageType(fileLink)){
+
+      event.preventDefault();
+
+      var imgTag = $("#popup_img");
+      imgTag.attr("src", fileLink);
+
+      console.log(imgTag.attr("src"));
+
+      $(".popup").show('slow');
+      imgTag.addClass("show");
+
+
+    }
+});
+//원본 이미지 클릭시 -> div다시숨김
+$("#popup_img").on("click", function(){
+
+  $(".popup").hide('slow');
+
+});
+
+```
+
+## boardupload
+
+게시물 수정화면은 첨부파일을 삭제후 새로운 파일을 업로드 할수있다.
+그에 대한 간단한 처리방법으로, 기존의 업로드를 모두 삭제하고, 새롭게 첨부파일과 관련된 정보를 다시넣는다.
+
+```
+(dao,mapper 구체적 코드 생략)
+delete from tbl_attach where bno = #{bno} //기존 업로드된 첨부파일 모두 삭제
+
+insert into tbl_attach(fullname,bno) values(#{fullName},#{bno}) // 모두삭제된 이후 새로 다시 업로드하는 파일
+```
+
+**수정작업에 대한 서비스의 트랜잭션 관리**
+
+첨부파일이 존재할경우 수정은 1.원래게시물 수정+ 2.기존 첨부파일 목록 삭제 + 3.새로운 첨부파일 정보 입력이 함께 이뤄져야 하기 때문에 트랜잭션으로 처리한다.
+
+```java
+//BoardServiceImpl 의 일부 (파일삭제후-> 게시물 등록에서의 DB작업인듯)
+
+@Transactional
+  @Override
+  public void modify(BoardVO board) throws Exception{
+    dao.update(board); //1.
+
+    Integer bno = board.getBno();
+
+    dao.deleteAttach(bno);//2.
+
+    String[] files = board.getFiles();
+
+    if(files == null){ return; }
+
+    for(String fileName : files){
+      dao.replaceAttach(fileName, bno); //3.
+    }
+  }
+
+```
+
+**삭제 처리**
+삭제 처리는 데이터베이스의 삭제와 업로드 되었던 첨부파일의 삭제 작업이 같이 진행된다.
+
+```java
+//UploadController의 일부
+
+//첨부파일의삭제 (이 부분은 수정페이지에서 첨부파일 썸네일의 x버튼(delbtn)누를때 Ajax처리되서 호출되는 부분)
+
+@ResponseBody
+  @RequestMapping(value="/deleteAllFiles", method=RequestMethod.POST)
+  public ResponseEntity<String> delete(@RequestParam("files[]")String [] files){
+
+    logger.info("delete all files: " + files);
+
+    if(files == null || files.length == 0){ //파일이 없을떄
+      return new ResponseEntity<String>("deleted", HttpStatus.OK);
+    }
+
+    for (String fileName : files){ //each로 모두삭제
+      String formatName = fileName.substring(fileName.lastIndexOf(".")+1);
+
+      MediaType mType = MediaUtils.getMediaType(formatName);
+
+      if(mType != null){ //이미지일때
+        String front = fileName.substring(0,12);
+        String end = filename.substring(14);
+        new File(uploadPath + (front+end).replace('/', File.separatorChar)).delete(); //삭제
+      }
+
+      new File(uploadPath+ filename.replace('/', File.separatorChar)).delete();
+
+    }
+    return new ResponseEntity<String>("deleted", HttpStatus.OK);
+  }
+
+//BoardServiceImpl의 일부
+
+/// 데이터베이스의 삭제 처리
+
+//삭제작업의 경우 tbl_attach가 tbl_board를 참조하기 때문에 반드시 첨부파일과 관련된 정보부터 삭제하고, 게시글을 삭제 한다.
+@Transactional
+  @Ovveride
+  public void remove(integer bno) throws Exception{
+    dao.deleteAttach(bno);
+    dao.delete(bno);
+  }
+
+```
+
+**삭제 화면의 처리**
+
+게시물의 삭제 시 Ajax를 이용해서 첨부파일의 삭제를 지시하고, <form> 방식을 이용해서 삭제를 진행한다.
+
+```js
+
+//readpage.jsp의 일부
+$("#removeBtn").on("click", function(){
+                    //댓글번호
+  var replyCnt = $("#replycntSmall").html().replace(/[^0-9]/g,""); //숫자가 아닌값을 null값으로 대체한다는것(태그같은걸 말하는건지..)
+
+  if(replyCnt > 0){
+    alert("댓글이 달린 게시물을 삭제할 수 없습니다.");
+    return;
+  }
+
+  var arr = [];
+  $(".uploadedList li").each(function(index){
+    arr.push($(this).attr("data-src")); //data-src를 뽑아와서 arr에 push한다.
+  });
+
+  if(arr.length > 0){
+    $.post("/deleteAllFiles",{files:arr}, function(){ //post방식으로 ajax수행 - 파일삭제
+
+    });
+  }
+
+  formObj.attr("action", "/sboard/removePage");
+  formObj.submit();
+});
+
 ```

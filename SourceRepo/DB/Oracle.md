@@ -104,3 +104,11 @@ alter index 인덱스이름 rename to NEW_INDEX;
 ---
 
 ### tablejoin
+
+두 가지이상의 테이블로 부터 조회해야 할때 - from 절에 두개 이상의 테이블이 나타날때 조인이라고 한다.
+
+(select * from tab) - 모든 테이블,뷰
+
+1. 어떤 테이블을 FROM에 둘까?
+
+2.
