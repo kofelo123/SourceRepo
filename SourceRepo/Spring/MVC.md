@@ -25,6 +25,7 @@
   - [첨부파일용 템플릿 추가하기](#template)
   - [조회 페이지와 파일 업로드](#readpagefileupload)
   - [게시물의 수정, 삭제 작업의 파일업로드](#boardupload)
+  - [(momstouch)프로젝트경로설정](#projectlocation)
 ### Paging
 
 파라미터를 직접 입력 받는 방법 / 객체로 받는 방법
@@ -910,7 +911,7 @@ private static String calcPath(String uploadPath){
    String monthPath = yearPath +
        File.separator +
        new DecimalFormat("00").format(cal.get(Calendar.MONTH)+1); //달을 두자리수로 포맷
-// /몇월/몇일
+// /년도/몇월/몇일
    String datePath = monthPath +
        File.separator +
        new DecimalFormat("00").format(cal.get(Calendar.DATE));
@@ -932,7 +933,7 @@ private static String calcPath(String uploadPath){
 
      File dirPath = new File(uploadPath + path);
 
-     if(! dirPath.exists() ){ //존재하면 인듯.
+     if(! dirPath.exists() ){ //존재하지 않으면인듯.(폴더)
        dirPath.mkdir();//폴더생성
      }
    }
@@ -999,6 +1000,10 @@ public class MediaUtils {
 	}
 }
 
+// *uploadFIle(파일업로드) 와 thumnail 부분이 헷갈릴수 있다. 그 과정을 분석해보면
+// 1. Drop->파일추출->FileCopyUtils.copy-> 로컬파일저장
+// 2. ImageIO.read로 로컬파일을 읽어서 -> ImgScalr 로 이미지 축소-> ImageIO.write(썸네일을 로컬에 저장)
+
 // 최종적으로 파일을 업로드 처리하는 코드
 //UploadFileUtils.java 의 일부
 
@@ -1010,7 +1015,7 @@ public static String uploadFile(String uploadPath,
 
    String savedName = uid.toString() +"_"+originalName;
 
-   String savedPath = calcPath(uploadPath);
+   String savedPath = calcPath(uploadPath);//calcPath() - 폴더 없으면 만들고 , 리턴으로 path값
 
    File target = new File(uploadPath +savedPath,savedName);
 
@@ -1058,6 +1063,7 @@ public ResponseEntity<String> uploadAjax(MultipartFile file)throws Exception{
 
   return
     new ResponseEntity<>(
+    //업로드하는 메소드호출
       UploadFileUtils.uploadFile(uploadPath,file.getOriginalFilename(),
                                             file.getBytes()),
       HttpStatus.CREATED);
@@ -1068,6 +1074,7 @@ public ResponseEntity<String> uploadAjax(MultipartFile file)throws Exception{
 //1.파일이름->태그만들기
 //2.파일데이터전송->MIME타입(이미지,일반파일)
 
+//UploadController의 일부
 @ResponseBody
 @Requestmapping("/displayFile") //localhost:8080/displayFile?filaName=/년/월/일/파일명
 public ResponseEntity<byte[]> displayFile(String fileName)throws Exception{
@@ -1092,6 +1099,7 @@ public ResponseEntity<byte[]> displayFile(String fileName)throws Exception{
       fileName = fileName.substring(filaName.indexOf("_")+1);
       headers.setContentType(MediaType.APPLICATION_OCTET_STREAM); //이 MIME타입으로 다운로드창을 연다
       headers.add("Content-Disposition", "attachment; filename=\""+ new String(fileName.getBytes("UTF-8"), "ISO-8859-1")+"\"");
+
     }
 
       entity = new ResponseEntity<byte[]>(IOUtils.toByteArray(in), //실제로 데이터를 읽는 부분이 IOUTils.toByteArray(in)-> 데이터전송+상태코드+헤더
@@ -1156,7 +1164,7 @@ Ajax로 호출된 결과를 이미지나 파일의 링크로 생성하여 업로
 					  if(checkImageType(data)){
 						  str ="<div><a href=displayFile?fileName="+getImageLink(data)+">"
 								  +"<img src='displayFile?fileName="+data+"'/>"
-								  +"</a><small data-src="+data+">X</small></div>";<!--  삭제버튼(x표시) -->
+								  +"</a><small data-src="+data+">X</small></div>";<!--  삭제버튼(x표시)  -> jquery로 $(".uploadedList").on("click", "small", function) 해서 ajax로 url - deleteFile, data - {fileName:$(this).attr("data-src") 해서 사용한다}-->
 					  }else{
 						  str = "<div><a href='displayFile?fileName="+data+"'>"
 								  + getOriginalName(data)+"</a>"
@@ -1201,9 +1209,10 @@ Ajax로 호출된 결과를 이미지나 파일의 링크로 생성하여 업로
 ### uploadcontrollerdelete
 
 >이미지 파일이 확인되면 원본 파일을 먼저 삭제하고, 이후에 파일을 삭제하는 방식으로 작성한다.
-
+한다}
 ```java
 //파일이름 -> 확장자분리 -> 미디어타입검사(이미지인지)
+//jquery로 $(".uploadedList").on("click", "small", function) 해서 ajax로 url - deleteFile, data - {fileName:$(this).attr("data-src") 해서 사용
 @ResponseBody
 @RequestMapping(value="/deleteFile", method=RequestMethod.POST)
 public ResponseEntity<String> deleteFile(STring fileName){
@@ -1293,7 +1302,7 @@ LAST_INSERT_ID()를 이용할 수 있다.
 //BoardServiceImpl의 일부
 @Transactional
   @Override
-  public void regist(BoardVO board) throws Exception{
+  public void regist(BoardVO board) throws Exception{ //BoardVO에 게시글내용 등과 첨부파일이 모두있는상태에서 submit됬을것.
 
     dao.create(board);
 
@@ -1657,4 +1666,38 @@ $("#removeBtn").on("click", function(){
   formObj.submit();
 });
 
+```
+
+String savePath = "product_images";
+
+   ServletContext context = session.getServletContext();
+   String uploadFilePath = context.getRealPath(savePath);
+
+
+## projectlocation
+**프로젝트 절대경로 구하기**
+
+```java
+@Override
+	public String uploadFile(String originalName, byte[] fileData,String uploadPath,HttpServletRequest request) throws IOException {
+
+		// UUID uid = UUID.randomUUID();
+    //
+		// String savedName = uid.toString() + "_"+originalName;
+		// //
+		String savePath = "resources/product_images";
+		HttpSession session = request.getSession();
+		ServletContext context = session.getServletContext();
+		String uploadFilePath = context.getRealPath(savePath);//getRealPath()가 어플리케이션의 기본 절대경로를 의미한다.
+		System.out.println("테스트:"+uploadFilePath);
+    //
+		// File target = new File(uploadPath,savedName);
+    //
+		// FileCopyUtils.copy(fileData, target);
+
+		return savedName;
+	}
+
+  //console
+  테스트:C:\workspace-sts-3.8.0.RELEASE\MomsTouch\src\main\webapp\resources\product_images
 ```
