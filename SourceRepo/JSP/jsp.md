@@ -1,6 +1,6 @@
 - [SessionScope](#session-scope)
 - [JSTL-forEach-배열과값비교-status활용/두개의 el 객체간의 비교방법](#foreach)
-
+- [JSTL-set사용](#jstlset)
 ### Session scope
 
 ```html
@@ -46,3 +46,33 @@ or, equivalently
 
 ```
 ---
+
+## jstlset
+
+JSTL에서 변수를 저장해서 쓰는 용도.
+
+```html
+c:set 사용
+
+<c:forEach items="${listNewProduct }"  var="productVO">
+
+	      <c:choose>
+			<c:when test="${productVO.kind == '치킨 메뉴' }">
+				<c:set var="subfolder" value="/menu_1"/>  
+			</c:when>
+			<c:when test="${productVO.kind == '씨푸드 메뉴' }">
+				<c:set var="subfolder" value="/menu_2"/>  
+			</c:when>
+			<c:when test="${productVO.kind == '버거 메뉴' }">
+				<c:set var="subfolder" value="/menu_3"/>  
+			</c:when>
+			<c:when test="${productVO.kind == '사이드 메뉴' }">
+				<c:set var="subfolder" value="/menu_4"/>  
+			</c:when>
+			<c:when test="${productVO.kind == '음료류' }">
+				<c:set var="subfolder" value="/menu_5"/>  
+			</c:when>
+		</c:choose>
+
+(사용) ${subfolder}
+```

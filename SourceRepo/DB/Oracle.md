@@ -106,7 +106,7 @@ Primary Key생성에 있어서
 
 1.테이블생성시에 바로 primary key 라고 선언하는 방법이 있고
 
-2.테이블생성후에 alter table 테이블명 add constraint pk이름(제약조건이름) primary key(칼럼명) 이런식으로 하는 방법이 있다.
+2.테이블생성후에 alter table 테이블명 add constraint pk이름(~~제약조건이름~~ ->인덱스이름) primary key(칼럼명) 이런식으로 하는 방법이 있다.
 
 오라클의 흰트를 사용하던중  ~~제약조건 이름~~(인덱스이름)이 필요했는데, 위의 1번방법으로 pk가 이미 만들어졌을떄,
 

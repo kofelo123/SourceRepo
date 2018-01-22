@@ -7,6 +7,7 @@
   - [onclick submit](#onclick-submit)
 - [replace정규표현식조건](#replaceregex)
 - [.addclass()](#addclass)
+- [체크박스 사용하기](#checkbox)
 ### radio check
 
 ```html
@@ -173,3 +174,25 @@ $("button").click(function(){
 //첫번째p에 intro 클래스를 적용한다.
 ```
 [w3school](https://www.w3schools.com/jquery/html_addclass.asp)
+
+---
+
+## checkbox
+
+> html에서 체크박스를 사용할때 js에서 받아서 처리하는 코드
+
+체크박스를 배열로 받아와서 길이를 기준으로 처리할떄 체크박스 변수가 하나일떄는 배열처리가 안된다(undefined)
+그래서 undefined일때 배열의 길이를 1로 처리해준다
+
+ if(document.formm.cseq.length == undefined && document.formm.cseq.checked == true){
+	  	count++;
+  }else{
+  for ( var i = 0; i < document.formm.cseq.length; i++) {
+    if (document.formm.cseq[i].checked == true) {
+      count++;
+    }
+  }
+  }
+      count++;
+    }
+  }

@@ -28,6 +28,9 @@ public List<OrderVO> listOrderById(String id, String result, int oseq) {
 return session.selectList(namespace + ".listOrderById", paramMap) ;
 }
 ```
+map에 단일 primitive 변수(+String) 값을 map에 담아서 보낼때는 mapper에서 그냥 #{변수명} 해서 쓰면되는데,
+map에 객체(VO)가 들어있을경우 #{객체.변수명} 이렇게 적어줘야한다.(map이 아닌 단일 VO 파라미터를 넘길때는 #{변수명}만 써도 된다.)
+
 
 ### include refid
 

@@ -7,7 +7,8 @@
 	- [success()](#success)
 	- [getJSON()](#getjson)
 - [.show , .hide()](#showhide)
-
+- [$().html(.append()와 차이점](#htmlappend)
+- [.find()](#find)
 
 ### Form control
 
@@ -269,3 +270,42 @@ $( "#clickme" ).click(function() {
   });
 });
 ```
+---
+
+
+## htmlappend
+```html
+$('#').html() will completely replace the content inside the tag that the selector corresponds to. $('#').append() will just append to the end of the content inside the tag.
+
+ex.
+
+$('#foo').html("New content here!");
+
+before: <span id="foo">Old content here!</span>
+after: <span id="foo">New content here!</span>
+and with append
+
+ $('#foo').append("New content here!");
+
+before: <span id="foo">Old content here!</span>
+after: <span id="foo">Old content here!New content here!</span>
+```
+---
+
+## find
+
+개요 : 선택된 요소 집합에서 선택자, jQuery 객체, 요소와 같은 인자에 맞는 요소들을 걸러내어 줍니다.
+
+item II 를 기준으로 li 요소들을 모두 찾아내는 스크립트는 아래와 같습니다.
+```js
+$('li.item-ii').find('li').css('background-color', 'red');
+```
+
+```js
+$("p").find("span").css('color','red'); p 하위의 모든 span태그를 찾아서 color를 red로 바꾼다.
+```
+
+[jqueryAPI](http://api.jquery.com/find/)
+
+
+---

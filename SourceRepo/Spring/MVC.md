@@ -26,7 +26,8 @@
   - [조회 페이지와 파일 업로드](#readpagefileupload)
   - [게시물의 수정, 삭제 작업의 파일업로드](#boardupload)
   - [(momstouch)프로젝트경로설정](#projectlocation)
-### Paging
+
+# Paging
 
 파라미터를 직접 입력 받는 방법 / 객체로 받는 방법
 
@@ -332,6 +333,7 @@ public class PageMaker{
 스프링 MVC org.springframework.web.util 클래스 중 하나.
 URI 작성시 도움이 되는 클래스이다.
 
+
 ```java
 //사용예시
 @test
@@ -390,8 +392,8 @@ public String makeQuery(int page){
     <c:forEach begin="${pageMaker.startPage }"
       end="${pageMaker.endPage }" var="idx">
       <li
-        <c:out value="${pageMaker.cri.page == idx?' class =active':''}"/>>
-        <a href="listPage${pageMaker.makeQuery(idx)}">${idx}></a>
+        <c:out value="${pageMaker.cri.page == idx?' class =active':''}"/>>  <!-- <li class=active> or <li> 이런식으로된다  -->
+        <a href="listPage${pageMaker.makeQuery(idx)}">${idx}></a> <!-- 만약 앞에 listpage이런거 안붙이고 ${pageMaker.makeQuery(idx)} 이런식으로 명시할경우 현재 페이지기준으로 파라미터가 붙는다.-->
       </li>
     </c:forEach>
 
@@ -586,7 +588,7 @@ where rn > 10;
 
 
 ```
-### upload
+# upload
 
 **<iframe>을 이용한 파일 업로드의 결과 처리**
 
