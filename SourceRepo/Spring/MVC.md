@@ -26,7 +26,8 @@
   - [조회 페이지와 파일 업로드](#readpagefileupload)
   - [게시물의 수정, 삭제 작업의 파일업로드](#boardupload)
   - [(momstouch)프로젝트경로설정](#projectlocation)
-
+- [인터셉터]
+  -[HandlerInterceptor](#handlerinterceptor)
 # Paging
 
 파라미터를 직접 입력 받는 방법 / 객체로 받는 방법
@@ -1702,4 +1703,177 @@ String savePath = "product_images";
 
   //console
   테스트:C:\workspace-sts-3.8.0.RELEASE\MomsTouch\src\main\webapp\resources\product_images
+```
+
+---
+
+## HandlerInterceptor
+
+인터셉터는 서블릿의 필터와 유사( 특정 URI 접근에 제어하는 용도로 사용된다.
+)하지만, 인터셉터가 spring의 context내부에 접근해있어서 스프링객체와의
+접근이 용이하다는 차이점이 있다.
+
+사전,후 처리는 AOP 기능으로 가능하지만, 일반적으로 컨트롤러를 이용할떄는 HandlerInterceptor 를 사용하는경우가
+많다고 한다.
+
+HandlerInterceptor의 메소드
+- preHandle(request, response, handler)
+:컨트롤러 동작의 전처리
+
+- postHandle(request,response,modelAndView)
+:컨트롤러 동작의 후처리(Spring MVC의 FrontController인 DispatcherServlet이 화면을 처리하기 전에 동작)
+
+- afterCompletion(request,response,handler,exception)
+:MVC의 FrontController인 DispatcherServlet의 화면처리 완료된 상태에서의 처리
+
+handlerInterceptor는 인터페이스로 정의, handlerInterceptorAdaptor는 인터페이스를 구현한 추상 클래스로 설계되어 있다.
+일반적으로 Adaptor라는 의미가 인터페이스를 구현하여 사용하기 쉽게 하는 용도가 많다.
+```
+class SampleIntercepter extends HandlerInterceptorAdapter
+```
+```xml
+
+
+<beans:bean id="authInterceptor" class="org.zerock.interceptor.AuthInterceptor"></beans:bean> //register 등 특정 url접근시 로그인 여부 체크->로그인페이지이동
+
+	<beans:bean id="loginInterceptor" class="org.zerock.interceptor.LoginInterceptor"></beans:bean>//loginPost에 맵핑을 가로챈다. session 기존의것 지우고, id/pw 체크후 세션저장한다. 여러 옵션에 따라 ..
+
+//아래 <interceptors> 쓰기위해서는 xml네임스페이스에 spring mvc관련 설정이 되어 있어야
+<interceptors>
+
+		<interceptor>
+			<mapping path="/user/loginPost" /> //이매핑에 대해서
+			<beans:ref bean="loginInterceptor" />
+		</interceptor>
+
+
+ 	  <interceptor>  <!-- 로그인해야 접근할수있게   -->
+	    <mapping path="/sboard/register/*"/>
+	    <mapping path="/sboard/modifyPage/*"/>
+	    <mapping path="/sboard/removePage/*"/>
+	    <mapping path="/sboard/mail/listmail/*"/>
+	    <mapping path="/sboard/readPage/like*"/>
+	    <mapping path="/sboard/list/supporter"/>
+
+	    <beans:ref bean="authInterceptor"/>
+	  </interceptor>
+
+	</interceptors>
+```
+
+```java
+//LoginInterceptor - 인터셉터 상속받아 오버라이딩한 메소드 posthandle,prehandle
+public class LoginInterceptor extends HandlerInterceptorAdapter {
+
+  private static final String LOGIN = "login";
+  private static final Logger logger = LoggerFactory.getLogger(LoginInterceptor.class);
+
+  @Override
+  public void postHandle(HttpServletRequest request,
+      HttpServletResponse response, Object handler,
+      ModelAndView modelAndView) throws Exception {
+
+    HttpSession session = request.getSession();
+
+    ModelMap modelMap = modelAndView.getModelMap();
+    Object userVO = modelMap.get("userVO");
+
+    if (userVO != null) {
+
+      logger.info("new login success");
+      session.setAttribute(LOGIN, userVO);
+
+      if (request.getParameter("useCookie") != null) {
+
+        logger.info("remember me................");
+        Cookie loginCookie = new Cookie("loginCookie", session.getId());
+        loginCookie.setPath("/");
+        loginCookie.setMaxAge(60 * 60 * 24 * 7);
+        response.addCookie(loginCookie);
+      }
+      // response.sendRedirect("/");
+      Object dest = session.getAttribute("dest");
+
+      response.sendRedirect(dest != null ? (String) dest : "/");
+    }
+  }
+
+  @Override
+  public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+
+    HttpSession session = request.getSession();
+
+    if (session.getAttribute(LOGIN) != null) {
+      logger.info("clear login data before");
+      session.removeAttribute(LOGIN);
+    }
+
+    return true;
+  }
+
+```
+```java
+
+public class AuthInterceptor extends HandlerInterceptorAdapter {
+
+  private static final Logger logger = LoggerFactory.getLogger(AuthInterceptor.class);
+
+  @Inject
+  private UserService service;
+
+  @Override
+  public boolean preHandle(HttpServletRequest request,
+      HttpServletResponse response, Object handler) throws Exception {
+
+    HttpSession session = request.getSession();   
+
+
+    if(session.getAttribute("login") == null){
+
+      logger.info("current user is not logined");
+
+      saveDest(request);
+
+      Cookie loginCookie = WebUtils.getCookie(request, "loginCookie");
+
+      if(loginCookie != null) {
+
+        UserVO userVO = service.checkLoginBefore(loginCookie.getValue());
+
+        logger.info("USERVO: " + userVO);
+
+        if(userVO != null){
+          session.setAttribute("login", userVO);
+          return true;
+        }
+
+      }
+
+      response.sendRedirect("/user/login");
+      return false;
+    }
+    return true;
+  }  
+  //이전의 페이지에 대한 저장 -> loginpost(loginInterceptor)에서 사용.
+//AuthInterceptor에서 로그인여부체크->비로그인시 로그인-> 로그인인터셉터 과정에서
+//마지막에 sendredirect'/'으로 기본으로 되어있어서 직전페이지로 가지않고 홈으로 가는것에 대해 대안으로 아래 코드가 있다
+
+  private void saveDest(HttpServletRequest req) {
+
+    String uri = req.getRequestURI();
+
+    String query = req.getQueryString();
+
+    if (query == null || query.equals("null")) {
+      query = "";
+    } else {
+      query = "?" + query;
+    }
+
+    if (req.getMethod().equals("GET")) {
+      logger.info("dest: " + (uri + query));
+      req.getSession().setAttribute("dest", uri + query);
+    }
+  }
+
 ```

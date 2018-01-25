@@ -2,7 +2,7 @@
   -[1장 깨끗한 코드](#cleancode)
 - [블스-JS](#blogstudyjs)
   -[ch2](#ch2)
-
+- [aws-id](#awsid)
 
 ### cleancode
 
@@ -35,3 +35,11 @@ console.log("varTemp type : " + typeof(vaTemp));
 indexOf(); 인덱스 검색
 
 배열열변수.indexof
+
+---
+
+## awsid
+
+aws 기존 hlw123@naver.com(중지시킴)
+
+aws 신규 gjwjddnjs012@daum.net

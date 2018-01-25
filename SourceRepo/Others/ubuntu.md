@@ -3,6 +3,11 @@
 - [vim 에디터종료](#vimediterend)
 - [디렉터리 권한](#directorypermission)
 - [디렉터리 생성](#directorycreate)
+- [톰캣로그확인](#tomcatlog)
+- [MySQL관련](#mysql)
+  - [버전확인](#versionfind)
+  - [DB서버쪽 한글세팅](#koreansetting)
+  - [리눅스 인스턴스 mysql접속](#mysqlconnect)
 ## else
 
 ### SSH와 RDP
@@ -69,4 +74,63 @@ chomod 755 ./filename
 
 ```
 mkdir 디렉토리명
+```
+---
+## tomcatlog
+
+tmcat\logs 에서
+```
+tail -f catalina.out
+```
+빠져나올떄는 ctrl + c
+---
+
+## mysql
+
+---
+## versionfind
+**MySQL버전찾기**
+```
+sudo mysql --version
+```
+
+## koreansetting
+우분투서버쪽에서 한글 데이터를 못가져오는 경우가 있다.
+한글 인코딩 상의 문제가 있는것..
+ ![img](https://drive.google.com/uc?export=view&id=1VgB9hSmilyCR6qEc_p74JpswcoJeQy5R)
+
+기본이 라틴으로.(클라이언트는 utf로 되어잇음-아마 스키마에서 설정한것일까..)
+server 가 라틴으로 되어있는것을 수정해야
+
+DB에 값을 입력할때 한글값이 제대로 저장 안되는 경우
+character set 설정문제가 대부분이며 이와 같은 경우에 UTF-8
+로 설정하면 쉽게 고칠 수 있다.
+
+latin1로 character set 설정되어있는 것을 utf-8로 변경
+
+/etc/mysql/my.cnf 파일 내용 설정 변경
+
+[client]
+default-character-set=utf8
+
+[mysql]
+default-character-set=utf8
+
+
+[mysqld]
+collation-server = utf8_unicode_ci
+init-connect='SET NAMES utf8'
+character-set-server = utf8
+
+![image](https://drive.google.com/uc?export=view&id=1XzbnsUCKS57BQVTvL5-J5z4BXjeIYyV5)
+주의 점은 기존의 만들어있던  DB,테이블들의 character-set이 변경되는 것은 아니기 때문에 직접 변경해줘야 한다.
+
+ALTER DATABASE [DB명] DEFAULT CHARACTER SET utf8;
+
+---
+
+## MySqlConnect
+(리눅스 인스턴스 mysql 접속) (thearc프로젝트-gjwjddnjs012@daum.net)
+```
+mysql -uroot -pgj0235689m
 ```

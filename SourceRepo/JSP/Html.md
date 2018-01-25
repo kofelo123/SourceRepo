@@ -1,5 +1,6 @@
 - [HTTP에러코드정리](#http-errorcode)
 - [checkbox의 값전달에 대해](#checkbox)
+- [링크 새창 열기(blank)](#blank)
 
 ### Http errorcode
 
@@ -77,4 +78,12 @@ if ($('input[name=sampleCheckbox]').is(":checked")) { //checkbox는 체크여부
 ```
 
 
+
+## blank
+**링크 새창으로 열기**
+
+```html
+target="_blank"
+
+<li><a href="https://github.com/kofelo123/smartitcording" target="_blank"><i class="fa fa-github "></i> <span>깃허브</span></a></li>
 ```

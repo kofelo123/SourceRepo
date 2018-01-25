@@ -1,6 +1,7 @@
 - [SessionScope](#session-scope)
 - [JSTL-forEach-배열과값비교-status활용/두개의 el 객체간의 비교방법](#foreach)
 - [JSTL-set사용](#jstlset)
+- [프로젝트의 루트경로 변경시](#rootpathmidofy)
 ### Session scope
 
 ```html
@@ -76,3 +77,15 @@ c:set 사용
 
 (사용) ${subfolder}
 ```
+---
+
+## rootpathmidofy
+**프로젝트의 루트경로 변경시**
+
+일반적으로 웹모듈의 path를 '/'로 두면 localhost:8080/ 이경로가 루트경로가 된다
+그래서 리소스의 경우 /resources 이런식으로 절대경로의 기준이 되는데(((webapp)/resources ))
+
+한서버에 여러 프로젝트를 구동할떄는 루트path를 각기 바꿨을경우
+'/thearc' 이런식으로 path를 줬을때
+
+/thearc/resources 이런식으로 접근해야된다. ((webapp)/thearc/resources)

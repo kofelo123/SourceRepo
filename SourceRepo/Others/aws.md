@@ -21,4 +21,4 @@ ec2를 생성하며 로컬에 내려받은 .pem 파일(aws로 받은 파일 aws_
 톰캣서버는 구동시 tomcat 유저 권한으로 구동된다.
 root권한 으로 구동되면 80포트에 문제없이 바인딩 통신가능. but 해킹 방지를 위해서..
 
-![image](https://drive.google.com/uc?export=view&id=1tUq7_bKgVwqhWGdS8UO70ymCajSIcUgR)
+![image](https://drive.google.com/uc?export=view&id=13SDaejoNFro7P2qhLPnP2XnO7Xp660Ch)
