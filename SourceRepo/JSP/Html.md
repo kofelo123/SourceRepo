@@ -1,7 +1,7 @@
 - [HTTP에러코드정리](#http-errorcode)
 - [checkbox의 값전달에 대해](#checkbox)
 - [링크 새창 열기(blank)](#blank)
-
+- [onclick에 return 함수](#onclickfunction)
 ### Http errorcode
 
 | 200 | OK, 에러 없이 전송 성공                                                    |
@@ -86,4 +86,58 @@ if ($('input[name=sampleCheckbox]').is(":checked")) { //checkbox는 체크여부
 target="_blank"
 
 <li><a href="https://github.com/kofelo123/smartitcording" target="_blank"><i class="fa fa-github "></i> <span>깃허브</span></a></li>
+```
+---
+
+## onclickFunction
+
+```
+
+onClick 이벤트에 return 문에 사용 및 차이점
+
+예) onClick="return check_name_text(); 과 onClick="check_name_text(); 차이점
+아래의 예제를 보면 공백 체크하는 예제입니다.
+
+onClick="return check_name_text(); 일경우에는 에러멘트 발생후 다음 이벤트가 동작하지 않습니다.
+즉 폼으로 전송이 안되죠..
+
+onClick="check_name_text();  일경우에는 에러멘트 발생후 에러에 다음 return값에 상관없이 동작합니다.
+즉 폼으로 데이타가 전송이 되는 거죠..
+
+쉽게 이야기 하면 onClick에서 이벤트에 return 문이 앞에오면 에러가 있을경우 그다음 내용이 동작하지 않습니다.
+
+한번 테스트 해보세요...
+
+<SCRIPT LANGUAGE="JavaScript">
+<!-- Website  http://www.cginjs.com -->
+function check_name_text() {
+var f=document.cnjform;
+if (f.UserName.value =="") {
+alert("공백입니다. 이름을 입력하십시오.");
+f.UserName.focus();
+return false;
+}
+}
+// End -->
+</script>
+
+<center>
+
+onClick에서 이벤트에 return 있을경우
+<form name="cnjform">
+이름에 한글 만 사용가능(욕 필터링,특정단어 예약)<br><br>
+이름 : <input type="text" name="UserName" size="12">
+<input type="submit" value="확인" onClick="return check_name_text();">
+</form>
+
+onClick에서 이벤트에 return 없을을경우
+<form name="cnjform">
+이름에 한글 만 사용가능(욕 필터링,특정단어 예약)<br><br>
+이름 : <input type="text" name="UserName" size="12">
+<input type="submit" value="확인" onClick="check_name_text();"> 
+</form>
+---
+
+
+
 ```

@@ -6,7 +6,8 @@
 - [테이블 조인하기](#tablejoin)
 - [칼럼속성 수정](#modifycolumn)
 - [view를 쓰는이유](#view)
-
+- [조인](#join)
+  - [조인사용예제](#joinex)
 ---
 
 ### RowNum
@@ -213,3 +214,23 @@ CREATE VIEW v_emp_read_only(empno, ename) AS SELECT empno, ename FROM emp WITH R
 
 ```
 ---
+## join
+
+## joinex
+```sql
+cart_view 라는 view가상 테이블에서
+3개의 테이블로부터의 정보를 조합해서
+주문에 대한 정보를 표기하는 쿼리.(조인)
+
+create or replace view cart_view
+as
+select o.cseq, o.id, o.pseq, m.name mname, p.name pname,
+o.quantity, o.indate, p.price2, o.result
+from cart o, member m, product p
+where o.id = m.id and o.pseq = p.pseq
+and result='1';
+
+cartinsert 할떄 실제로는 몇개의 정보를 카트테이블에 넣어주고
+카트뷰(가상테이블)에서 조인으로 여러 테이블에서의 값(가격등)을 가져오는
+
+```
