@@ -27,7 +27,8 @@ packages - autocomplete-plus 중지시켜놨다.
 ### Link
 
 ```
-[Text](URI)
+[Text](URI)     
+[Text](URI){:target="_blank"}
 ```
 
 ---

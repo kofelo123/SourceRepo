@@ -8,6 +8,7 @@
 - [replace정규표현식조건](#replaceregex)
 - [.addclass()](#addclass)
 - [체크박스 사용하기](#checkbox)
+- [명시적(선언)함수와 익명함수차이](#function)
 ### radio check
 
 ```html
@@ -181,10 +182,13 @@ $("button").click(function(){
 
 > html에서 체크박스를 사용할때 js에서 받아서 처리하는 코드
 
-체크박스를 배열로 받아와서 길이를 기준으로 처리할떄 체크박스 변수가 하나일떄는 배열처리가 안된다(undefined)
+(장바구니에서 삭제)체크박스를 배열로 받아와서 길이를 기준으로 처리할떄 체크박스 변수가 하나일떄는 배열처리가 안된다(undefined)
 그래서 undefined일때 배열의 길이를 1로 처리해준다
-
- if(document.formm.cseq.length == undefined && document.formm.cseq.checked == true){
+```
+//(체크가 된것을 뽑아야하는데 그 체크된 체크박스가 하나일때는 undefined가 되니까.)
+function go_cart_delete() {
+  var count = 0;
+  if(document.formm.cseq.length == undefined && document.formm.cseq.checked == true){
 	  	count++;
   }else{
   for ( var i = 0; i < document.formm.cseq.length; i++) {
@@ -193,6 +197,58 @@ $("button").click(function(){
     }
   }
   }
-      count++;
-    }
+  console.log("test3:"+count);
+  if (count == 0) {
+    alert("삭제할 항목을 선택해 주세요.");
+
+  } else {
+    document.formm.action = "/momstouch/product/cart_delete";
+    document.formm.submit();
   }
+}
+
+```
+
+//자바단에서 처리
+```java
+@RequestMapping(value = "cart_delete" , method = RequestMethod.POST)
+public String cart_delete(Model model,@RequestParam("cseq")String[] cseq){
+
+  for(String cseq2:cseq){
+    service.deleteCart(Integer.parseInt(cseq2));
+  }
+
+  return "redirect:/product/cart_list";
+}
+```
+```//html단에서는 안보이지만 체크박스 안에 value를 넣은것으로 전달한다.
+<input type="checkbox" name="cseq" value= "${cartVO.cseq}">
+```
+
+---
+
+## function
+
+<명시적(선언) 함수>
+
+function 함수이름 (){
+로직
+}
+
+함수이름();
+html 가장먼저실행
+
+<익명 함수>
+
+var 변수이름 = function(){
+로직
+}
+
+변수이름();
+위에서 순차적으로 실행
+
+-> 그래서 아마 thearc 에서
+익명함수 들이 큰틀에 감싸져 안에 있는데
+그 큰틀이 $(document).ready(function(){
+이렇게 감싸주는 이유가 그것인것같다.
+자바스크립트에서는 onload가 그 기능을 하는녀석 이었다고 한다.

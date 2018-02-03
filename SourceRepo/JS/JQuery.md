@@ -9,8 +9,11 @@
 - [.show , .hide()](#showhide)
 - [$().html(.append()와 차이점](#htmlappend)
 - [.find()](#find)
-
+- [document.ready](#documentready)
+- [자손과 후손](#descendants)
+- [체크박스체크예제](#checkboxex)
 ### Form control
+
 
 ```js
 $(document).ready(function(){
@@ -201,11 +204,10 @@ Get the value of an attribute for the first element in the set of matched elemen
 
 Contents:
 
-.attr( attributeName ) //매칭되는 엘리먼트의 값을 get함.
+.attr( "attributeName" ) //매칭되는 엘리먼트의 값을 get함.
 
-.attr( attributeName, value ) // 매칭되는 엘리먼트에 값을 set함.
-.attr( attributes )
-.attr( attributeName, function )
+.attr( "attributeName", "value" ) // 매칭되는 엘리먼트에 값을 set함.
+
 ```
 
 ---
@@ -309,3 +311,99 @@ $("p").find("span").css('color','red'); p 하위의 모든 span태그를 찾아�
 
 
 ---
+
+## documentReady
+
+$(document).ready(function(){
+});
+는 약식으로
+
+$(function(){
+});
+이렇게 쓸수있다.
+
+$는 제이쿼리 식별자로
+window.jQuery =window.$ = jQuery의미.
+
+---
+
+## descendants
+
+자손과 후손
+```
+<body>
+	<div>
+		<ul>
+			<li>
+			<li>
+body의 자손:div
+body의 후손: div,ul,li 모두
+
+자손 선택자
+$('body > *').css~~
+
+후손선택자
+$('body *').css ~~
+```
+
+## noconflict
+
+jQuery 충돌 방지
+
+$.noConflict() -> 사용하면 더이상 jQuery의 식별자 $ 못씀
+```js
+<script>
+
+//플러그인 간의 충돌 제거
+$.noConflict();
+var J = jQuery; //jQuery 기니까 불편해서 변수에 담음
+
+//jQuery 사용
+J(document).ready(function(){
+	J('h1').removeClass('high-light');
+});
+
+</script>
+```
+
+---
+
+## checkBoxEx
+
+
+```js
+$(document).ready(function(){
+	$("#userBan").on("click", function(){
+
+		var count = 0;
+
+		var frm = $("form[name='frm']");
+
+		var checkbox = $('input[name="useyn"]');
+
+		/* console.log(checkbox.length); */
+
+
+		if(checkbox.length == undefined && checkbox.checked == true){
+			count++;
+			console.log(count);
+		}else{
+			for( var i = 0;  i< checkbox.length; i++){
+				if(checkbox[i].checked == true){
+					count ++;
+				}
+			}
+
+			if(count == 0){
+				alert("정지시킬 계정을 선택해 주세요.")
+			}else{
+				frm.attr("method","post");
+				frm.attr("action","/momstouch/admin/userBan");
+				frm.submit();
+			}
+		}
+
+
+	});
+});  
+```

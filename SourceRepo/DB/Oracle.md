@@ -8,6 +8,8 @@
 - [view를 쓰는이유](#view)
 - [조인](#join)
   - [조인사용예제](#joinex)
+- [rownum과 orderby 사용-서브쿼리](#rownumorderbysubquery)
+- [다중정렬](#multisort)
 ---
 
 ### RowNum
@@ -234,3 +236,38 @@ cartinsert 할떄 실제로는 몇개의 정보를 카트테이블에 넣어주�
 카트뷰(가상테이블)에서 조인으로 여러 테이블에서의 값(가격등)을 가져오는
 
 ```
+
+---
+
+## rownumOrderbySubquery
+
+>order by 절과 rownum을 함께 쓸때 아래와 같이 한번에 쿼리를 쓰면 order by 정렬 전에 rownum으로 잘려버려 원하는 데이터가 나오지 않는다.
+
+```sql
+select *
+from order_view
+where mname like '%'||#{key}||'%' and rownum < 30 order by result,o seq desc
+```
+
+> 서브쿼리를 써서 아래와 같이 변경시킨다.
+```sql
+select *
+from
+(
+  select *
+  from order_view
+  order by result, oseq desc
+)
+where rownum < 50;
+// 1차적으로 정렬을 한 데이터 리스트로부터 rownum 으로 갯수제한을 하는 서브쿼리 형태로 만든다.
+```
+---
+
+## multiSort
+
+```sql
+select * from member where name like '%'||#{key}||'%' order by useyn desc,indate desc
+```
+order by에 다중정렬 하고싶으면
+desc 속성, asc 속성 이런식으로 하면 앞에꺼부터 우선순위로 다중정렬 적용된다.
+근데 만약에 useyn,indate desc 이렇게 하면 useyn이 asc로 정렬된다(아마 asc는생략이라서 그런듯)

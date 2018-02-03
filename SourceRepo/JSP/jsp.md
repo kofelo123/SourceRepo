@@ -1,6 +1,8 @@
 - [SessionScope](#session-scope)
-- [JSTL-forEach-배열과값비교-status활용/두개의 el 객체간의 비교방법](#foreach)
-- [JSTL-set사용](#jstlset)
+- [JSTL](#jstl)
+  - [forEach-배열과값비교-status활용/두개의 el 객체간의 비교방법](#foreach)
+  - [set사용](#jstlset)
+  - [날짜관련-fmt태그](#fmttag)
 - [프로젝트의 루트경로 변경시](#rootpathmidofy)
 ### Session scope
 
@@ -9,6 +11,7 @@
 ```
 
 ---
+## jstl
 
 ## foreach
 
@@ -89,3 +92,67 @@ c:set 사용
 '/thearc' 이런식으로 path를 줬을때
 
 /thearc/resources 이런식으로 접근해야된다. ((webapp)/thearc/resources)
+
+---
+
+## fmtTag
+
+jstl 날짜관련 (fmt)
+```html
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+//현재날짜
+<jsp:useBean id="now" class="java.util.Date" />
+
+<fmt:formatDate value="${now}" pattern="yyyy-MM-dd a hh:mm" />
+
+//(변수로 저장할 수 있다 - jstl의 태그들 다수는 var를 표기안했을때는 바로 화면에 출력이되고, var로 변수를 표기시에는 var를 사용할떄만 출력되는 규칙이 있다.)
+<fmt:formatDate value="${now}" pattern="yyyy-MM-dd a hh:mm" var="변수명" />
+
+회원관련 VO 에서 Timestamp형으로 쓰고있었다.
+Date형 으로 쓰는 타입이다.
+
+
+
+
+[출처] JSTL 날짜 형식 바꾸기 (fmt:parseDate & fmt:formatDate)|작성자 lbiryu
+<%--시간관련 계산로직 --%>
+      <jsp:useBean id="curtime" class="java.util.Date" /> //현재의 날짜를 받기위함
+    	<fmt:formatDate value="${curtime}" pattern="yyyy-MM-dd-hh" var="current" /> //fmt:formatDate : Date 형을 받아서 원하는 포멧으로 날짜 형태를 변경시켜 준다.
+    	<fmt:parseDate value="${current}" pattern="yyyy-MM-dd-hh" var="current2" /> //fmt:parseDate : String 형을 받아서 워하는 포멧으로 자료형을 Date 형태로 변경 시켜 준다.
+		<fmt:parseNumber value="${current2.time / (1000*60*60) }" integerOnly="true" var="curcal"/> //fmt:parseNumber: date형->숫자형으로 변환(계산을위해필요)
+
+    	 <fmt:formatDate value="${orderVO.indate}" pattern="yyyy-MM-dd-hh" var="orderdate" />
+    	 <fmt:parseDate value="${orderdate}"    pattern="yyyy-MM-dd-hh" var="orderdate2"/>
+		 <fmt:parseNumber value="${orderdate2.time /(1000*60*60) }" integerOnly="true" var="ordercal"/>
+
+    	<c:set var="timecal" value="${curcal-ordercal }"/>
+
+    	<c:if test='${timecal < 24}'>
+    		${timecal}시간 전
+    	</c:if>
+    	<c:if test='${timecal >= 24}'>
+    		 <fmt:parseNumber value="${timecal/24}" integerOnly="true"/>일 전
+    	</c:if>
+     <%--시간관련 계산로직 --%>
+	</td>
+--
+
+표현법은 java의 SimpleDateFormat 을 따른다
+
+- 종류
+
+   ㄴ hh : 01~12
+
+   ㄴ HH : 00~23  //hh를 쓰다가 오전오후 시간 계산의 오차가 생겨 -표기가 되어 알아보니 HH를 써야 24시간 계산.
+
+   ㄴ kk : 01~24
+
+   ㄴ KK : 00~11
+
+<fmt:formatDate value="${result.regDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+
+<fmt:formatDate value="${result.regDate}" pattern="yyyy-MM-dd KK:mm:ss"/>
+
+
+```
