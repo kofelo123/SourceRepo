@@ -42,4 +42,4 @@ indexOf(); 인덱스 검색
 
 aws 기존 hlw123@naver.com(중지시킴)
 
-aws 신규 gjwjddnjs012@daum.net
+aws 신규 gjwjddnjs012@daum.net  (pw+!)
