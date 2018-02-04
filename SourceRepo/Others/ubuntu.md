@@ -3,6 +3,7 @@
 - [vim 에디터종료](#vimediterend)
 - [디렉터리 권한](#directorypermission)
 - [디렉터리 생성](#directorycreate)
+- [디렉터리 삭제](#directorydelete)
 - [톰캣로그확인](#tomcatlog)
 - [MySQL관련](#mysql)
   - [버전확인](#versionfind)
@@ -84,7 +85,24 @@ tail -f catalina.out
 ```
 빠져나올떄는 ctrl + c
 ---
+## directorydelete
 
+우분투에서의 파일/디렉터리삭제
+//test 파일삭제
+rm test
+
+//파일삭제시 확인과정 거치지 않음
+rm -f test
+
+//home디렉터리를 삭제
+
+rm -r home/
+(비어있지 않은 디렉터리는 -r 옵션 없이는 삭제할수없다)
+
+rmdir을 디렉터리 삭제시 사용하기도 한다.
+
+
+---
 ## mysql
 
 ---

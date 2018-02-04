@@ -3,7 +3,7 @@
 - [@RequestParam이 Null일떄](#requestparam)
 - [@ModelAttibue()](#modelattribute)
 - [logger](#logger)
-
+- [@Resource 주입](#resource)
 ### @RequestParam
 
 > @RequestParam은 Null이 될떄 아래와 같은 에러가 발생한다.
@@ -46,3 +46,20 @@ private static final Logger logger = LoggerFactory.getLogger(현재클래스.cla
 ```
 
 ---
+
+## resource
+
+```java
+//UserServiceImpl.java
+@Resource(name = "ipAddress") // ip 가변적이라서 주입(local-server).
+	private String ipAddress;
+
+```
+
+```xml
+//root-context.xml
+	<bean id="ipAddress" class="java.lang.String">
+		<constructor-arg value="localhost"> //war배포후 xml에서 수정
+		</constructor-arg>
+	</bean>
+```
