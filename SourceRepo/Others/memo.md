@@ -3,6 +3,7 @@
 - [블스-JS](#blogstudyjs)
   -[ch2](#ch2)
 - [aws-id](#awsid)
+- [oracle-id](#oracleid)
 
 ### cleancode
 
@@ -43,3 +44,9 @@ indexOf(); 인덱스 검색
 aws 기존 hlw123@naver.com(중지시킴)
 
 aws 신규 gjwjddnjs012@daum.net  (pw+!)
+
+## oracleid
+
+hlw123@naver.com
+
+Gj~(+pw)

@@ -1,6 +1,6 @@
 - [null for parameter](#nullforparameter)
 - [value too large](#valuetoolarge)
-
+- [방화벽문제](#firewallissue)
 ## nullforparameter
 
 mapper로 전달되는 VO같은 파라미터에 null이 들어가거나 등의 경우..
@@ -18,3 +18,16 @@ org.springframework.web.util.NestedServletException: Request processing failed; 
                                                               //DB명     //테이블명 //칼럼명   //현재값3  //최대값1
 java.sql.SQLException: ORA-12899: value too large for column "JEONGWON"."PRODUCT"."BESTYN" (actual: 3, maximum: 1)
 ```
+
+
+## firewallissue
+
+The Network Adapter could not establish the connection
+(방화벽문제)
+
+sldeveloper 에서 원격 우분투에 접속하기
+
+이름과 비밀번호 입력.
+호스트이름 : aws ip
+포트 : 2521(원래는 1521인데 우분투설정을 그렇게 해놨다)
+aws - 보안그룹에서 2521 포트를 열어놔야한타(커스텀)

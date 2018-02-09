@@ -1,6 +1,7 @@
 - [Elastic Ip](#elasticip)
 - [puttygen](#puttygen)
 - [80포트 리다이렉트](#redirect)
+- [AWS 우분투 중단-다시시작](#awsrestart)
 ## elasticip
 
 고정아이피를 말한다. aws에서 받을수있고 조건에 따라무료, 원래는 public DNS와 public ip가 주어지면 재시작시에
@@ -21,4 +22,18 @@ ec2를 생성하며 로컬에 내려받은 .pem 파일(aws로 받은 파일 aws_
 톰캣서버는 구동시 tomcat 유저 권한으로 구동된다.
 root권한 으로 구동되면 80포트에 문제없이 바인딩 통신가능. but 해킹 방지를 위해서..
 
-![image](https://drive.google.com/uc?export=view&id=13SDaejoNFro7P2qhLPnP2XnO7Xp660Ch)
+
+```
+//(sudo)
+# iptables -t nat -I PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8080
+# service iptables save
+```
+---
+
+## awsRestart
+
+AWS 의 우분투 인스턴스를 중단->재시작 할때는 public ip(+public도메인)와 80포트 리다이렉트 설정이 변동되니
+
+다시 설정해줘야한다.
+
+public ip 관련 - datasource 등 xml설정,도메인, xshell(putty),filezilla

@@ -62,4 +62,9 @@ private static final Logger logger = LoggerFactory.getLogger(현재클래스.cla
 		<constructor-arg value="localhost"> //war배포후 xml에서 수정
 		</constructor-arg>
 	</bean>
+
+  //scan맞춰줘야함
+<context:component-scan base-package="com.thearc.service"></~
+
+
 ```
