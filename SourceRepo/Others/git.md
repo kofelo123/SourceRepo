@@ -1,5 +1,8 @@
 - [pull request](#pull-request)
 - [깃허브 검색](#githubsearch)
+- [에러](#error)
+  -[add - 줄바꿈관련에러](#adderror)
+
 ### Pull request
 > 깃허브의 아주 강력한 협업기능이다.
 > 머지 전 리뷰를 통한 공동학습가능.
@@ -29,3 +32,14 @@ mapper in:file user:kofelo123 //코드 내용
 
 
 ```
+
+
+
+---
+# error
+
+## adderror
+git add .
+warning: LF will be replaced by CRLF in target/classes/.gitignore.
+The file will have its original line endings in your working directory.
+줄바꿈 관련해서 os별 크로스 문제가 있어서 이걸 세팅으로 해결하는것에 대한 글을 글이 있던데, 나는 그냥 git init으로 초기화 시키고 진행했다.

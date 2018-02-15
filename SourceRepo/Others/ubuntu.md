@@ -209,7 +209,7 @@ find / -name '.bash*'
 >xe 설치후 나오는 설치보고의 bc에러의 경우도 그중하나(blog2에서는 linux기반 설치이므로 yum이 아니라 apt 로 bc설치해야됨).
 >나의 경우 blog1대로 설치-> 설치중의 잡에러 + 'shared memory realm does not exist' ,로그인실패문제등. ->2차설치에서 blog2의 해결책+bc설치
 > -> 개선되었으나 이번에는 "Oracle initialization or shutdown in progreess"에러 -> 3차 재설치 - blog2의 # /etc/init.d/oracle-xe configure 세팅 그대로 따라한후 접속하니까 드디어 잘되었다.(지금도 구체적인 이유는 모른다.)
-
+> 정리) bc설치 -> blog1 대로설치 -> 마지막 포트세팅 하는파트부터 다시 blog2 처럼 세팅.
 
 **blog1내용**
 Oracle XE를 설치하기 위해서는 서버 운영체제가 64bit 운영체제야 한다. Ubuntu에서 현재 시스템이 64bit인지를 확인해보자.

@@ -539,7 +539,7 @@ import과정은 워크시트에서 "@스크립트 파일명" 을 실행해서 �
 **cmd에서 dump하기**
 
 
-exp test1/test1 file=expdat.dmp full=y;  <--이것은 로컬에 있는 db백업
+exp test1/test1 file=expdat.dmp full=y;  <--이것은 로컬에 있는 db백업 //이것사용
 
 exp test1/test1@SID file=expdat.dmp full=y;  <--로컬이 아닌곳 즉 실서버가 따로 존재하는곳..
 
@@ -573,10 +573,17 @@ C:>imp userid=scott/tiger file='C:scott.dmp'
 - 다른 계정으로 IMPORT하기
   scott유저의 데이터를 EXPORT받아서 test 유저에게 IMPORT하는 예제 입니다.
 C:>exp userid=system/manager file='C:scott.dmp' owner=scott
-C:>imp userid=system/manager file='C:scott.dmp' fromuser=scott touser=test  
+C:>imp userid=system/manager file='C:scott.dmp' fromuser=scott touser=test   //이것사용
 ```
+
+ex)imp userid=system/gj02(~pw)@13.125.91.243 file='C:\Users\허정원\0214.dmp' fromuser=jeongwon touser=momstouch
+(로컬의 cmd에서)
+
 >나 같은경우 local db의 a라는 유저로 부터 우분투서버의 b라는 유저에 import했기 때문에 '다른 계정으로 IMPORT하기를 사용했다. 이름이 다를때는 저렇게 해야한다고 한다.'
->sqlplus system/gj023...(pw)@13.125...(ip):2521/xe
+
+
+
+>(참고-dump와 무관)sqlplus system/gj023...(pw)@13.125...(ip):2521/xe
 (들어가서 sqlplus에서 conn 시도할때도 뒤에 @아이피:포트/sid 붙여줘야됨.)
 
 ---
