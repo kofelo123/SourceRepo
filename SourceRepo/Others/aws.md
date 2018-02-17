@@ -2,6 +2,7 @@
 - [puttygen](#puttygen)
 - [80포트 리다이렉트](#redirect)
 - [AWS 우분투 중단-다시시작](#awsrestart)
+- []
 ## elasticip
 
 고정아이피를 말한다. aws에서 받을수있고 조건에 따라무료, 원래는 public DNS와 public ip가 주어지면 재시작시에

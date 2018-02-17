@@ -3,6 +3,11 @@
 - [Limit](#limit)
 - [더미 데이터 생성](#dummy-data)
 - [백업하기-MysqlDump](#mysqldump)
+- [mysql 원격접속](#mysqlremoteconnect)
+
+- [Error]
+  - [버퍼풀 메모리 관련 오류](#bufferpoolmemoryisuue)
+  - [mysql접속 오류1045](#mysqlconnectissue)
 
 ### Limit
 
@@ -61,3 +66,66 @@ mysqldump: [Warning] Using a password on the command line interface can be insec
 위의 경고(에러아님)이 뜨긴한데 비밀번호를 직접 보이게 하지말라는건데(안보이게 하는 setting이 있다고 함)
 경고일뿐 실행하는데 문제는 없음.
 ```
+
+
+---
+## mysqlRemoteConnect
+//원격접속할떄는 -h 아이피를 넣음
+mysqldump -h 192.168.12.1 -u 아이디 -p패스워드 DB명 > dump.sql
+
+
+//sql문 실행시키는것 (오라클의 @이것과같은듯)	(워크밴치에서 쓰는 방법은 아니고 mysql 접속후 cmd에서 쓰는방법..)
+source d:\mysql\test.sql;
+
+import시에 해당스키마(db라고부름)를 선택해주고 sql import 해줘야해서
+
+db선택하는방법이 mysql 접속후에
+use DB(스키마명)명 이렇게 해주고들어가면 된다.
+
+그후  source C:\Program Files\MySQL\MySQL Server 5.7\bin\0216.sql
+
+이런식으로..
+
+//세팅후 재시작
+service mysql restart
+
+
+---
+## bufferpoolmemoryisuue
+
+**버퍼풀 메모리 관련 오류**
+
+(우분투에서 mysql start 안되는 상황..)
+
+//에러메세지
+Job for mysql.service failed because the control process exited with error code. See "systemctl status mysql.service" and "journalctl -xe" for details.
+
+/var/log/mysql/error.log
+살펴보면
+cannot allocate memory for the buffer pool
+-> 버퍼풀 메모리 관련 오류
+
+my.cnf 를 찾아서 수정해야.
+
+find / -name 'my.cnf'
+찾아서 (/etc/mysql/my.cnf)
+연후에
+
+[mysqld] 아래에 기술해준다.
+```
+innodb_buffer_pool_size = 16M
+(기본 128M이며 나는 64부터 잘되더라)
+mysql> show variables like "innodb_buffer_pool_size";
+버퍼풀 변경 확인(재시작 해줘야함)
+```
+
+---
+
+## mysqlconnectissue
+
+mysql 접속 오류
+ERROR 1045 (28000): Access denied for user
+
+-p 옵션을 붙여 패스워드를 입력하자.
+
+---

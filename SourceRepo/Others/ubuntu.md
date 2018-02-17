@@ -3,7 +3,7 @@
 - [vim 에디터종료](#vimediterend)
 - [디렉터리 권한](#directorypermission)
 - [디렉터리 생성](#directorycreate)
-- [디렉터리 삭제](#directorydelete)
+- [디렉터리/파일 삭제](#directorydelete)
 - [톰캣로그확인](#tomcatlog)
 - [MySQL관련](#mysql)
   - [버전확인](#versionfind)
@@ -12,6 +12,14 @@
 - [su](#su)
 - [파일찾기](#find)
 - [오라클 설치과정](#installoracle)
+- [메모리 실시간보기(sar,htop)](#memoryscan)
+- [현재 열려있는 포트 확인](#portfind)
+- [프로세스 강제종료](#processkill)
+- [톰캣 8 설치](#tomcat8install)
+- [Mysql 설치](#mysqlinstall)
+- [패키지 파일 삭제](#packagedelete)
+- [에러]
+  - [write error in swap file](#error1)
 ## else
 
 ### SSH와 RDP
@@ -146,7 +154,12 @@ character-set-server = utf8
 ![image](https://drive.google.com/uc?export=view&id=1XzbnsUCKS57BQVTvL5-J5z4BXjeIYyV5)
 주의 점은 기존의 만들어있던  DB,테이블들의 character-set이 변경되는 것은 아니기 때문에 직접 변경해줘야 한다.
 
-ALTER DATABASE [DB명] DEFAULT CHARACTER SET utf8;
+ALTER DATABASE DB명(스키마) DEFAULT CHARACTER SET utf8;
+
+
+현재 Character-Set 확인하기
+show variables like ‘c%’
+status
 
 ---
 
@@ -782,3 +795,104 @@ FILE_NAME                                TABLESPACE_NAME
 /u01/app/oracle/oradata/XE/undotbs1.dbf  UNDOTBS1
 /u01/app/oracle/oradata/XE/system.dbf    SYSTEM
 ```
+
+---
+
+## memoryscan
+
+메모리 실시간 보기
+
+```
+sar -r 1
+```
+
+```
+htop
+```
+
+---
+## portfind
+
+현재 열려있는 포트 확인
+
+```
+netstat -tnlp
+```
+
+---
+
+## error1
+
+```
+//에러 메시지
+write error in swap file
+```
+
+swap file을 쓸수 없다는 말인데
+하드디스크 내 여분의 공간이 없어서 그렇다.
+-
+우분투 하드디스크 용량 확인
+df -h
+
+
+---
+
+## processkill
+
+프로세스 강제종료
+
+```
+sudo kill -9 pid(프로세스아이디)
+```
+
+## tomcat8install
+
+톰켓 8 설치
+```
+ sudo apt-get install tomcat8 tomcat8-admin
+```
+[참조](https://gs.saro.me/#!m=elec&jn=679)
+---
+
+## packagedelete
+
+```
+sudo apt-get remove 패키지명
+```
+---
+## mysqlinstall
+
+```
+sudo apt-get install mysql-server mysql-client
+```
+
+- mysql client 접속
+```
+ mysql -u root -p
+```
+- 외부에서 접근할 권한 부여 / 적용 / 나가기
+mysql> GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '접속에 필요한 암호';
+mysql> flush privileges; 서비스가 켜진 상태에서 값을 적용하는 명령이지만, 곧바로 restart 할 예정임으로 의미가 없습니다.
+mysql> quit
+
+접근설정
+```
+sudo vim /etc/mysql/my.cnf
+```
+===========================================================
+- 만일 !includedir /etc/mysql/mysql.conf.d/ 구문이 있다면 :q로 나갑니다.
+- 그리고 다시 입력!!
+```
+sudo vim /etc/mysql/mysql.conf.d/mysqld.cnf
+```
+===========================================================
+- bind-address = 127.0.0.1 를 찾아 i키로 insert 모드로 바꾼 후 앞에 #를 붙여 주석처리합니다.
+#bind-address = 127.0.0.1
+- 위와같이 앞에 #를 붙여 주석처리
+- :wq 저장하고 나갑니다.
+```
+ sudo service mysql restart
+```
+워크밴치에서 접속여부를 확인 (aws에서는 mysql포트열어 놔야함)
+
+[서버쪽 인코딩설정](https://github.com/kofelo123/SourceRepo/blob/master/SourceRepo/Others/ubuntu.md#koreansetting)

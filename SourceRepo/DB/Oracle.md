@@ -21,9 +21,16 @@
 - [롤을 사용한 권한부여](#role)
 - [오라클 덤프](#oracledump)
 - [기타 유용한 쿼리]
-  - [라인,페이지 사이즈](#linesizePagesize)
+  - [라인,페이지 사이즈](#linesizepagesize)
   - [현재 생성된 계정 확인](#userview)
   - [전체 테이블,뷰,시퀀스 삭제](#entiredelete)
+
+- [Error]
+  - [null for parameter](#nullforparameter)
+  - [value too large](#valuetoolarge)
+  - [방화벽문제](#firewallissue)
+  - [접속문제](#connectissue)
+  - [오라클 설치에러](#oracleinstallerror)
 ---
 
 ### RowNum
@@ -617,3 +624,96 @@ SELECT  'DROP sequence ' || object_name ||';'
 WHERE   object_type = 'SEQUENCE';
 
 ```
+
+
+## nullforparameter
+
+mapper로 전달되는 VO같은 파라미터에 null이 들어가거나 등의 경우..
+두번쨰중에 null for parameter #9 with jdbcType OTHER 이라고 되어있는데 저 #9가 mapper에서의 전달되는 9번째 파라미터를 말하는것이다.
+```sql
+org.springframework.web.util.NestedServletException: Request processing failed; nested exception is org.springframework.jdbc.UncategorizedSQLException: Error setting null for parameter #9 with JdbcType OTHER . Try setting a different JdbcType for this parameter or a different jdbcTypeForNull configuration property. Cause: java.sql.SQLException: 부적합한 열 유형: 1111
+; uncategorized SQLException for SQL []; SQL state [99999]; error code [17004]; 부적합한 열 유형: 1111; nested exception is java.sql.SQLException: 부적합한 열 유형: 1111
+```
+---
+
+## valuetoolarge
+
+들어가야할 칼럼의 속성에 비해 많은 값이 들어갔다.
+```sql
+                                                              //DB명     //테이블명 //칼럼명   //현재값3  //최대값1
+java.sql.SQLException: ORA-12899: value too large for column "JEONGWON"."PRODUCT"."BESTYN" (actual: 3, maximum: 1)
+```
+
+
+## firewallissue
+
+The Network Adapter could not establish the connection
+(방화벽문제)
+
+sldeveloper 에서 원격 우분투에 접속하기
+
+이름과 비밀번호 입력.
+호스트이름 : aws ip
+포트 : 2521(원래는 1521인데 우분투설정을 그렇게 해놨다)
+aws - 보안그룹에서 2521 포트를 열어놔야한타(커스텀)
+
+---
+
+## connectissue
+
+//errorMessage
+oracle network adapter could not establish the connection
+
+위의 메세지는
+
+1. 접속정보가 잘못됨
+
+2. 방화벽 문제
+  - 오라클이 설치된 서버가 방화벽에 있는 경우, 클라이언트 컴퓨터의 IP를 서버 방화벽에 접속허용
+
+3. 오라클과 연동프로그램 (ex: JSP Server)가 같은 머신에 있지 않은 경우
+
+4. DB서버에 리스너 ON(시작됨)이 아닌 경우
+
+--
+
+
+
+오라클 재설치를 반복하다보면
+
+포트세팅에서 이미 세팅되었다고 표기될때가 종종 있는데, 그런과정때문이었는지
+
+2521로 최종설정했었던 포트가 1521로 리스너에 세팅이 되어있어서
+
+네트워크 접속이 안되는 현상이 생겼다.
+(sqldeveloper-네트워크 접속에러(oracle network adapter could not establish the connection) 메세지, sqlplus에서 원격접속 시도 -ORA-12541: TNS:no listener 메세지)
+
+```
+lsnrctl status/stop/start
+```
+를 통해 리스너에 동작을 줄수 있다.
+
+그로인해 포트가 1521로 설정되어있음을 확인하고 다시 1521로 접속 해보니
+
+ORA-12514, TNS:listener does not currently know of service requested in connect descriptor
+
+위와 같은 리스너 문제를 호소했다.
+
+분명 세팅할떄 2521로 설정했는데 싶어서,  리스너 설정파일인 listener.ora 를 찾았다.
+(/u01/app/oracle/product/11.2.0/xe/network/admin/listener.ora)
+
+들어가서 포트를 2521로 수정후 적용을 위해 oracle-xe를 stop->start한후
+
+lsnrctl status/stop/star 로 리스너도 중단후 다시 시도하니 포트설정이 2521로 돌아온후 접속도 성공적으로 되었다.
+
+
+
+---
+## oracleinstallerror
+**오라클 설치에러**
+
+Configuring database...
+Database Configuration failed.
+
+오라클 설치 - 마지막 포트세팅할떄
+톰캣,mysql등을 켜놔서 메모리가 부족하면 설치가 안된다.

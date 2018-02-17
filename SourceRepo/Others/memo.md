@@ -45,6 +45,10 @@ aws 기존 hlw123@naver.com(중지시킴)
 
 aws 신규 gjwjddnjs012@daum.net  (pw+!)
 
+2/14 우분투 인스턴스2 생성
+
+aws 신규  kofelo123@nate.com
+
 ## oracleid
 
 hlw123@naver.com
