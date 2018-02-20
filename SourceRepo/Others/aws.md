@@ -1,8 +1,9 @@
 - [Elastic Ip](#elasticip)
 - [puttygen](#puttygen)
+- [privatekey](#privatekey)
 - [80포트 리다이렉트](#redirect)
 - [AWS 우분투 중단-다시시작](#awsrestart)
-- []
+
 ## elasticip
 
 고정아이피를 말한다. aws에서 받을수있고 조건에 따라무료, 원래는 public DNS와 public ip가 주어지면 재시작시에
@@ -15,7 +16,22 @@ ip,도메인이 바뀌게되는데 고정아이피로 쓰려거든 Elastic ip를
 ec2를 생성하며 로컬에 내려받은 .pem 파일(aws로 받은 파일 aws_password2.pem)을 이용해서 private key를 생성해 줄 프로그램
 
 접속할떄 이 private key를 이용해서ec2 인스턴스에 접속한다.
+(현재 dev/key 에서 보관중)
 
+.pem 파일 불러온후 옵션에 SSH-1(RSA)체크 해주고 saveprivate key눌러서 저장한다
+## privatekey
+
+(filezilla)
+private key 불러오고 이름은 ubuntu
+ ![](https://drive.google.com/uc?export=view&id=1YDHFWjTKNmYHwwT77_obgVvTt-XnAale)\
+
+(xshell)
+.pem key 불러오고 이름은 ubuntu(암호 비워놓으면됨)
+![](https://drive.google.com/uc?export=view&id=1H0JRFi_TZ5_zE_Knnr2FJ-IETos2zgTd)
+
+(putty)
+ ![](https://drive.google.com/uc?export=view&id=1x1JH6-1d-8QOBBaF3P086nEENEQ8NcDj)
+  ![](https://drive.google.com/uc?export=view&id=169OsmL-eqUiaVuA6STNQnROI2e8fK7HC)
 ## redirect
 
 원래는 .com(80포트) -> .com:8080(8080포트)로 redirect 하는데 있어서 /tomcat/conf/server.xml 을 수정하는 방법이 있으나 리눅스의 경우 일반 유저 권한에서 바인딩 할 수없도록 되어있다고 한다.(보안상)

@@ -858,13 +858,13 @@ JOIN ON 하나로 모든 조인결과 집합을 만들어 낼 수 있다.
 기존의 오라클쿼리에서 JOIN ON으로 바꿔본다.
 
 기존의 ORACLE JOIN 의 [EQUI JOIN]
-```
+```sql
 SELECT e.ename, d.dname
 FROM emp e, dept d
 WHERE e.deptno = d.deptno;
 ```
 에서 FROM 절의 콤마대신 JOIN을, WHERE 대신  ON을 사용
-```
+```sql
 SELECT e.ename, d.dname
 FROM emp e JOIN dept d
 ON e.deptno = d.deptno;
@@ -872,45 +872,45 @@ ON e.deptno = d.deptno;
 ```
 
 기존의 ORACLE JOIN 의 [NON EQUI JOIN]
-```
+```sql
 SELECT e.ename, e.sal, s.grade
 FROM emp e, salgrade s
 WHERE e.sal between s.losal and s.hisal;
 ```
 JOIN ON 으로 변경
-```
+```sql
 SELECT e.ename, e.sal, s.grade
 FROM emp e JOIN salgrade s
 ON e.sal between s.losal and s.hisal;
 ```
 
 기존의 ORACLE JOIN 의 [LEFT OUTER JOIN]
-```
+```sql
 SELECT e.ename, nvl(d.dname, 'WAITING') as dname
 FROM emp e, dept d
 WHERE e.deptno = d.deptno(+);
 ```
 JOIN 조건의 반대편에 (+)를 붙이는 대신 명시적으로 LEFT OUTER JOIN라고 적어준다.
-```
+```sql
 SELECT e.ename, nvl(d.dname, 'WATING') as dname
 FROM emp e LEFT OUTER JOIN dept d
 ON e.deptno = d.deptno;
 ```
 기존의 ORACLE JOIN 의 [RIGHT OUTER JOIN]
-```
+```sql
 SELECT e.ename, d.dname
 FROM emp e, dept d
 WHERE e.deptno(+) = d.deptno;
 ```
 에서
-```
+```sql
 SELECT e.ename, d.dname
 FROM emp e RIGHT OUTER JOIN dept d
 ON e.deptno = d.deptno;
 ```
 [FULL OUTER JOIN]
 :오라클 조인에서는 문법상으로 지원되지 않는 FULL OUTER JOIN 도 쉽게 구현가능
-```
+```sql
 //아래와 같이 FULL OUTER JOIN 기술만으로 구현가능
 SELECT e.ename, d.dname
 FROM emp e FULL OUTER JOIN dept d
@@ -918,13 +918,13 @@ ON e.deptno = d.deptno;
 ```
 
 기존의 ORACLE JOIN 의 [SELF JOIN]
-```
+```sql
 SELECT e.ename mentee, m.ename mentor
 FROM emp e, emp m
 WHERE e.mgr = m.empno(+);
 ```
 +대신에 명시적으로 LEFT OUTER라고 기술하면된다.
-```
+```sql
 SELECT e.ename AS mentee, m.ename AS mentor
 FROM emp e LEFT OUTER JOIN emp m
 ON e.mgr = m.empno;
@@ -936,7 +936,7 @@ ON e.mgr = m.empno;
 
 조인조건없이 자동으로 양쪽 테이블 집합의 이름이 같은 칼럼끼리 EQUI JOIN처리를 해주는건데,
 만약 이름은 같으나 의미가 다른 칼럼이 있을떄 데 완전히 잘못된 결과를 가져올수 있으므로 사용 지양하는게 좋다.
-```
+```sql
 SELECT ename,dname
 FROM emp NATURAL JOIN dept;
 ```
@@ -944,7 +944,7 @@ FROM emp NATURAL JOIN dept;
 ## joinusing
 위의 NATURAL JOIN이 자동으로 결정되는 조인 조건때문에 신뢰가 어려운데,
 써야한다면  명시적으로 조인 컬럼을 지정할수 있는 JOIN USING 을 써서 USING에 조인 조건으로 사용할 칼럼을 지정해주되 괄호로 감싸서 쓴다.
-```
+```sql
 SELECT ename, dname
 FROM emp JOIN dept
 USING (deptno);
@@ -965,20 +965,20 @@ JOIN 하는 집합의 개수가 3개 이상인 JOIN을 Three Way JOIN 이라고 
 사원이름(emp.ename), 급여(emp.sal), 급여등급(salgrade.grade), 부서이름(dept.dname)을 출력해본다.
 
 우선 emp 테이블과 salgrade 테이블을 조인한다.
-```
+```sql
 SELECT e.ename, e.sal, s.grade
 FROM emp e, salgrade s
 WHERE e.sal between s.losal and s.hisal;
 ```
 이 결과집합과 다시 DEPT 집합을 JOIN한다고 생각하면 간단하다.
-```
+```sql
 //(추가적인 조인에 대한것들을 추가해준다)
 SELECT e.ename, e.sal, s.grade,d.dname -- d.dname 컬럼 추가
 FROM emp e, salgrade s,dept d --DEPT 테이블 JOIN
 WHERE e.sal between s.losal and s.hisal
 and e.deptno = d.deptno(+); --DEPT 테이블 JOIN 조건(+를 통해서 LEFT OUTER JOIN)
 ```
-```
+```sql
 ex2)
 SELECT e.last_name 이름,e.salary 급여,j.grade_level 급여등급,d.department_name 부서이름, l.city 도시, c.country_name 나라
 FROM employees e, job_grades j, departments d,locations l, countries c
@@ -990,7 +990,7 @@ and l.country_id = c.country_id(+);
 
 [ANSI Three Way JOIN]
 :사원이름(emp.ename), 급여(emp.sal), 급여등급(salgrade.grade), 부서이름(dept.dname)을 출력해본다.
-```
+```sql
 (단계별로 접근할것- 우선 emp테이블과 salgrade 테이블을 join)
 SELECT e.ename, e.sal, s.grade
 FROM emp e JOIN salgrade s
@@ -999,7 +999,7 @@ ON e.sal between s.losal and s.hisal;
 오라클 조인은 FROM 절 옆에 집합 이름을 추가하는 형식이지만
 ANSI 조인은 결과 집합과 JOIN 한다는 것을 잘 나타내주는 구문 형태이다.
 그리고 대기발령중인 사원도 출력하기 위해 LEFT OUTER를 JOIN 왼쪽에 기술한다.
-```
+```sql
 SELECT e.ename, e.sal, s.grade ,d.dname -- d.dname 컬럼 추가
 FROM emp e JOIN salgrade s
 ON e.sal between s.losal and s.hisal
@@ -1007,7 +1007,7 @@ LEFT OUTER JOIN dept d  -- DEPT 테이블 JOIN , LEFT OUTER 추가
 ON e.deptno = d.deptno; -- DEPT 테이블 JOIN 조건
 ```
 
-```
+```sql
 ex2)
 SELECT e.last_name 이름,e.salary 급여, j.grade_level 급여등급, d.department_name 부서명,l.city 도시,c.country_name 국가
 FROM employees e JOIN job_grades j
