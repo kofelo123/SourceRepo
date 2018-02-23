@@ -12,6 +12,13 @@
 - [JVM 메모리구조](#jvm)
 - [오버로딩,오버라이딩](#overloadingoverriding)
 - [상속](#inheritance)
+- [다형성](#polymorphism)
+- [의존주입](#dependencyinjection)
+- [인터페이스](#interface)
+- [abstract](#abstract)
+- [static](#static)
+- [예외에 대해](#exception)
+- [String,StringBuffer,StringBuilder 차이](#stringelse)
 
 ### replaceAll
 > //모든 \n을 <b.r/>으로 변경한다.(textarea에서 개행시 \n으로 되는것을 변환하는 코드에서)  
@@ -237,7 +244,7 @@ JVM의 메모리구조
  ![](https://drive.google.com/uc?export=view&id=19vfWueTPzml0K-uuEA0HxfivT0BFT48L)
 
  ---
-- [static](#static)
+
 
 ## static
 static 변수
@@ -252,7 +259,7 @@ static 메소드
 (static메소드안에서 말하는듯)
 클래스명만 있어도 된다.''
 ---
-- [abstract](#abstract)
+
 ## abstract
 abstract - 추상
 
@@ -268,7 +275,7 @@ abstract 메서드: 선언부만 작성하고 구현부는 작성하지 않은 �
 추상메소드는 단지 슈퍼클래스의 용도이며, 일반메소드도 포함될 수 있으며 반드시 추상메소드를 구현해야한다.
 
 ---
-- [인터페이스](#interface)
+
 ## interface
 인터페이스
 :추상클래스의 극단적인 경우이다.
@@ -291,7 +298,6 @@ abstract 메서드: 선언부만 작성하고 구현부는 작성하지 않은 �
 
 ---
 
-- [의존주입](#dependencyinjection)
 ## dependencyinjection
 의존주입
 
@@ -301,7 +307,7 @@ abstract 메서드: 선언부만 작성하고 구현부는 작성하지 않은 �
 또, 배포후에 class파일만 남게 되어 자바소스상에서 수정하기 힘든데, 의존주입을 통해 xml에서 쉽게 수정이 가능하다.
 
 ---
-- [다형성](#polymorphism)
+
 
 ## polymorphism
 
@@ -312,7 +318,7 @@ abstract 메서드: 선언부만 작성하고 구현부는 작성하지 않은 �
 클래스:상속,인터페이스
 
 ---
-- [예외에 대해](#exception)
+
 
 ## exception
 
@@ -367,7 +373,7 @@ catch(SQLException e) {
 [참고사이트](http://www.nextree.co.kr/p3239/)
 ---
 
-- [String,StringBuffer,StringBuilder 차이](#stringelse)
+
 
 ## stringelse
 
