@@ -41,6 +41,9 @@
     - [오라클조인에서](#threewayjoinbyoracle)
     - [ANSI조인에서](#threewayjoinbyansi)
 
+- [maven dependency관련-ojdbc6등록](#ojdbc6)
+
+
 - [Error]
   - [null for parameter](#nullforparameter)
   - [value too large](#valuetoolarge)
@@ -1019,3 +1022,108 @@ ON d.location_id = l.location_id
 LEFT OUTER JOIN countries c
 ON l.country_id = c.country_id;
 ```
+
+---
+## ojdbc6
+
+oracle의 경우 저작권문제가 공식적으로 maven repository에 등록되지 않는다.
+oracle14버전만 지원되는데 jdk1.6이상의 경우 적합 x
+jdbc의 로그를 기록하지 못한다.
+
+JDBC드라이버를 사용하는 방법에는 크게 다음과 같은 방법을 고려할 수 있습니다.
+
+1. 복잡하지만 Maven에 JDBC드라이버를 추가해서 사용하는 방법
+2. STS상의 프로젝트에 라이브러리를 추가해서 사용하는 방법
+3. 클래스 패스를 이용해서 JDBC드라이버를 설정하고 사용하는 방법
+
+1번의 경우 Maven 프로그램이 설치되어야 하기 때문에 복잡하므로,  초급자에게는 권장하고 싶지는 않습니다.
+
+3번의 경우는 시스템 전체에 영향을 주기 때문에, 여러 프로젝트를 진행해야 하는 개발자들에게는 유용하지 않습니다.
+
+이 블로그에서는 2번을 기준으로 설명하도록 합니다.
+
+sqldeveloper가 깔려있다면
+폴더안에 ojdbc6.jar가 이미 들어있다.
+
+-> dependency에 ojdbc6 정보넣어주면
+<dependency>
+		    <groupId>oracle</groupId>
+		    <artifactId>ojdbc6</artifactId>
+		    <version>11.2.0.3</version>
+</dependency>
+
+빨간줄 나면서 apache-maven 디렉터리의 oracle repository쪽에 jar파일이 없다고
+하는데 그쪽(maven의 repository)에다가 jar파일을 버전에 맞게 이름맞춰서 넣어주고 maven-update project해주면된다.
+
+
+
+
+---
+- [](#)
+
+##
+
+---
+- [](#)
+
+##
+
+---
+- [](#)
+
+##
+
+---
+- [](#)
+
+##
+
+---
+- [](#)
+
+##
+
+---
+- [](#)
+
+##
+
+---
+- [](#)
+
+##
+
+---
+- [](#)
+
+##
+
+---
+- [](#)
+
+##
+
+---
+- [](#)
+
+##
+
+---
+- [](#)
+
+##
+
+---
+- [](#)
+
+##
+
+---
+- [](#)
+
+##
+
+---
+- [](#)
+
+##

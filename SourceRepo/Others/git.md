@@ -1,6 +1,8 @@
 - [pull request](#pull-request)
 - [깃허브 검색](#githubsearch)
 - [깃허브 과정](#githubprocess)
+- [깃허브 서칭API](https://github.com/search/advanced)
+- [git bash에서 사용자변경](#userchange)
 
 - [에러](#error)
   -[add - 줄바꿈관련에러](#adderror)
@@ -21,7 +23,7 @@
 
 ## githubsearch
 
-[깃허브 서칭API](https://github.com/search/advanced)
+
 
 ```
 user:kofelo123  pagemaker
@@ -80,3 +82,98 @@ git pull origin master --allow-unrelated-histories
 ```
 
 ---
+
+
+## userchange
+
+깃 bash에서 사용자변경
+```
+git config --global user.name "이름"
+git config --global user.email "이메일"
+```
+프로젝트 하나에서만 변경하고 싶으시면
+```
+git config --local user.name "이름"
+git config --local user.email "이메일"
+```
+---
+- [](#)
+
+##
+
+---
+- [](#)
+
+##
+
+
+---
+- [](#)
+
+##
+
+
+---
+- [](#)
+
+##
+
+
+---
+- [](#)
+
+##
+
+
+---
+- [](#)
+
+##
+
+
+---
+- [](#)
+
+##
+
+
+---
+- [](#)
+
+##
+
+
+---
+- [](#)
+
+##
+
+
+---
+- [](#)
+
+##
+
+
+---
+- [](#)
+
+##
+
+
+---
+- [](#)
+
+##
+
+
+---
+- [](#)
+
+##
+
+
+---
+- [](#)
+
+##

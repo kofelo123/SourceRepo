@@ -8,7 +8,7 @@
 - [.replace](#replace)
 - [.substring](#substring)
 - [주석](#comment)
-- [equals와 ==차이](#equals)
+- [equals와 ==차이](#equalsidentity)
 - [JVM 메모리구조](#jvm)
 - [오버로딩,오버라이딩](#overloadingoverriding)
 - [상속](#inheritance)
@@ -19,6 +19,18 @@
 - [static](#static)
 - [예외에 대해](#exception)
 - [String,StringBuffer,StringBuilder 차이](#stringelse)
+- [hashCode()](#hashcode)
+- [쓰레드](#thread)
+- [enum](#enum)
+- [지넥스](#generics)
+- [Map(HashMap,Hashtable)](#map)
+- [set(HashSet,TreeSet)](#set)
+- [iterator](#iterator)
+- [List(ArrayList,LinkedList,Stack,Queue)](#list)
+- [컬렉션](#collection)
+
+- [error]
+  -[이클립스 import 안될때](#notworkingimport)
 
 ### replaceAll
 > //모든 \n을 <b.r/>으로 변경한다.(textarea에서 개행시 \n으로 되는것을 변환하는 코드에서)  
@@ -202,10 +214,10 @@ IndexOutOfBoundsException - if the beginIndex is negative, or endIndex is larger
 
  ---
 
-## equals
+## equalsidentity
 
  equals는 객체가 가지고 있는 내용(값)비교
-==는 객체가 같은 참조(가리키는 주소)인지 참조
+==(identity)는 객체가 같은 참조(가리키는 주소)인지 참조
 
 ---
 
@@ -432,3 +444,286 @@ StringBuilder는 스레드에 안전한지 여부가 전혀 관계 없는 프로
 
 
 단순히 성능만 놓고 본다면 연산이 많은 경우, StringBuilder > StringBuffer >>> String 이다.
+
+---
+
+## hashcode
+
+hashCode():객체를 구별하기 위해 고유한 정수값으로 출력시켜준다.(reference 주소를 반환)
+equals()가 true이면 hashCode()의 값은 같다.
+하지만 hashCode()의 값이 같다해서 두 객체가 같은 객체라고는 볼 수 없다.
+equals 는 두 객체의 내용이 같은지, 동등성(equality) 를 비교하는 연산자
+hashCode 는 두 객체가 같은 객체인지, 동일성(identity) 를 비교하는 연산자 (==과 같은 의미일듯)
+
+---
+
+## collection
+
+컬렉션 프레임워크: 데이터 군을 저장하는 클래스들의 표준화된 설계
+
+
+- List: 순서가 있는 데이터의 집합, 데이터 중복 허용
+ex)대기자 명단
+구현클래스:ArrayList,LinkedList,Stack,Vector 등
+
+- Set:순서를 유지하지 않는 데이터의 집합, 데이터의 중복 허용X
+ex)양의 정수집합,소수의집합
+구현클래스: HashSet,TreeSet 등
+
+- Map: 키와 값의 쌍으로 이루어진 데이터의 집합
+순서는 유지되지 않으며, 키는 중복을 허용하지 않고, 값은 중복을 허용한다.
+ex)우편번호, 지역번호(전화번호)
+구현클래스: HashMap, TreeMap,Hashtable,Properties 등
+
+컬렉션 클래스 정리  & 요약
+ ![](https://drive.google.com/uc?export=view&id=1q4GgbK_AwpnkRLcvx9Gz1257TgRTTm4i)
+
+ ![](https://drive.google.com/uc?export=view&id=1-b8lppslmNWiwlnYNpnHTyxB27azZaPy)
+
+---
+
+
+## list
+
+ArrayList: vector를 개선한것으로 기능적으로 거의동일하다.
+기존의 호환성떄문에 vector를 남겨둔것이고, 현재는 ArrayList를 사용하는것이 권장된다.
+Object 배열을 이용해서 데이터를 순차적으로 저장한다.
+
+LinkedList:
+
+기존의 배열은 두가지 단점이 있다.
+
+1.크기를 변경할수 없다.(메모리 낭비 가능성)
+2.비순차적 데이터의 추가 또는 삭제에 시간이 많이 걸린다.
+배열의 중간에 데이터를 추가하면, 빈자리를 만들기 위해 다른데이터들의 복사해서 이동해하는 번거로움
+
+위의 배열의 단점을 보완하기 위해 링크드 리스트가 생겼다.
+
+ArrayList vs LinkedList
+1.순차적으로 추가/삭제 하는 경우는 ArrayList>LinkedList
+
+2.중간 데이터를 추가/삭제 하는 경우는 ArrayList<LinkedList
+
+배열은 각 요소들이 연속적 메로리 존재-> 간단 계산으로 n번째 데이터 주소를 얻어서 바로 읽을수 있다.
+그에반해 링크드 리스트는 불연속적 위치한 요소들이 연결되어있으므로 차례로 n번쨰 데이터로 까지 따라가야 해서 데이터양이 많을수록 느려진다.
+
+읽기: ArrayList >LInkedList
+추가/삭제:ArrayList<LinkedList
+
+데이터의 개수가 변하지 않는 경우라면 ArrrayList가 최상의 선택이다. 변경이 잦다면 LinkedList를 사용하는것이 더 나은선택이다.
+
+Stack과 Queue
+
+스택: 마지막에 저장한 데이터를 가장 먼저 꺼내게 되는 LIFO(Last In First Out)구조로 되어 있다.
+ArrayList같은 배열기반 컬렉션클래스로 구현하는게 적합
+(LIFO라서 배열의 큰 변화없이 바로처리가능)
+
+큐:처음저장한 데이터를 가장 먼저 꺼내게 되는 FIFO(First IN First Out)
+LinkedList로 구현하는것이 적합
+(배열기반의 컬렉션으로 구현하면 데이터를 꺼낼떄 마다 빈공간을 채우기 위해 데이터복사가 발생)
+
+---
+
+
+## iterator
+
+Iterator
+:컬렉션에 저장된 요소들을 읽어오는 방법을 표준화
+메소드
+- boolean hasNext():읽어 올 요소가 남아있는지 확인한다. 있으면 true 없으면, false를 반환
+
+- Object next():다음 요소를 읽어 온다.  next()하기전에 hasNext()해서 다음요소가 있는지 확인해야 안전하다.
+
+- void remove() : next()로 읽어 온 요소를 삭제한다. next()를 호출한 다음에 remove()를 호출해야한다.(선택적 기능)
+
+---
+
+
+## set
+
+HashSet
+:Set인터페이스를 구현한 가장 대표적인 컬렉션이며, Set의 특징처럼 중복된 요소를 저장하지 않는다.
+저장순서를 유지하지 않으므로 저장순서를 유지하고자 한다면 LinkedHashSet을 사용해야 한다.
+
+TreeSet
+:이진 검색 트리라는 자료구조의 형태로 데이터를 저장하는 컬렉션 클래스이다.
+Set 인터페이스를 구현했으므로 중복된 데이터의 저장을 허용하지 않으며 정렬된 위치에 저장하므로 저자순서를 유지하지 않아도 된다.
+
+---
+
+
+## map
+
+HashMap과 Hashtable
+
+HashMap이 후에 나온것이지 떄문에 권장된다.
+Map을 구현했으므로 키와 값을 묶어서 하나의 데이터(entry)로 저장한다는 특징을 갖는다.
+해싱을 사용하기 때문에 많은 양의 데이터를 검색하는 데 있어서 뛰어난 성능을 보인다.
+
+키는 저장된 값을 찾는데 사용되는 것이기 때문에 유일해야한다.(키는 중복x)
+
+Hashtable은 예전것이며,호환때문에 있지만 HashMap의 하위호환
+
+해싱:해시함수를 이용해서 데이터를 해시테이블에 저장하고 검색하는 기법.->원하는 데이터를 빠르게 찾음.
+
+TreeMap
+:TreeMap은 이름에서 알 수 있듯이 이진검색트리의 형태로 키와 값이 쌍으로 이루어진 데이터를 저장한다.
+검색과 정렬에 적합한 컬렉션 클래스이다.
+대부분의 경우 HashMap이 TreeMap보다 더 뛰어나므로 HashMap을 사용하는것이 좋다. 다만 범위검색이나 정렬이 필요한 경우에는 TreeMap을 사용한다.
+
+
+---
+
+
+## generics
+
+지네릭스(Generics)
+:다양한 타입의 객체를 다루는 메서드나 컬렉션 클래스에 컴파일 시의 타입체크를 해주는 기능.
+객체의 타입을 컴파일 시에 체크하기 때문에 객체의 타입 안정성을 높이고 형변환의 번거로움이 줄어든다.
+타입 안정성을 높인다는것은 의도하지 않은 타입의 객체가 저장되는 것을 막고, 저장된 객체를 꺼내올 때 원래의 타입과 다른 타입으로 잘못 형변환되어 발생할 수 있는 오류를 줄여준다.
+
+장점
+
+1.타입의 안정성을 제공
+
+2.타입체크와 형변환을 생략할 수 있으므로 코드가 간결
+
+-> 다룰 객체의 타입을 미리 명시해둠으로써 번거로운 형변환을 줄여준다
+
+지네릭 클래스의 선언
+:지네릭 타입은 클래스와 메서드에 선언 할 수 있다.
+
+
+---
+
+
+## enum
+
+enum:열거형
+
+:클래스처럼 보이게 하는 상수
+서로 관련 있는 상수들을 모아 심볼릭한 명칭의 집합으로 정의한것
+---
+
+
+## thread
+
+쓰레드
+
+프로세스:실행시 OS로 부터 필요한 자원(메모리)을 할당받아 실행중인 프로그램이다.
+
+프로세스= 메모리(자원)+쓰레드로 구성
+
+1프로세스=1이상의쓰레드가 존재
+
+2개이상 쓰레드를 가지면 멀티쓰레딩(멀티태스킹,병렬처리)
+
+멀티쓰레딩 장점
+:CPU 사용률 향상
+자원을 효율적으로 사용
+사용자에 대한 응답성 향상
+작업 분리,코드간결
+
+1.Tread클래스 상속
+2.Runnable 인터페이스 구현
+---
+
+## notworkingimport
+
+이클립스를 import할떄 안될때는
+
+.project, .classpath 없이 소스있는 경우인데
+
+워크스페이스 아닌곳에 프로젝트를 둔후
+
+new - spring regacy project해서
+
+프로젝트 불러오기 지정해서 생성시켜서
+
+.project 만들면된다.
+
+
+---
+- [](#)
+
+##
+
+---
+- [](#)
+
+##
+
+---
+- [](#)
+
+##
+
+---
+- [](#)
+
+##
+
+---
+- [](#)
+
+##
+
+---
+- [](#)
+
+##
+
+---
+- [](#)
+
+##
+
+---
+- [](#)
+
+##
+
+---
+- [](#)
+
+##
+
+---
+- [](#)
+
+##
+
+---
+- [](#)
+
+##
+
+---
+- [](#)
+
+##
+
+---
+- [](#)
+
+##
+
+---
+- [](#)
+
+##
+
+---
+- [](#)
+
+##
+
+---
+- [](#)
+
+##
+
+---
+- [](#)
+
+##
