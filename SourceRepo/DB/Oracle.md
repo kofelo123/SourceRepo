@@ -24,6 +24,7 @@
   - [라인,페이지 사이즈](#linesizepagesize)
   - [현재 생성된 계정 확인](#userview)
   - [전체 테이블,뷰,시퀀스 삭제](#entiredelete)
+- [SELECT 문장의 패턴](#selectpattern)
 - [조인](#join)
   - [오라클조인](#oraclejoin)
     - [EQUI JOIN](#equijoin)
@@ -1059,14 +1060,239 @@ sqldeveloper가 깔려있다면
 
 
 ---
-- [](#)
+## selectpattern
 
-##
+SELECT 문장의 해석/작성 권장순서
+
+4.SELECT
+1.FROM
+2.WHERE
+3.GROUP BY: 데이터를 더 작은 그룹으로 나눌 떄 사용(대개 복수행 함수(그룹함수 또는 집계 함수라고 부르기도함),WHERE는 GROUP BY에 적용된다.(where에서 걸러진후 groupby적용) ~'별'로 나눈다. 해석
+5.HAVING : GROUP BY 절의 결과를 필터링 할 때 사용
+6.ORDER BY :결과 데이터의 정렬
+
+
+SELECT 문장의 패턴
+
+1.SELECT FROM
+2.SELECT FROM WHERE
+3.SELECT FROM GROUP BY
+4.SELECT FROM  WHERE GROUP BY
+5.SELECT FROM GROUP BY HAVING
+6.SELECT FROM  WHERE GROUP BY HAVING
+
+위의 모든패턴에 order by 를 사용할 수 있다.
+
+
+Q.10% 인상된 급여 쿼리하기
+```sql
+SELECT empno, ename, sal, sal*1.1
+FROM emp;
+```
+Q.NULL 값이 포함/미포함 된 행을 찾으세요
+```sql
+SELECT empno, ename, comm
+FROM emp
+WHERE comm is null; (is not null)
+```
+Q.오름차순과 null
+오름차순정렬의 경우 (asc) null값이 마지막에 나타난다.
+오름차순인데 null 값이 먼저 나오게 하도록 쿼리할 수 있다.
+```sql
+SELECT empno, ename ,sal ,comm, deptno
+FROM emp
+ORDER BY comm nulls first;
+```
+반대로 내림차순은 null 값이 먼저 나오지만, 마지막에 나오게 할수 있다.
+```sql
+SELECT empno ,ename ,sal comm, deptno
+FROM emp
+ORDER BY comm desc nulls last;
+```
+Q.select절에 없는 컬럼으로 정렬 가능
+```sql
+SELECT empno, ename, job
+FROM emp
+ORDER BY sal desc;
+```
+Q.중복제거
+```sql
+SELECT distinct job
+FROM emp;
+
+SELECT unique job
+FROM emp;
+```
+Q 리터럴
+```sql
+SELECT ename , ' 사원의 업무는 ', job ,'입니다'
+FROM emp;
+```
+이런식으로 실제 데이터는 아니지만 문자를 넣는것..
+문자 리터럴은 작은 따옴표로 감싸야 한다.
+
+각각 ename, '사원의 업무는',job,'입니다' 가 끊어서 나오지만
+보기좋은 결과를 위해 연결 연산자 || 를사용할 수 있다.
+```sql
+SELECT ename||' 사원의 업무는 '||job||'입니다.'
+FROM emp;
+//위또한 alias 할수있다.
+```
+
+2.
+
+Q.IN 연산자(포함여부)
+```sql
+WHERE department_id in (20,50,80);
+//셋중에 포함되는것이 있는 데이터를 출력
+```
+```sql
+Q. TO_CHAR(SYSDATE,'YYYY-MM-DD')
+-----------
+2015-03-16
+```
+이런식으로 날짜와 문자화 해주는 그런 함수들이 있다는것..
+
+3.SELECT,FROM,GROUP BY
+
+GROUP BY 절은 데이터를 더 작은 그룹으로 나누어 연산할 떄 사용한다.
+그룹별 평균,최대,최소 등을 구하기 위해 복수행 함수(그룹함수 또는 집계함수라고 해도됨)와 함께 사용한다.
+(집계연산 함수 쓸때 반드시 group by 함께 써야 오류안난다.(무엇을 기준으로 연산할지에 대한것이라서)
+GROUP BY  와 복수행 함수를 사용하면 데이터 더미의 의미를 다양하게 파악할 수 있다.
+```sql
+SELECT deptno, count(*) # (3) 부서별로 count
+FROM emp		# (1) 사원 테이블의 데이터(행)를
+GROUP BY deptno	# (2) 부서 번호 같은 데이터(행)끼리 모아
+ORDER BY deptno;	# (4) 결과를 정렬
+```
+ex)
+Q 부서별, 업무별 사원수, 급여합,급여 평균 구하라
+```sql
+SELECT deptno, job, count(*), sum(sal),avg(sal)
+FROM emp
+GROUP BY deptno, job
+ORDER BY 1, 2;
+```
+Q.SELECT 절을 작성할때 한 줄에 하나의 칼럼을 나열하는 것은 자주 권장되는 작성 방법이다.
+```sql
+SELECT deptno,
+	job,
+	max(hiredate),
+	min(hiredate)
+FROM emp
+GROUP BY deptno, job
+ORDER BY 1,2;
+```
+4.SELECT FROM WHERE GROUP BY
+
+순서는 WHERE 에서 거른후 GROUP BY 에서 그룹'별'로 분류
+
+5.SELECT FROM GROUP BY HAVING
+
+순서: FROM - GROUPBY SELECT HAVING 순서로 해석
+(HAVING은 SELECT 다음에 해석)
+```sql
+SELECT deptno, count(*) # (3) 인원수를 헤어린 뒤
+FROM emp #(1) 사원 테이블에서
+GROUP BY deptno #(2) 같은 부서에 근무하는 사원끼리 헤쳐모아
+HAVING count(*) >= 5 #(4) 인원수가 5명 이상인 결과를 남긴다
+ORDER BY count(*); #(5) 정렬수행
+```
+컬럼의 별명(alias)는 GROUP BY 및 HAVING 절에 사용할 수 없다.
+
+6.SELECT, FROM, WHERE, GROUP BY, HAVING
+
+FROM > WHERE > GROUP BY > SELECT > HAVING 순으로 작성 및 해석.
+
+Q. WHERE 절과 HAVING 절을 비교 설명
+기능이 비슷해보여서 고민할 수 있다.
+
+필터링할 조건을 WHERE절에 적용해보고 문법에 오류가 있으면 HAVING에 조건을 포현하면 된다.
+문법 규칙중에 WHERE 절에는 집계 함수(복수행함수)를 사용할 수 없다는 것을 기억하고있으면 도움이 된다.
+
+2가지 문제
+1.조건을 WHERE 절과  HAVING절 어디에든 사용할 수 있는 경우
+2.조건을 반드시 HAVING 절에만 사용 할 수 있는 경우.
+
+1.의경우 WHERE을 쓰는게 좀더 효율적이다.
+왜냐하면, 테이블에서 조건에 맞는 것만 남기고 나은 결과로 집단화하고 연산을 수행한다.
+HAVING을 쓸경우 전체 데이터를 집단화하고 연산을 수행한후 그 결과에서 뒤늦게 필터링 처리하기 때문에 결과에 포함시키지 않는 데이터까지 집단화시키고 연산하는 작업을 하게 되므로 비효율적이다.
 
 ---
-- [](#)
+- [집합연산자](#setoperator)
 
-##
+## setOperator
+
+
+수학에서의 합집합(UNION 또는 UNION ALL),교집합(INTERSECT),차집합(MINUS)
+
+@ 합집합 (UNION, UNION ALL)
+```sql
+SELECT n FROM 집합A
+UNION
+SELECT n FROM 집합B;
+````
+개별 SELECT 문의 컬럼 이름이 다르더라도 상관없다.
+집합 연산은 SELECT 하는 컬럼의 개수와 데이터 타입의 순서만 일치하면 수행된다. 단, 컬럼의 이름이 다른 경우, 출력 결과의 컬럼 이름은 첫 번째 SELECT 문의 컬럼 이름으로 출력된다.
+
+
+UNION 과 UNION ALL 의 차이점은
+UNION ALL은
+1.중복된 레코드를 제거하지 않는다,
+2.정렬하지 않은채로 출력.(UNION ALL 외의 모든집합은 정렬된 상태로 출력된다. 정렬은 많은 시스템 자원을 소모하므로 중복 레코드가 없다는 확신이 서거나, 결과가 중복되어서 무방할때는 UNION ALL 을 사용하는게 좋다.)
+
+@ 그 외의 규칙
+
+1. 서로 다른 테이블에 대한 집합연산을 적용해도 무방하다
+출력하는 컬럼의 개수와 데이터 타입만 일치하면 어떤 집합이라도 무방.
+```sql
+SELECT last_name FROM employees
+UNION
+SELECT ename FROM emp;
+```
+2. 컬럼의 개수 및 SELECT 순서가 일치해야 한다.
+
+3.집합 연산에서 ORDER BY 절은 마지막에 한 번만 기술한다.
+```sql
+SELECT * FROM 집합A ORDER BY 1 desc //에러남
+UNION ALL
+SELECT * FROM 집합B;
+```
+```sql
+SELECT *
+FROM (SELECT * FROM 집합A ORDER BY 1 desc) -- 인라인 뷰를 사용하면 된다.
+UNION ALL
+SELECT * FROM 집합B;
+```
+@ 두 쿼리문의 쿼리 항목 개수나 데이터 타입이 다름에도 불구하고 집합연산을 해야할때.
+
+Q.EMP테이블과 DEPT 테이블을 UNION ALL 하여 ename,deptno,dname을 출력하시오.
+(emp테이블은 dname이 없고 dept테이블은 ename컬럼이 없다)
+
+-> 없는컬럼을 null로 비우고 UNION ALL 한다.
+```sql
+SELECT ename,deptno,null FROM emp
+UNION ALL
+SELECT null,deptno,dname FROM dept;
+```
+
+# 교집합
+
+집합 A 와 집합 B 의 교집합은 INTERSECT를 이용하여 구한다.
+```sql
+SELECT n FROM 집합A
+INTERSECT
+SELECT n FROM 집합B;
+```
+# 차집합
+
+MINUS 를 이용한다.
+```sql
+SELECT n FROM 집합A
+MINUS
+SELCT n FROM 집합B;
+```
+
 
 ---
 - [](#)
