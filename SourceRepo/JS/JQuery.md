@@ -16,6 +16,7 @@
 - [체크박스체크예제](#checkboxex)
 - [val()](#val)
 - [find()](#find)
+- [테스트](#11)
 ### Form control
 
 
@@ -485,3 +486,9 @@ formObj.find("[name=id"];
 아니면 form에서 접근하지말고
 $("input[name=id]").val()
 이렇게 직접적으로 접근해도 된다.
+
+---
+
+## 11
+
+숫자 테스트
