@@ -125,7 +125,7 @@ public List<BoardVO> listCriteria(Criteria cri) throws Exception{
 #### 화면 하단의 페이징 처리
 
 - 시작 페이지 번호(startPage)
-> 시작페이지 번호가 1이 아니라면 이전(prev) 으로 갈 수 있는 링크가 제공되야 한다.
+> 시작페이지 번호가 1이 아니라면(11페이지부터) 이전(prev) 으로 갈 수 있는 링크가 제공되야 한다.
 
 - 끝 페이지 번호(endPage)
 > 몇 개의 번호를 보여줘야 하는지. 전체 데이터 개수에 영향을 받는다.

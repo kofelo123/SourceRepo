@@ -1,3 +1,4 @@
+- [Query 속성선택자](#propertyselector)
 - [Form 제어](#form-control)
 - [.html()](#html)
 - [.submit](#submit)
@@ -13,6 +14,7 @@
 - [자손과 후손](#descendants)
 - [충돌방지 noconflict](#noconflict)
 - [체크박스체크예제](#checkboxex)
+- [val()](#val)
 ### Form control
 
 
@@ -30,6 +32,8 @@ $(document).ready(function(){
 	});
 });
 
+
+
 ```
 
 
@@ -37,7 +41,7 @@ $(document).ready(function(){
 
 ```
 Definition and Usage
-
+// html() 메소드는 html의 태그까지 같이 get 하거나 set한다.
 //1.return 하는 용도로 쓸때는 첫번째 매칭 요소를 반환한다.
 //2.set하는 용도로 쓸때는 모두 덮어쓴다
 
@@ -407,4 +411,53 @@ $(document).ready(function(){
 
 	});
 });  
+```
+
+---
+
+
+## propertySelector
+
+Query 속성선택자
+
+ 요소[속성]
+
+ 특정 속성을 가지고 있는 문서 객체를 선택함
+
+ 요소[속성=값]
+
+ 속성 안의 값이 특정 값과 같은 문서 객체를 선택함
+ 요소[속성~=값]	 속성 안의 값이 특정 값을 단어로써 포함하는 문서 객체를 선택함
+ 요소[속성^=값]
+
+ 속성 안의 값이 특정 값으로 시작하는 문서 객체를 선택함
+ 요소[속성$=값]	 속성 안의 값이 특정 값으로 끝나는 문서 객체를 선택함
+ 요소[속성*=값]
+
+ 속성 안의 값이 특정 값을 포함하는 문서 객체를 선택함
+
+
+
+사용 예)
+
+<inuput type="text" />
+
+
+
+$('input[type=text]').val("텍스트 값추가");
+
+
+
+---
+
+
+## val
+
+사용자가 폼 내부의 input에 무엇을 입력했는지 알고싶을 때, 일반적으로 val()을 사용합니다:
+```js
+var answer = $("#answer").val();
+```
+반대로 value에 값을 세팅하는 용도로 사용되기도 한다.
+```js
+var answer2 = $("#answer").val("settingvalue");
 ```

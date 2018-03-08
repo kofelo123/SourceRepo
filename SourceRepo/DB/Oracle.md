@@ -7,8 +7,7 @@
 - [테이블 조인하기](#tablejoin)
 - [칼럼속성 수정](#modifycolumn)
 - [view를 쓰는이유](#view)
-- [조인](#join)
-  - [조인사용예제](#joinex)
+
 - [rownum과 orderby 사용-서브쿼리](#rownumorderbysubquery)
 - [다중정렬](#multisort)
 - [오라클 포트변경](#modifyport)
@@ -42,8 +41,10 @@
     - [오라클조인에서](#threewayjoinbyoracle)
     - [ANSI조인에서](#threewayjoinbyansi)
 
+  - [조인사용예제](#joinex)
 - [maven dependency관련-ojdbc6등록](#ojdbc6)
-
+- [ERD보기](#erd)
+- [뷰](#view)
 
 - [Error]
   - [null for parameter](#nullforparameter)
@@ -257,27 +258,7 @@ CREATE VIEW v_emp_read_only(empno, ename) AS SELECT empno, ename FROM emp WITH R
 ```sql
 
 ```
----
-## join
 
-## joinex
-```sql
-cart_view 라는 view가상 테이블에서
-3개의 테이블로부터의 정보를 조합해서
-주문에 대한 정보를 표기하는 쿼리.(조인)
-
-create or replace view cart_view
-as
-select o.cseq, o.id, o.pseq, m.name mname, p.name pname,
-o.quantity, o.indate, p.price2, o.result
-from cart o, member m, product p
-where o.id = m.id and o.pseq = p.pseq
-and result='1';
-
-cartinsert 할떄 실제로는 몇개의 정보를 카트테이블에 넣어주고
-카트뷰(가상테이블)에서 조인으로 여러 테이블에서의 값(가격등)을 가져오는
-
-```
 
 ---
 
@@ -1023,7 +1004,27 @@ ON d.location_id = l.location_id
 LEFT OUTER JOIN countries c
 ON l.country_id = c.country_id;
 ```
+---
 
+
+## joinex
+```sql
+cart_view 라는 view가상 테이블에서
+3개의 테이블로부터의 정보를 조합해서
+주문에 대한 정보를 표기하는 쿼리.(조인)
+
+create or replace view cart_view
+as
+select o.cseq, o.id, o.pseq, m.name mname, p.name pname,
+o.quantity, o.indate, p.price2, o.result
+from cart o, member m, product p
+where o.id = m.id and o.pseq = p.pseq
+and result='1';
+
+cartinsert 할떄 실제로는 몇개의 정보를 카트테이블에 넣어주고
+카트뷰(가상테이블)에서 조인으로 여러 테이블에서의 값(가격등)을 가져오는
+
+```
 ---
 ## ojdbc6
 
@@ -1295,61 +1296,49 @@ SELCT n FROM 집합B;
 
 
 ---
-- [](#)
 
-##
+## erd
 
----
-- [](#)
-
-##
+ERD보기
+파일 -> Data Modeler -> 임포트 -> 데이터 딕셔너리
+ ![](https://drive.google.com/uc?export=view&id=19tPqEVW116gm4mr0VWhHsE42qE9da4Ag)
 
 ---
-- [](#)
 
-##
 
----
-- [](#)
 
-##
+ ## view
 
----
-- [](#)
+ 뷰는 하나 이상의 테이블이나 다른뷰를 이용하여 생성되는 가상테이블을 말한다.
+ 테이블은 디스크에 공간이 할당되어 데이터를 저장하고 있지만 뷰는 디스크 저장 공간이 할당되지 않는다.
 
-##
 
----
-- [](#)
+ @뷰의 종류
 
-##
+ 단순뷰:하나의 기본 테이블로 생성한 뷰이며 DML 명령문을 실행할 수 있다. DML명령문의 처리 결과는 기본테이블에 반영된다.
 
----
-- [](#)
+ 복합뷰: 두 개 이상의 기본 테이블로 생성한 뷰이다.
+ 무결성 제약조건, 표현식, GROUP BY 절의 유무에 따라 DML 명령문을 제한적으로 사용한다.
+ 복합뷰는 DISTINCT,그룹함수, GROUP BY, ROWNUM을  포함시킬수 없다.
 
-##
+ @뷰 사용이유
+ :뷰를 사용하는 이유는 보안과 사용의 편의성 때문이다.
+ 전체 데이터가 아닌 일부만 접근 할 수 있도록 뷰를 정의하면 일반 사용자에게 해당 뷰만 접근 가능하도록
+ 허용하여 중요한 데이터가 외부에 공개되는 것을 막을 수 있다.
 
----
-- [](#)
+ @ OR REPLACE
+ :존재 하는 뷰에 대해서 그 내용을 새롭게 변경하여 재 생성한다. 뷰를 정의할떄 일반적으로 CREATE VIEW 보다 CREATE OR REPLACE VIEW 를 사용하여 융통성 있게 뷰를 생성한다.
 
-##
+ @장점
+ 1.DB의 선택적인 부분만 보여주므로 접근을 제한
+ 2.다양한 접근 경로 설정
+ 3.복잡한 질의를 단순화
+ 4.데이터 독립성 제공
+ 5.동일한 데이터를 또 다른 뷰로 표현
+ 6.한개의 뷰에 여러 테이블의 데이터를 검색 가능
+ 7.한 개의 테이블로부터 여러 뷰를 생성가능
 
----
-- [](#)
+ @단점
+ - 뷰의 정의를 변경할 수 없고 isnert,delete,update에 많은 제한이 있음
 
-##
-
----
-- [](#)
-
-##
-
----
-- [](#)
-
-##
-
----
-- [](#)
-
-##
+ [참조](http://sjs0270.tistory.com/54)
