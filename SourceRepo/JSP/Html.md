@@ -2,6 +2,7 @@
 - [checkbox의 값전달에 대해](#checkbox)
 - [링크 새창 열기(blank)](#blank)
 - [onclick에 return 함수](#onclickfunction)
+- [span사용](#span)
 ### Http errorcode
 
 | 200 | OK, 에러 없이 전송 성공                                                    |
@@ -134,10 +135,18 @@ onClick에서 이벤트에 return 없을을경우
 <form name="cnjform">
 이름에 한글 만 사용가능(욕 필터링,특정단어 예약)<br><br>
 이름 : <input type="text" name="UserName" size="12">
-<input type="submit" value="확인" onClick="check_name_text();"> 
+<input type="submit" value="확인" onClick="check_name_text();">
 </form>
 ---
 
 
 
 ```
+---
+## span
+
+<span style="float: left;">
+             <img src="/momstouch/resources/image/momstouch${subfolder }/${productVO.image}"  />
+           </span>         
+
+span(인라인)이 있어야 이미지를 한줄에 끝내고 텍스트를 그 우측에 배치한다.

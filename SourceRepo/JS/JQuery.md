@@ -15,6 +15,7 @@
 - [충돌방지 noconflict](#noconflict)
 - [체크박스체크예제](#checkboxex)
 - [val()](#val)
+- [find()](#find)
 ### Form control
 
 
@@ -461,3 +462,26 @@ var answer = $("#answer").val();
 ```js
 var answer2 = $("#answer").val("settingvalue");
 ```
+---
+
+
+## find
+
+콜백 함수 내부에서, this 키워드를 사용해서 폼 요소를 참조할 수 있습니다. 흔한 패턴은 폼 요소 내부의 입력값만을 찾기 위해서 폼 요소에서 find()를 호출하는 것입니다:
+```js
+    $("form").on("submit", function() {
+      // 입력란에 name='age' 값을 저장합니다
+       var age = $(this).find('[name=age]').val();
+    });
+```
+form 안에 여러 input type 요소들이 있을건데 그것을 접근할떄 javascript dom에서는
+form.요소 이런식으로 접근하면 되지만
+jquery에서는
+var formObj =$("form[name='formm']");
+formObj.find("[name=id"];
+이런식으로 find를 쓴다.
+값을 불러오려면 .val()을 뒤에 붙여주고..
+
+아니면 form에서 접근하지말고
+$("input[name=id]").val()
+이렇게 직접적으로 접근해도 된다.
