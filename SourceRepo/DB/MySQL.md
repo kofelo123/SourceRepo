@@ -31,7 +31,7 @@ insert into tbl_board (title,content,writer)(select title, content,writer from t
 
 ## mysqldump
 
->cmd에서 bin경로에서 mysqld로 하는방법이 있고 워크밴치에서 하는 방법이 있으나
+>cmd에서 bin경로에서 mysqld로 하는방법이 있고 워크밴치에서 하는 방법이 있으나,
 둘다 안되었다. 특히 workbench의 경우 아스키 문제가 잇었는데, 사용자 계정이 한글이라서 그런것 같기도 한데,
 경로를 바뀌어도 같은문제에 검색해도 딱히 해결방법이 나오지 않았다.
 cmd방법을 다시 시도했고 시키는 대로 했으나 엑세스 거부 문제가 생겼다.
