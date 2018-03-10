@@ -41,6 +41,7 @@
     - [ANSI조인에서](#threewayjoinbyansi)
 
 - [조인사용예제](#joinex)
+- [집합연산자](#setoperator)
 - [서브쿼리](#subquery)
 - [maven dependency관련-ojdbc6등록](#ojdbc6)
 - [ERD보기](#erd)
@@ -992,22 +993,22 @@ sqldeveloper가 깔려있다면
 
 SELECT 문장의 해석/작성 권장순서
 
-4. SELECT
-1. FROM
-2. WHERE
-3. GROUP BY: 데이터를 더 작은 그룹으로 나눌 떄 사용(대개 복수행 함수(그룹함수 또는 집계 함수라고 부르기도함),WHERE는 GROUP BY에 적용된다.(where에서 걸러진후 groupby적용) ~'별'로 나눈다. 해석
-5. HAVING : GROUP BY 절의 결과를 필터링 할 때 사용
-6. ORDER BY :결과 데이터의 정렬
+4) SELECT
+1) FROM
+2) WHERE
+3) GROUP BY: 데이터를 더 작은 그룹으로 나눌 떄 사용(대개 복수행 함수(그룹함수 또는 집계 함수라고 부르기도함),WHERE는 GROUP BY에 적용된다.(where에서 걸러진후 groupby적용) ~'별'로 나눈다. 해석
+5) HAVING : GROUP BY 절의 결과를 필터링 할 때 사용
+6) ORDER BY :결과 데이터의 정렬
 
 
 SELECT 문장의 패턴
 
-1.SELECT FROM
-2.SELECT FROM WHERE
-3.SELECT FROM GROUP BY
-4.SELECT FROM  WHERE GROUP BY
-5.SELECT FROM GROUP BY HAVING
-6.SELECT FROM  WHERE GROUP BY HAVING
+1) SELECT FROM
+2) SELECT FROM WHERE
+3) SELECT FROM GROUP BY
+4) SELECT FROM  WHERE GROUP BY
+5) SELECT FROM GROUP BY HAVING
+6) SELECT FROM  WHERE GROUP BY HAVING
 
 위의 모든패턴에 order by 를 사용할 수 있다.
 
@@ -1147,7 +1148,7 @@ Q. WHERE 절과 HAVING 절을 비교 설명
 HAVING을 쓸경우 전체 데이터를 집단화하고 연산을 수행한후 그 결과에서 뒤늦게 필터링 처리하기 때문에 결과에 포함시키지 않는 데이터까지 집단화시키고 연산하는 작업을 하게 되므로 비효율적이다.
 
 ---
-- [집합연산자](#setoperator)
+
 
 ## setOperator
 
