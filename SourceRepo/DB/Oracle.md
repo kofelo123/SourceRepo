@@ -992,12 +992,12 @@ sqldeveloper가 깔려있다면
 
 SELECT 문장의 해석/작성 권장순서
 
-4.SELECT
-1.FROM
-2.WHERE
-3.GROUP BY: 데이터를 더 작은 그룹으로 나눌 떄 사용(대개 복수행 함수(그룹함수 또는 집계 함수라고 부르기도함),WHERE는 GROUP BY에 적용된다.(where에서 걸러진후 groupby적용) ~'별'로 나눈다. 해석
-5.HAVING : GROUP BY 절의 결과를 필터링 할 때 사용
-6.ORDER BY :결과 데이터의 정렬
+4. SELECT
+1. FROM
+2. WHERE
+3. GROUP BY: 데이터를 더 작은 그룹으로 나눌 떄 사용(대개 복수행 함수(그룹함수 또는 집계 함수라고 부르기도함),WHERE는 GROUP BY에 적용된다.(where에서 걸러진후 groupby적용) ~'별'로 나눈다. 해석
+5. HAVING : GROUP BY 절의 결과를 필터링 할 때 사용
+6. ORDER BY :결과 데이터의 정렬
 
 
 SELECT 문장의 패턴
