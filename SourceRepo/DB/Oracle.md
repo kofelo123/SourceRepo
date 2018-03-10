@@ -4,9 +4,8 @@
 
 - [concat](#concat)
 - [PK생성과 제약조건 이름변경](#pkconstraintrename)
-- [테이블 조인하기](#tablejoin)
 - [칼럼속성 수정](#modifycolumn)
-- [view를 쓰는이유](#view)
+
 
 - [rownum과 orderby 사용-서브쿼리](#rownumorderbysubquery)
 - [다중정렬](#multisort)
@@ -176,19 +175,6 @@ alter index 인덱스이름 rename to NEW_INDEX;
 
 ```
 
----
-
-### tablejoin
-
-두 가지이상의 테이블로 부터 조회해야 할때 - from 절에 두개 이상의 테이블이 나타날때 조인이라고 한다.
-
-(select * from tab) - 모든 테이블,뷰
-
-1. 어떤 테이블을 FROM에 둘까?
-
-2.
-
-
 
 ---
 
@@ -198,67 +184,6 @@ alter index 인덱스이름 rename to NEW_INDEX;
 **칼럼의 속성수정하기**
 ```sql
 alter table product modify kind varchar(10);
-```
-
-## view
-
-. view 는 table 과 유사하고 table 처럼 사용하지만 table과 달리 data를 저장하기 위한 물리적 공간을 필요로 하지 않는다.
-. data 를 물리적이 아닌 논리적 집합을 갖는다.
-. table 과 마찬가지로 select , insert, update, delete 가 가능
-. view 를 생상하면 select 문장이 dictionnary에 저장된다.
-. view 를 조회하면 dictionary에 저장되어 있는 해당 view의 sql 문장을 이용하여 근간이 되는 table을 access한다.
-
-
-VIEW 만들기
-```sql
-CREATE  OR  REPLACE VIEW view_name
-AS query
-[WITH CHECK OPTION]
-[WITH READ ONLY];
-```
-참고로 만들어진 VIEW를 삭제하려면,
-DROP VIEW view_name; 라고 하면 됩니다.
-
-뷰를 만들 때 CREATE OR RELPACE VIEW 대신 그냥 CREATE VIEW만 사용해도 됩니다. 그러나 그냥 CREATE VIEW를 통해 만들어진 뷰의 구조를 바꾸려면 뷰를 삭제하고 다시 만들어야 되는 반면, CREATE OR REPLACE VIEW는 새로운 뷰를 만들거나 기존의 뷰를 통해 새로운 구조의 뷰를 만들 수도 있습니다. 그래서 대부분 뷰를 만들 때는 CREATE VIEW 대신 CREATE OR REPLACE VIEW를 사용하는 편입니다.
-
-VIEW에는 VIEW를 생성하는 SELECT 문만 저장됩니다. 즉 실제로 테이블은 존재하지 않으며, VIEW를 SELECT 문으로 검색하는 순간 실제 테이블을 참조하여 보여줍니다.
-VIEW의 query문에는 ORDER BY 절을 사용할 수 없습니다.
-
-
-VIEW를 사용하는 이유
-- 보안 관리을 위한 VIEW
-   . 보안 등급에 맞추어 컬럼 및 범위를 정하고 privilege 부여
-   . 연산 결과만 제공하고 Algorithm 을 숨기기 위해 사용
-   . SELECT List 를 Function으로 가공하여 UPDATE, INSERT를 원천적으로 봉쇄
-   . Table 의 명칭이나 Column의 명칭을 숨기기 위한 View
-
-- 사용 편의를 위한 View
-   . 검색조건의 단순화
-   . End User를 위한 Table 명, Column의 한글화
-   . join 문장의 단순화를 위한 View
-
-- 수행속도 향상을 위한 View
-   . 미리 Tuning 된 SQL문으로 생성한 View
-   . 특정한 절차로 수행시키기 위해 View 의 SELECT List에 HINT등을 사용한 View
-
-- 융통성 향상을 위한 View
-   . 업무 규칙의 변경이 빈번하여 응용프로그램의 수정이 자주 발생 경우의 해결
-
-
-- 보안관리를 위한 View
-CREATE VIEW v_emp(empno, ename) AS SELECT NVL(empno,NULL), ename FROM emp;
- - > NVL(empno,NULL) 같이 view에 함수를 이용한 가공된 Column은 INSERT, UPDATA 불가
-
-CREATE VIEW v_emp2(empno,ename,annual_sal) AS SELECT empno, ename, (sal + NVL(comm,0)) * 12 annual_sal FROM emp;
- - > 연산을 숨길수 있다.
-
-
-
-읽기전용으로 만들기
-CREATE VIEW v_emp_read_only(empno, ename) AS SELECT empno, ename FROM emp WITH READ ONLY;
-
-```sql
-
 ```
 
 
