@@ -41,10 +41,12 @@
     - [오라클조인에서](#threewayjoinbyoracle)
     - [ANSI조인에서](#threewayjoinbyansi)
 
-  - [조인사용예제](#joinex)
+- [조인사용예제](#joinex)
+- [서브쿼리](#subquery)
 - [maven dependency관련-ojdbc6등록](#ojdbc6)
 - [ERD보기](#erd)
 - [뷰](#view)
+- [테이블삭제관련](#tabledrop)
 
 - [Error]
   - [null for parameter](#nullforparameter)
@@ -1342,3 +1344,278 @@ ERD보기
  - 뷰의 정의를 변경할 수 없고 isnert,delete,update에 많은 제한이 있음
 
  [참조](http://sjs0270.tistory.com/54)
+
+ ---
+
+
+ ## subquery
+
+ ### 서브쿼리
+
+ 서브쿼리는 메인쿼리에 비해 먼저 수행되고 그 결과를 메인쿼리가 이용하는 형태이다.
+
+ 조인이 2개 이상의 집합에서 데이터 검색을 할떄 유용하다면
+ 서브쿼리는 데이터값의 비교가 목적이다.
+ 조인보다 서브쿼리의구조가 더직관적이고 이해하기 쉽다.
+
+ 서브쿼리는 단일 행 서브쿼리, 다중 행 서브쿼리, 상호관련 서브쿼리로 분류할 수있다.
+
+ ### Single Row 서브쿼리
+
+ 메인쿼리에 적용될 결과 집합이 하나의 레코드만을 갖는 쿼리를 의미한다.
+
+ ex) BLAKE와 같은 부서에서 근무하는 모든 사원을 출력하라.
+ ```sql
+ SELECT ename
+ FROM emp
+ WHERE deptno = (SELECT deptno FROM emp
+  		WHERE ename='BLAKE');
+ ```
+
+ #### Multiple Row 서브쿼리
+ :메인쿼리에 적용할 **서브쿼리** 결과 집합의 레코드 수가 2개 이상인 서브쿼리를 말한다.
+
+ 서브쿼리 결과집합이 하나일때는 = 동등조건이 가능하지만
+ 다중행 서브쿼리는 안된다.
+
+ 이때 조건으로 사용되는 것이 in, any, all과 같은 연산자이다.
+
+ @ in 연산자
+
+ ex) BLAKE 또는 MILLER 와 같은 부서에 일하는 사원 출력
+
+ ```sql
+ SELECT ename FROM emp
+ WHRE deptno in (SELECT deptno FROM emp
+ 		WHERE ename = 'BLAKE' OR ename = 'MILLER');
+ ```
+
+ 만약 서브쿼리 결과 중 NULL 값이 하나라도 포함된다면 WHERE 절의 결과는 결과적으로 NULL이 된다.(메인쿼리의 결과는 아무것도 반환하지 않게 됨)
+
+ 따라서 IN 조건을 사용했는데 아무런 결과를 얻지 못하는 경우
+
+ 정말로 해당 조건을 만족하는 로우가 없는지 아니면 서브쿼리 결과에 NULL 이 포함되었기 때문인지를 확인해 봐야한다.
+
+ (참고)
+ null은 값이 없음을 나타내는데 값이 없으니 그 값도 없어서
+ 비교대상이 되지 않는다. 떄문에 = null 이 아닌 is null , is not null의 형태로 사용해야한다.
+
+ @ any 연산자
+
+ ```sql
+ SELECT ename, sal
+ FROM emp
+ WHERE sal > any (SELECT sal FROM emp
+ 		WEHRE job = 'MANAGER');
+ ```
+
+ ->job이 MANAGER인 어떤 요소들이든 간에 보다 더 많은 급여를 받는 사원을 조회.(세명중 가장 작은 급여를 받는 사원보다 많은 급여를 받는 사원 조회)
+
+ @ all 연산자
+
+ SELECT ename, sal ,job
+ FROM emp
+ WHERE sal > all (SELECT sal FROM emp
+ 		WHERE job= 'MANAGER');
+ -> job이 MANAGER인 모든 사람들보다 많은 급여를 받는 사원 쿼리(MANAGER인 사람중 가장많은 급여를 받는 사람보다 많은 급여를 받는 사원조회)
+
+ @ exists 연산자
+ :exists 연산자는 메인쿼리의 로우 하나하나(후보행)에 대해 서브쿼리를 적용시킨다.
+ 서브쿼리의 결과가 하나라도 존재하면 해당 후보행이 WHERE절의 조건을 만족한 것이 된다.
+ 상호관련 서브쿼리의 방식과 유사하나 , 차이점은 서브쿼리에 있는 테이블의 모든 로우를  검색하지 않을 수도 있다는 점이다.
+ 서브쿼리의 WHERE 절을 만족하는 로우가 나타나자마자 다음 후보행으로 넘어가기 때문이다.
+ 또한 exists 연산자의 사용 목적이 로우의 컬럼값을 얻기 위한 것이 아니라 단지 결과가 존재하는지를 판단하는 것이기 때문에 서브쿼리의 SELECT 절에 숫자 리터럴이나 문자 리터럴을 사용한다.
+
+ 후보행마다 서브쿼리의 결과가 달라져야 exists 연산자를 사용하는 의미가 있으므로
+ 서브쿼리에는 WHERE 절이 있어야하며 그 WHERE 절에 메인쿼리 테이블의 컬럼이 사용되어야 한다.
+
+ ->예제를 통해서 보면
+ ```sql
+ SELECT deptno, dname FROM dept
+ WHERE exists (SELECT 1 FROM emp
+               WHERE emp.deptno = dept.deptno);
+ ```
+ :메인쿼리의 첫 후보행의 deptno컬럼값에 해당하는  서브쿼리의 emp.depno  의 일치값이 있는 로우가 존재하는지 판단한다.
+ 만약 첫번쨰 로우가 해당하는 값이 있으면 존재하는것이므로
+ emp 테이블의 나머지 로우에 대해서는 비교하지 않는다.
+
+ 그러므로 exists 라는 영어단어의 뜻처럼 메인쿼리의 후보행에 대해서 서브쿼리의 결과가 하나라도 존재하기만 하면 된다.
+ (존재여부를 파악하는 것이 exists)
+
+
+ @ Multiple Column 서브쿼리
+
+ 과일의 정보가 담긴 fruits테이블이 있다.
+ ('딸기','A'),('딸기','B')
+ ('바나나','A')('바나나','B')('바나나','C')
+
+ 구매 테이블인 purchases가 있다.
+ ('딸기','A')('바나나','B')
+
+ 이렇게 데이터가 있을때.
+
+ fruits 테이블에서 구매된 적 있는 제품만 출력하고 싶을때 쿼리 하려고 할떄.
+
+ ```sql
+ SELECT *
+ FROM fruits
+ WHERE name in (SELECT name FROM purchases)
+ AND grade in (SELECT grade FROM purchases);
+ ```
+
+ 위 쿼리는 딸기 A/ 바나나 B를 찾는게 아니라, name이 딸기 이거나 바나나이며
+
+ grade가 A이거나 B인 레코드, 다시말해 딸기 A/ 딸기 B 또는 바나나A,바나나B를 fruits
+
+ 테이블에서 검색하게 된다.
+
+ 이렇게 각 칼럼을 별개의 조건으로 사용 할 경우를 Non-pairwise 라고 부른다.
+
+ 반대로 칼럼들을 조합하여 컬럼들에 대한 조건을 딸기 A/ 바나나 B 의 형태로 서브쿼리
+
+ 를 할경우 이를 pairwise 라고 하며 아래와 같이 사용하면 된다.
+
+ ```sql
+ SELECT *
+ FROM fruits
+ WHERE (name,grade) in (SELECT name,grade FROM purchases);
+ ```
+ 서브쿼리에서 구매된 적 있는 과일과 등급을 결과집합으로 얻고 그 결과집합을 메인쿼리의 WHERE 절에서 컬럼대 컬럼으로 비교하여 해당 레코드를 최종결과집합으로 얻게된다.
+
+ ex) 위 테이블에서 purchases 에서 구매하지 않은 과일들을 출력하라
+ ```sql
+ SELECT *
+ FROM fruits
+ WHERE (name,grade) not in (SELECT name,grade FROM purchases);
+ ```
+ ex) scott 계정의 dept 테이블과 emp 테이블을 이용하여 각 부서별 최저 연봉을 받고 있는 사원의 이름,부서번호, 급여를 출력하라
+
+ ```sql
+ SELECT ename, sal, deptno FROM emp
+ WHERE (dept, sal ) in (SELECT deptno, min(sal)
+ 			FROM emp
+ 			GROUP BY deptno);
+ ```
+ 서브쿼리의 결과의 어느 한 칼럼이라도 null 값이 들어갈 경우 메인쿼리에 반영 안된다.
+
+ @ 상호관련 서브쿼리(Correlated Subquery)
+
+ 기존의 서브쿼리->메인쿼리 적용형태
+
+ 그러나 상호관련 서브쿼리는 서브쿼리가 메인쿼리의 후보행을 참조하여 수행된후, 그
+
+ 서브쿼리의 결과가 메인쿼리의 후보행에 적용되는 경우이다.
+
+ -
+
+ 소속부터의 평균 급여보다 많은 급여를 받는 사원들을 출력하기 위해 아래와 같은 서브쿼리가 있다.
+
+ ```sql
+ SELECT ename, sal
+ FROM emp A
+ WHERE sal > (SELECT avg(sal)
+ 		FROM emp B
+ 		WHERE B.deptno = A.deptno);
+ ```
+
+ 서브쿼리의 WHERE 절에서 메인쿼리의 부서번호를 참조하고 있는 것을 볼 수 있다.
+
+ 메인쿼리의 FROM 절에 있는 emp 테이블의 레코드를 한건 읽는다. 이것을 후보행이라 한다.
+
+ 그러면 서브쿼리에서 후보행의 deptno 컬럼을 참조하여 후보행의 사원이 소속된 부서의
+
+ 평균급여를 구한다. 서브쿼리의 결과, 즉 후보행 사원이 속한 부서의 평균 급여를 후보
+
+ 행에적용해 평균급여보다 많은 급여를 받는 사원인지를 판단한다. 이로써 첫번쨰 후보
+
+ 행에 대한 상호관련 서브쿼리 연산이 끝난다.
+
+ 메인쿼리의 나머지 레코드에 대해서도 같은 과정을 적용한다.
+
+ > '서브쿼리에서 전체 연산후 메인쿼리의 레코드 하나씩 적용하는 과정반복'
+
+ 따라서 메인 쿼리 레코드가 많을 경우 상호관련 서브쿼리는 일반적으로 성능이 떨어지게 된다.
+
+ 이런경우 아래와 같이 JOIN 문을 이용하는것이 좋다.
+
+ ```sql
+ SELECT ename, sal
+ FROM emp A JOIN (SELECT deptno, avg(sal) as avg_sal
+ 		FROM emp
+ 		GROUP BY deptno) B
+ ON A.deptno = B.deptno
+ AND A.sal > B.avg_sal;
+ ```
+
+ @ 서브쿼리 기타
+
+ @ CTAS
+
+ 기존 테이블의 구조나 레코드를 복제하여 손쉽게 테이블을 생성할 수 있다.
+
+ 이떄 Create Table 테이블명 As SELECT 형태의 구문을 수행하여 머리글자를 따서 CTAS라고 부른다.
+
+ 서브쿼리의 결과집합 처럼 생긴 테이블을 만들라는 뜻으로 서브쿼리의 SELECT 절에
+
+ 사용된 컬럼을 테이블의 컬럼으로 하는 테이블을 생성하고 결과 레코드를 삽입한다.
+
+ (만약 서브쿼리의 SELECT 절에 수식이나 함수가 들어갈경우 반드시 별명을 삽입해야)
+
+ 모든 서브쿼리는 괄호로 감싸져야 하지만 CTAS는 예외적으로 괄호를 생략 가능하다.
+ (99.9% 생략하여 사용한다.)
+
+ ex) emp 테이블의 ename 과 sal 컬럼을 복제한 emp_temp를 생성한다.
+
+ ```sql
+ CREATE TABLE emp_temp
+ AS
+ SELECT ename, sal FROM emp;
+ ```
+ (데이터까지 다 들어간다.)
+
+
+ @ insert
+
+ 서브쿼리의 결과집합을 테이블에 삽입하기 위해 INSERT 문에 서브쿼리를 사용한다.
+
+ 이경우에도 예외적으로 괄호를 생략할 수있으며 대체로 생략하는것을 선호한다.
+
+ ```sql
+ INSERT INTO emp_temp2
+ SELECT * FROM emp WHERE deptno=10;
+ ```
+
+ @ update
+
+ ```sql
+ UPDATE emp_temp2
+ SET job = (SELECT job FROM emp_temp2
+ 		WHERE ename = 'MILLER')
+ WHERE ename = 'CLARK';
+ ```
+
+ @ delete
+
+ ```sql
+ DELETE FROM emp_temp2
+ WHERE job = (SELECT job FROM emp_temp2
+ 		WHERE ename = 'MILLER');
+```
+
+---
+
+## tabledrop
+
+* 테이블 삭제 시
+
+drop table 테이블명;
+
+* 테이블 완전 삭제하기 (휴지통에 저장되지 않음)
+DROP TABLE 테이블명 purge;
+
+* 휴지통 비우기
+purge recyclebin;
+
+
+* 휴지통에 있는 테이블 복원
+FLASHBACK TABLE 테이블명 TO BEFORE DROP
