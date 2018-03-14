@@ -16,6 +16,9 @@
 - [체크박스체크예제](#checkboxex)
 - [val()](#val)
 - [find()](#find)
+- [값계산](#valcal)
+- [onKey](#onkey)
+- [전체 replace, 모든 공백제거](#replace)
 
 ### Form control
 
@@ -486,3 +489,115 @@ formObj.find("[name=id"];
 아니면 form에서 접근하지말고
 $("input[name=id]").val()
 이렇게 직접적으로 접근해도 된다.
+
+
+---
+
+
+## onKey
+
+[javascript] 키보드 이벤트 (onkeydown, onkeyup, onkeypress)
+
+onkeydown, onkeyup, onkeypress 이벤트는 키보드 입력시 동작 시점에 따라 발생하는 키보드 이벤트 이다.
+
+onkeydown : 키를 눌렀을때 이벤트이다 (shift, alt, controll, capslock 등의 모든 키에 동작한다. 단 한영변환, 한자 등의 특수키는 인식 못한다).
+
+onkeyup : 키를 눌렀다가 땠을 때 이벤트이다 (onkeydown 에서 인식하는 키들을 인식 한다).
+
+onkeypress : 실제로 글자가 써질때 이벤트이다 (shift, tap, enter 등의 특수키는 인식 못한다).
+
+
+아래 예제는 jQuery  
+
+```html
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+	<title></title>
+
+</head>
+
+<body>
+
+	남은 글자수
+
+	<h1>150</h1>
+
+	<textarea></textarea>
+
+	<script type="text/javascript" src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+
+	<script type="text/javascript">
+
+		$('textarea').keyup(function () {
+
+			var inputLength = $(this).val().length;
+
+			var remain = 150 - inputLength;			 
+			$('h1').html(remain);			 
+			if (remain >= 0) {
+
+				$('h1').css('color','blue');
+
+			} else {
+
+				$('h1').css('color','red');
+
+			}
+
+
+
+		});
+
+	</script>
+
+
+
+</body>
+
+</html>
+```
+
+ ![](https://drive.google.com/uc?export=view&id=1cY-UeMkcANLlJmGPgyenM2t5b1k-Js_6)
+
+onkeypress 이벤트는 한글을 지원하지 않는다.
+
+
+
+---
+
+
+## valcal
+
+<input type="text" name="price2" size="11" onBlur="go_ab()" onKeyUp='NumFormat(this)' placeholder="판매가입력..">
+
+
+function go_ab(){ // 판매가-원가=순매출을 replace해서 계산해 준다.
+
+	var formObj = $("[name=frm]");
+
+	var a = formObj.find("[name=price2]").val().replace(/,/g , '');
+	var b = formObj.find("[name=price1]").val().replace(/,/g, '');
+	var ab = parseInt(a) - parseInt(b);
+	formObj.find("[name=price3]").val(ab);
+}
+
+---
+
+
+## replace
+
+```js
+
+$('#id').val().replace(" ", "") -> 첫번째 공백 1개만 없어짐.
+$.trim($('#id').val()) -> 글자사이 공백은 안없어짐.﻿
+
+
+
+$('#id').val().replace(/ /g, ''); -> 모든 공백 없어짐.﻿
+
+$('#id').val().replace(/,/g, ''); -> 모든 콤마(,) 없어짐.
+```

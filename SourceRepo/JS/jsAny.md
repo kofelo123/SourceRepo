@@ -9,6 +9,8 @@
 - [.addclass()](#addclass)
 - [체크박스 사용하기](#checkbox)
 - [명시적(선언)함수와 익명함수차이](#function)
+- [onblur](#onblur)
+- [원 단위 찍기](#numformat)
 ### radio check
 
 ```html
@@ -252,3 +254,58 @@ var 변수이름 = function(){
 그 큰틀이 $(document).ready(function(){
 이렇게 감싸주는 이유가 그것인것같다.
 자바스크립트에서는 onload가 그 기능을 하는녀석 이었다고 한다.
+
+
+---
+
+
+## onblur
+
+
+객체 내에있던 포커스를 잃었을떄 발생하는 이벤트 핸들러이다.
+
+선언된 객체 외에 다른 객체를 클릭하거나 탭 키를 이용해서 포커스가
+
+주어지는 경우 이벤트가 발생
+
+```js
+<script type="text/javascript">
+<!--
+  function eventonblur() {
+    alert("focus를 잃었습니다.");
+  }
+-->
+</script>
+</head>
+<body>
+<input type="text" id="Rangs" onblur="eventonblur()">
+</body>
+```
+
+
+---
+
+
+## numformat
+
+원 단위 찍기
+-
+
+<input type="text" name="price2" size="11" onBlur="go_ab()" onKeyUp='NumFormat(this)' placeholder="판매가입력..">
+
+onkeyUp이기 때문에 키를 눌렀다가 뗄때마다 수행된다.
+
+```js
+function NumFormat(t) // 원 단위, 찍어주기
+{
+	s = t.value;
+	s = s.replace(/\D/g, '');
+	l = s.length - 3;
+	while (l > 0) {
+		s = s.substr(0, l) + ',' + s.substr(l);
+		l -= 3;
+	}
+	t.value = s;
+	return t;
+}
+```

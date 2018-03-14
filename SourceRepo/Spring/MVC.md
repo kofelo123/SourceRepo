@@ -27,11 +27,11 @@
   - [게시물의 수정, 삭제 작업의 파일업로드](#boardupload)
   - [(momstouch)프로젝트경로설정](#projectlocation)
 - [인터셉터]
-  -[HandlerInterceptor](#handlerinterceptor)
+  - [HandlerInterceptor](#handlerinterceptor)
 # Paging
 
 파라미터를 직접 입력 받는 방법 / 객체로 받는 방법
--
+
 
 ### Limit
 
