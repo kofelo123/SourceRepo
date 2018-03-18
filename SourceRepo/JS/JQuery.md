@@ -19,6 +19,10 @@
 - [값계산](#valcal)
 - [onKey](#onkey)
 - [전체 replace, 모든 공백제거](#replace)
+- [location.href](#href)
+- [keypress,엔터키인식](#keypress)
+- [is()참,거짓여부](#is)
+
 
 ### Form control
 
@@ -394,7 +398,7 @@ $(document).ready(function(){
 		/* console.log(checkbox.length); */
 
 
-		if(checkbox.length == undefined && checkbox.checked == true){
+		if(checkbox.length == undefined && checkbox.checked == true){//.checked가 안되는경우 .is(":checked") 사용
 			count++;
 			console.log(count);
 		}else{
@@ -600,4 +604,80 @@ $.trim($('#id').val()) -> 글자사이 공백은 안없어짐.﻿
 $('#id').val().replace(/ /g, ''); -> 모든 공백 없어짐.﻿
 
 $('#id').val().replace(/,/g, ''); -> 모든 콤마(,) 없어짐.
+```
+
+
+---
+
+###### href
+
+jQuery에서는 document.location.href를 어떻게 표현?
+
+```js
+$(location).attr('href', url);
+```
+
+zerock에서는 버튼에 jquery로
+
+self.location=""; 으로 사용했었다.
+
+제일 원초적인 방법은
+
+<button type="button" onclick="location.href='joinUs.jsp' ">회원가입</button>
+---
+
+###### keypress
+keypress,엔터키인식
+
+1.
+텍스트 박스에서 언터키 이벤틀 줄려면
+<input name="pwd" type="password" id="pwd" class = "log_pwd" size="25" tabindex="2" onkeypress="if(event.keyCode==13) {chkLogIn();}">
+이처럼 텍스트 박스에 onkeypress 이벤트를 주면 된다.
+혹시 html 전체에 줄려면 body태그에 위에 같이 주면된다.
+
+
+2.
+$( "#target" ).keypress(function( event ) {
+  if ( event.which == 13 ) {
+     event.preventDefault();
+  }
+...
+}
+
+---
+
+
+######is
+is()참,거짓여부
+-
+
+javascript에서 checked여부를 판단하는것을
+jquery에서 $("#checkedboxid").checked 이런식으로 접근하니까안됬다.
+is메소드를 사용해준다.
+그리고 속성의 변경도 $("#checkedboxid").disabled=true 와 같은 접근은 안되고 속성이니 jquery의 attr을 사용한다.
+
+javascript 에서
+```js
+if(document.getElementById("checkboxuse").checked){
+				document.getElementById("uncheckeduse").disabled=true;
+			}
+```
+jquery에서
+```js
+if($("#checkboxuse").is(":checked")){
+				$("#checkboxuse").attr("disabled","true");
+			}
+```
+
+체크박스배열로 순회하려면 아래와같이 활용
+```js
+ $('input:checkbox[name="checkbox_name"]').each(function() {
+
+     if(this.value == "비교값"){ //값 비교
+
+            this.checked = true; //checked 처리
+
+      }
+
+ });
 ```

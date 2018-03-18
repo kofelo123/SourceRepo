@@ -1,3 +1,5 @@
+- [jUnit 메소드](#junitmethod)
+- [스프링 프로젝트 세팅 Al](#springsettingal)
 - [페이징](#paging)
   - [Limit](#limit)
   - [DAO 처리를 도와줄 Criteria , 페이지계산](#criteria)
@@ -1763,7 +1765,9 @@ class SampleIntercepter extends HandlerInterceptorAdapter
 ```
 
 ```java
+
 //LoginInterceptor - 인터셉터 상속받아 오버라이딩한 메소드 posthandle,prehandle
+
 public class LoginInterceptor extends HandlerInterceptorAdapter {
 
   private static final String LOGIN = "login";
@@ -1811,8 +1815,11 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 
     return true;
   }
+}
 
 ```
+
+
 ```java
 
 public class AuthInterceptor extends HandlerInterceptorAdapter {
@@ -1876,5 +1883,65 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
       req.getSession().setAttribute("dest", uri + query);
     }
   }
+}
 
 ```
+
+
+---
+
+
+
+###### junitmethod
+
+jUnit 메소드
+-
+
+- @Test: 메소드위에 @Test 애노테이션을 추가하면 jUnit은 해당 메소드를 테스트용 코드로 간주
+
+- @Before:모든 테스트 이전에 준비해야할 내용을 작성한 메소드 위해 추가하는 애노테이션
+
+- @After: 테스트 작업이 끝난 후 자동으로 실행되는 메소드
+
+- org.junit.Assert.assertxxx: 테스트 중에 발생되는 값을 확신하는 용도로 사용. (특정 값이나 상태를 예상하고, 체크하는 용도)
+
+---
+
+
+###### springsettingal
+
+스프링 프로젝트 세팅 Al
+-
+
+pom.xml
+- jdbc
+- jUnit
+- Mybatis
+- MyBatis-spring
+- spring-jdbc
+- spring-test
+- jackson-databind
+- javax.servlet-api 3.1.0
+테스트(연결)
+
+root-context.xml - Namespace
+-aop
+-context
+-jdbc
+-mybatis-spring
+
+root-context.xml
+- DataSource 관련 빈, 프로퍼티 세팅
+
+테스트(DataSource inject해서 연결)
+
+@ MyBatis연결
+
+sqlSessionFactory 빈 생성
+
+mybatis-config.xml 파일추가
+
+root-context.xml의 sqlSessionFactory 빈안에
+mybatis-config.xml  속성추가
+
+MyBatis 연결 테스트
