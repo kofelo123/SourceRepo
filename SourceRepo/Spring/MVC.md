@@ -30,6 +30,10 @@
   - [(momstouch)프로젝트경로설정](#projectlocation)
 - [인터셉터]
   - [HandlerInterceptor](#handlerinterceptor)
+
+- [sqlSession](#133)
+- [Exception처리](#222)
+
 # Paging
 
 파라미터를 직접 입력 받는 방법 / 객체로 받는 방법
@@ -1945,3 +1949,91 @@ root-context.xml의 sqlSessionFactory 빈안에
 mybatis-config.xml  속성추가
 
 MyBatis 연결 테스트
+
+root-conetxt.xml sessionFactory 빈안에
+
+각 mapper들 인식할수있게 mapperLoactions 설정
+
+root-context 에서 sqlSession관련 설정
+
+root-context 에 component-scan base-pakage="~.persistence"
+
+pom.xml 파일에 log4jdbc-log4j2 라이브러리 추가
+
+root-context에 driverclassName의 값을 net.sf.log4jdbc.DriverSpy로 변경, url도 log4jdbc추가
+
+resources 폴더에 log4jdbc.log4j2.properties파일, logback.xml 파일 추가
+
+web.xml에 ufc8 인코딩 설정
+
+mybatis-config.xml 에 typeAliases 설정(mybatis mapper에 매번 resultType,parameterType을 패키지까지 포함된 클래스명을 일일이 작성하기 번거로우므로 alias지정 -> ex org.~.momain 생략하고 클래스이름만 ~VO 이렇게 사용가능)
+
+
+
+---
+
+
+######133
+sqlSession
+-
+
+mybatis-spring에서 제공하는 SqlSessionTemplate는 MyBatis의 SqlSession 인터페이스를 구현한 클래스로
+트랜잭션관리, 쓰레드 처리의 안정성을 보장,
+데이터베이스의 연결과 종료를 책임진다.
+
+SqlSessionTemplate는 SqlSEssionFactory를 생성자로 주입해서 설정한다.
+
+```xml
+<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate" destroy-method="clearCache">
+	<constructor-arg name="sqlSessionFactory"
+	ref="sqlSessionFactory"></constructor-arg>
+</bean>
+```
+
+각 DAOImple 에서 주입받아서 사용하도록 한다.
+
+@Inject
+private SqlSession sqlSession;
+
+
+SqlSession에서 쓸수있는 기능
+
+- selectOne
+- selectList
+- selectMap
+- insert
+- update
+- delete
+
+
+---
+
+RedirectAttribute  - addFlashAttribute()
+브라우저까지 전송하지만 uri상에서 보이지않는 숨겨진 데이터의 형태로 전송
+
+<c:forEach items="${list}" var="boardVO">
+	<tr>
+		<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm" value="${boardVO.regdate}"/></td>
+</c:forEach>
+
+충분한양의 데이터넣기
+
+insert into tbl_board(title,content,writer)(select title,content,writer from tbl_board);
+---
+
+
+######222
+Exception처리
+-
+
+Spring MVC - Controller의 Exception처리방법
+
+- @ExceptionHandler
+- @ControllerAdvice
+- @ResponseStatus를 사용한 Http 상태코드 처리
+
+범용적인 방법이 @ControllerAdvice
+:호출되는 메소드의 발생된 모든 Exception을 처리
+
+클래스에 @ControllerAdvice라는 애너테이션 처리
+각 메소드에 @ExceptionHandler를 이용해서 적절한 타입의 Exception을 처리
