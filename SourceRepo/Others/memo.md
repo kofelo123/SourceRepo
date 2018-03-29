@@ -53,4 +53,11 @@ aws 신규  kofelo123@nate.com
 
 hlw123@naver.com
 
-Gj~(+pw)
+Gj~(+pw)o
+
+
+## jenkins
+
+jeongwon heo
+
+gj~(+pw)j

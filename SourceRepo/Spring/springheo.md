@@ -1,6 +1,11 @@
 - [pom.xml수정시 발생에러](#pomxmlerror)
 - [로깅](# logging)
 - [Dependency Injection](#ch2)
+- [스프링 컨텍스트](#2.1.3)
+- [생성자 의존주입](#2.1.4)
+- [p네임스페이스](#59)
+- [컬렉션 타입 의존성 설정](#60)
+
 ---
 
 # 스프링 프레임워크 원리부터 실전까지 - 허진경
@@ -47,6 +52,7 @@ SLF4J(Simple Logging Facade for java)가 나온 뒤로 JCL대신 SLF4j를 사용
 소스코드에서 로그를 남기기 위해 LoggerFactory의 getLogger() 메서드를 이용해 Logger 객체를 얻어야 한다. LoggerFactory와 Logger는 org.slf4j 패키지를 import해야한다.
 
 ```java
+
 notation.RequestMethod;
 13
 14 @Controller
@@ -57,7 +63,8 @@ notation.RequestMethod;
 19 @RequestMapping(value = "/", method = RequestMethod.GET)
 20 public String home(Locale locale, Model model) {
 21 logger.info("Welcome home! The client locale is {}.", locale);
-...
+}
+}
 ```
 
 
@@ -151,7 +158,7 @@ Appender 패턴을 이용하여 원하는 형식으로 로그를 출력가능
  ---
 
 
- ## ch2
+## ch2
 
  Dependency Injection
  -
@@ -195,7 +202,7 @@ Appender 패턴을 이용하여 원하는 형식으로 로그를 출력가능
 
 
   ---
-  - [스프링 컨텍스트](#2.1.3)
+
 
   ###### 2.1.3
 
@@ -243,7 +250,7 @@ Appender 패턴을 이용하여 원하는 형식으로 로그를 출력가능
   ```
 
   ---
-  - [생성자 의존주입](#2.1.4)
+
 
   ###### 2.1.4
 
@@ -322,8 +329,101 @@ Appender 패턴을 이용하여 원하는 형식으로 로그를 출력가능
   는 컨텍스트로부터 해당 빈을 찾아 반환합니다. 위 코드에서 10 라인은 다음과 같이 작성할 수 있습
   니다. getBean(Class<T> requiredType) : T 메서드를 이용하면 메서드 인자로 지정한 유형의 객체
   가 컨텍스트에 하나만 있을 경우 해당 빈을 리턴해 줍니다.
-  
+
   ```java
   10 HelloController controller = context.getBean(HelloController.class);
   ```
-  ~78p
+
+
+  생성자의 인자로 전달하는 타입이 문자열(String)이거나 기본 데이터 타입일경우 value속성을 이용한다.
+
+   ![](https://drive.google.com/uc?export=view&id=1IEeF8CVv5872wenIutVW-tdCQiFtZ1Uq)
+
+  <constructor-arg> 태그의 속성으로 name 속성과 type 속성을 사용할 수 있다. name 속성은 생성자 파라미터 변수의 정확한 이름을 지정한다. 두 파라미터 변수가 같은 타입일 경우 모호성을 피할때 사용한다.
+
+  type속성은 단일인자를 갖는 생성자가 모두 String 타입으로 변환되는 모호함을 해결하기 위해 사용한다.
+  (아마 위의 두속성을 사용하는경우가 극히 드물다.)
+
+
+  의존성을 주입할 객체가 많을 경우 클래스에 생성자를 중복 선언하는것은 부담스러운 일이다.
+  클래스에 set 메서드를 선언하고 설정파일에서 <property>태그로 의존객체를 주입할 수 있다.
+
+  set 메서드를 사용할경우 기본생성자외에 다른 생성자를 정의해서는 안된다.
+
+   ![](https://drive.google.com/uc?export=view&id=1E-OHJn2M7AXfVzQv56vTYZvJEjnF3gFD)
+
+  <property> 태그의 속성은 name, ref, value가 있다.
+  name: 주입할 빈의 고유이름
+  ref : 주입할 객체의 이름
+  value : 값지정
+
+   ![](https://drive.google.com/uc?export=view&id=1zb5ya-8DgBdYx1BYyAABHy6Gc3MFTzL2)
+
+   ![](https://drive.google.com/uc?export=view&id=153A6gjkc_Rx84pkGBALz6d1ptoqJOUWK)
+
+  ---
+
+
+  ######59
+  p네임스페이스
+  -
+
+  setter 의존성 주입하는 경우 p 네임스페이스를 이용해서 bean 태그 속성으로 의존성 할 수있다.
+  Namespace 탭에서 p 네임스페이스를 체크해줘야한다.
+
+   ![](https://drive.google.com/uc?export=view&id=1L67SzHcLcLLuzFFvepBWMAZyDEgmSEUW)
+
+
+  ---
+
+
+  ######60
+  컬렉션 타입 의존성 설정
+  -
+
+  의존성 주입해야할 멤버변수 타입이 배열,컬렉션일 경우도 의존성 주입 가능.
+
+
+   ![](https://drive.google.com/uc?export=view&id=1gghemb_0jYwv-2Rd_fkd_ocdYWOj4G_R)
+
+   ![](https://drive.google.com/uc?export=view&id=1t-6iKxBVCx7_VGC93f4PNyBzwfF8_k13)
+
+
+
+  * List
+
+  배열 또는 List 타입 속성들을 의존성 주입할경우 <list> 태그를 사용.
+
+  <list>는 <value>,<ref>,<bean> 태그를 자식태그로 가질수 있다.
+
+  <value>태그는 List가 가져야할 데이터의 타입이 String이거나 기본데이터타입일때 사용.
+  <ref>태그는 List 가 이미 정의되어 있는 다른빈을 가져야 할때 사용,
+  <bean> 태그는 미리정의되어있는 빈이 아닌 새로운 빈을 직접 정의해 사용할 수 있다.
+
+   ![](https://drive.google.com/uc?export=view&id=1BVojSsS3chkepKG82Jo_uRUjK8I-6niV)
+
+
+  * <set>
+
+  Set 타입 속성을 의존주입할떄 사용
+  <value>
+  <ref>
+  <bean>이 있다.(List와 사용법 이하 같음)
+
+  * <map>
+
+  Map은 Key 와 Value를 가져야 하므로 쌍을 함께 지정해줘야하는데 그때 <entry> 태그를 사용.
+  <entry>태그는 key 속성으로 Map 데이터의 Key를 지정한다.
+  이하 <value>,<ref>,<bean> 태그를 역시 사용할수있다.
+
+   ![](https://drive.google.com/uc?export=view&id=1JhIZHuNfqFGeFKzL_D0823T4XmomuKHj)
+
+   ![](https://drive.google.com/uc?export=view&id=1YZOwypK6QUKh9h84JbIouQnLn2d33pqS)
+
+   ![](https://drive.google.com/uc?export=view&id=1elULLncibe8dRDMmk3z-rC9QG8cJDSPm)
+
+   ![](https://drive.google.com/uc?export=view&id=1getK93ZqD7XLwZ_N7PlL-z4peciNCjRo)
+
+   ![](https://drive.google.com/uc?export=view&id=1glgsgMJyzhM295ixUnj5H_kpEC8wFngv)
+
+  ~66p

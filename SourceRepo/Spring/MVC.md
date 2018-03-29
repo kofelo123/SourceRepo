@@ -33,7 +33,8 @@
 
 - [sqlSession](#133)
 - [Exception처리](#222)
-
+- [RedirectAttributes](#redirectattributes)
+- [Uri생성 - UriComponentBuilder](#uricomponentbuilder)
 # Paging
 
 파라미터를 직접 입력 받는 방법 / 객체로 받는 방법
@@ -2019,6 +2020,7 @@ RedirectAttribute  - addFlashAttribute()
 충분한양의 데이터넣기
 
 insert into tbl_board(title,content,writer)(select title,content,writer from tbl_board);
+
 ---
 
 
@@ -2037,3 +2039,53 @@ Spring MVC - Controller의 Exception처리방법
 
 클래스에 @ControllerAdvice라는 애너테이션 처리
 각 메소드에 @ExceptionHandler를 이용해서 적절한 타입의 Exception을 처리
+
+
+---
+
+######redirectattributes
+RedirectAttributes 사용
+-
+
+```java
+  @RequestMapping(value = "/removePage/{category}", method = RequestMethod.POST)
+	  public String remove(@RequestParam("bno") int bno, SearchCriteria cri, RedirectAttributes rttr,@PathVariable("category")String category) throws Exception {
+
+	    service.remove(bno);
+
+	    rttr.addAttribute("page", cri.getPage());///addFlashAttribute와 달리 URL 파라미터에 붙여주는 방식이다. 그래서 list페이지로 redirect될때 파라미터로 받아낼수있게 cri 넘긴다.
+	    rttr.addAttribute("perPageNum", cri.getPerPageNum());
+	    rttr.addAttribute("searchType", cri.getSearchType());
+	    rttr.addAttribute("keyword", cri.getKeyword());
+
+	    rttr.addFlashAttribute("msg", "SUCCESS");// 파라미터에 표기되지않은채 1회성으로 데이터를 전달할떄 사용
+
+	    return "redirect:/sboard/list/"+category;
+	  }
+```
+
+ ![](https://drive.google.com/uc?export=view&id=)
+
+ ---
+
+
+ ######uricomponentbuilder
+ UriComponentBuilder Uri생성
+ -
+
+ ```java
+ public String makeQuery(int page){
+
+ UriComponents uriComponents = UriComponentsBuilder.newInstance().queryParam("page",page)
+ 				.queryParam("perPageNum", cri.getPerPageNum())
+ 			.build();
+
+ return uriComponents.toUriString();		
+ }
+ ```
+
+ ```html
+ <a href='/board/readPage${pageMaker.makeQuery(pageMaker.cri.page)}&bno=${boardVO.bno}'>
+ ```
+
+ 310p
