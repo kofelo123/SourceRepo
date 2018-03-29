@@ -1913,7 +1913,7 @@ jUnit 메소드
 ---
 
 
-###### springsettingal
+######springsettingal
 
 스프링 프로젝트 세팅 Al
 -
@@ -1974,7 +1974,7 @@ mybatis-config.xml 에 typeAliases 설정(mybatis mapper에 매번 resultType,pa
 ---
 
 
-######133
+###### 133
 
 sqlSession
 -
@@ -2025,7 +2025,7 @@ insert into tbl_board(title,content,writer)(select title,content,writer from tbl
 ---
 
 
-######222
+###### 222
 
 Exception처리
 -
@@ -2045,7 +2045,8 @@ Spring MVC - Controller의 Exception처리방법
 
 ---
 
-######redirectattributes
+###### redirectattributes
+
 RedirectAttributes 사용
 -
 
