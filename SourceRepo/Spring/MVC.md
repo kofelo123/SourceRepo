@@ -1975,6 +1975,7 @@ mybatis-config.xml 에 typeAliases 설정(mybatis mapper에 매번 resultType,pa
 
 
 ######133
+
 sqlSession
 -
 
@@ -2025,6 +2026,7 @@ insert into tbl_board(title,content,writer)(select title,content,writer from tbl
 
 
 ######222
+
 Exception처리
 -
 
@@ -2062,6 +2064,7 @@ RedirectAttributes 사용
 
 	    return "redirect:/sboard/list/"+category;
 	  }
+
 ```
 
  ![](https://drive.google.com/uc?export=view&id=)
@@ -2069,7 +2072,8 @@ RedirectAttributes 사용
  ---
 
 
- ######uricomponentbuilder
+######uricomponentbuilder
+
  UriComponentBuilder Uri생성
  -
 
