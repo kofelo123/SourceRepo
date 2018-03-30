@@ -5,7 +5,11 @@
 - [생성자 의존주입](#2.1.4)
 - [p네임스페이스](#59)
 - [컬렉션 타입 의존성 설정](#60)
-
+- [프로토타입과 싱글턴](#67)
+- [빈설정](#70)
+- [의존성주입 어노테이션 종류](#diannotation)
+- [스프링 설정파일 나누기](#78)
+- [AOP와 횡단 관점](#81)
 ---
 
 # 스프링 프레임워크 원리부터 실전까지 - 허진경
@@ -426,4 +430,158 @@ Appender 패턴을 이용하여 원하는 형식으로 로그를 출력가능
 
    ![](https://drive.google.com/uc?export=view&id=1glgsgMJyzhM295ixUnj5H_kpEC8wFngv)
 
-  ~66p
+
+ ---
+
+ ###### 67
+
+ 프로토타입과 싱글턴
+ -
+
+ 스프링 컨테이너는 빈생성시 클래스당 한개 인스턴스를 생성한다. 싱글턴 레지스트리를 이용해서 일반 클래스도 싱글턴처럼 관리해주는 방식을 제공한다.
+
+ 이것은 bean의 옵션으로 선택할수도 있다.
+
+  ![](https://drive.google.com/uc?export=view&id=1_qH4WuBltM4FFREjurEW5cpwV3PnMFAy)
+
+ ---
+
+ ###### 70
+
+ 빈 설정
+ -
+
+ 빈 설정을 위한 어노테이션은 네지가 있다.
+
+ 1. @Component : 일반적인 컴포넌트 등록을 위한 클래스에 사용
+
+ 2. @Controller : 컨트롤러 클래스에 사용
+ 3. @Service : 서비스 클래스에 사용
+ 4. @Repository : DAO 클래스 또는 리포지토리 클래스
+
+ 빈의 이름은 클래스의 첫글자를 소문자로 한 이름이다.
+
+
+
+ ---
+
+
+ ###### diannotation
+
+ 의존성주입 어노테이션 종류
+ -
+
+ *  @Autowired를 이용한 의존성 주입
+
+ @Autowired는 타입을 기준으로 의존성을 주입해준다.
+
+ ```java
+
+ @Autowired
+ IHelloService helloService;
+
+ ```
+ * @Qualifier를 이용한 의존객체 설정
+
+ HelloService 클래스 외에 IHelloService 인터페이스를 구현한 클래스가 하나 더 추가될수있을때
+
+ HelloService 빈이 아닌 NiceService 빈을 전달하고 싶을경우 @Qualifier 어노테이션을 써서 빈의 이름을 지정한다.
+
+ @Autowried
+ @Qualifier("niceService")
+ IHelloService helloService;
+
+ >'빈을 타입으로 받지만 같은 타입내 여러개 빈이 있는경우를 말하는듯'
+
+
+ * @Resource를 이용한 의존성 주입
+
+ @Resource 는 @Autowired와 @Qualifier를 같이 사용하는 것과 같다. name 속성으로 이름을 지정할 수 있다.
+ ```java
+ @Resource(name="niceService")
+ IHelloService helloService
+ ```
+
+ * @Inject 어노테이션을 이용한 의존성 주입
+
+ @Inject 는 @Autowired를 사용하는것과 같다.
+
+ 이 둘은 같은 타입 빈이 두개 이상 있을경우 변수의 이름과 같은 이름을 갖는 빈을 찾는다.
+ 찾지 못하면 에러가 발생.
+
+ Error Massage : Error creating bean with name ~ : Injection of autowired dependencies failed
+
+ * XML 사용, 어노테이션 사용의 빈생성 및 의존성 설정의 비교
+
+  ![](https://drive.google.com/uc?export=view&id=1EuU954vEvidjFjXaFqr5W-n19rdX-R8L)
+
+
+ ---
+
+ ###### 78
+
+ 스프링 설정파일 나누기
+ -
+
+ 기능별로 여러 xml 파일로 나누어 작성하여 관리 할 수있다.
+
+
+  ![](https://drive.google.com/uc?export=view&id=1bzhu86UkHYxYhq5en-oRcyCysTh0-Apt)
+
+ * <import> 태그를 이용한 다른 빈설정 파일 포함
+
+ 한 파일에 작성하는 것같은 효과를 줄수있다.
+
+  ![](https://drive.google.com/uc?export=view&id=1rHNCL9yFak29jCA6BG2jYmE4IpxLH-Xu)
+
+ * 여러개 설정파일 지정
+
+ 여러 설정파일로 나누었을 경우 설정파일 지정을위해 * 문자를 사용할 수 있다.
+
+ (ApplicationContext)이용한경우
+
+  ![](https://drive.google.com/uc?export=view&id=1hVlnWvx9SNIQVzRbdNVGdI9pbEua5hJ6)
+
+ 웹 애플리케이션에서 설정파일을 지정할 때는 web.xml 파일을 이용해야한다. 이 경우에도 * 를 이용해서 여러개 설정파일을 지정 가능하다.
+
+![](https://drive.google.com/uc?export=view&id=1B5TMR4tYjezg8u6LZwhE6BoToYk0Vlmd)
+
+ * 문자를 이용하여 설정파일을 지정하지 않고 직접 모든 설정파일을 하나하나 지정할 수있다.
+
+  ![](https://drive.google.com/uc?export=view&id=1dIcTkWH-bdU_P9RpV5lKoRjqz8TrzsH2)
+
+
+ ---
+
+
+ ###### 81
+
+ AOP와 횡단 관점
+ -
+
+ OOP에서는 횡단관점 분리를 위해 공통기능을 하나의 클래스 단위로 모으고 그것들을 모듈로부터 분리하여 재사용성과 보수성을 높인다.
+
+ 각 모듈로부터 공통기능을 분리 하더라도 호출하는 코드는 분리하지 못하게 되는데
+ 그래서 AOP가 필요하게 된다.
+
+ AOP는 핵심 로직을 구현한 코드에서 공통기능을 직접적으로 호출하지 않는다.
+
+ 그 호출까지도 관점으로 다룬다.
+
+ AOP는 각 모듈로 부터 관점에 관한 코드를 완전히 제거하는것을 목표로 한다.
+
+ * 프락시 클래스를 이용한 AOP 구현
+
+ IHelloService 인터페이스를 구현한 HelloService 클래스 의 sayHello 메소드를 삭제하고
+
+ HelloServiceProxy 클래스가 HelloService 를 상속받도록하여 로그를 출력하는 메소드(공통코드) 실행후 super 클래스의 메소드를(핵심코드) 실행
+
+ Controller는 기존의 HelloService 빈을 참조하여 실행하지않고 HelloServiceProxy 빈을 참조하여 실행하면 분리하여 작성했지만 핵심코드가 실행될때 공통코드로 실행되도록 할수있다.
+
+ 위의 프락시클래스를 이용한 AOP구현은 스프링 AOP 없이 관점지향 을 구현한 예이다.
+
+ 핵심코드가 실행될때 공통코드가 실행되도록 핵심코드에 공통코드를 삽입하는 것을 위빙이라고 한다.
+
+ 매번 관점지향 프로그래밍을 위해 프락시 클래스를 만들어야한다면 부담스럽기 때문에, AOP 프레임워크는 부가적인 코드를 작성하지 않도록 해준다.
+
+~85

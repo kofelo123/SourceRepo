@@ -8,6 +8,11 @@
 - [부품화에대해](#61)
 - [기술 은닉과 부적절한 기술은닉](#67)
 - [어노테이션을 이용한 DI](#82)
+- [@Component](#95)
+- [생명주기 관리](#99)
+- [Bean 정의 파일을 이용한 DI](#100)
+- [프로퍼티 파일 이용](#106)
+- [JavaConfig를 이용한 DI](#108)
 
 ## spring4
 ### 스프링입문4
@@ -257,7 +262,7 @@ USB 포트에 여러 마우스를 꽂는걸 생각해볼수 있다.
 - 부품화 문제는 DI 컨테이너로 해결
 - 기술 은닉과 부적절한 기술 은닉 문제는 AOP로 해결
 
-~77p
+
 
 
 
@@ -279,4 +284,186 @@ USB 포트에 여러 마우스를 꽂는걸 생각해볼수 있다.
 @Autowired로 인젝션할 클래스형이 2개 존재한다면?
 에러가 발생한다. 인젝션할 클래스형은 반드시 하나도 해야한다.
 
-~91
+
+
+ ![](https://drive.google.com/uc?export=view&id=1esszuoYitLea8tbaZfC1w-dRDdhsQXKp)
+
+
+인터페이스의 구현 클래스를 다른 클래스로 바꿀경우 불편해서 이를 회피하는 세가지 방법이 있다.
+
+1. Bean을 설정하는 @Primary를 @Bean이나 @Component에 부여하는 방법.
+(Bean의 정의파일에서는 <bean primary="ture"> 사용)
+```java
+@Component
+@Primary
+public class ...
+```
+
+2.@Autowired와 병행해서 @Qualifier를 하는 방법
+이 경우는 @Component에도 이름을 지정해야 하는데, 지정하지 않은 경우는 클래스의 선두를 소문자로 한것이 디폴트로 부여된다.
+```java
+@Autowired
+@Qualifier("productDao")
+private Dao productDao;
+```
+```java
+@Component("productDao")
+public class ...
+```
+
+3. Bean의 정의파일에서 context:component-scan을 이용한다.
+즉 component-scan을 부분으로 나누어서 기술하는 방법이다.
+그리고 필요하지않을때 주석처리하거나 한다.
+
+
+
+
+---
+
+
+###### 95
+
+@Component
+-
+
+Component를 확장해서 좀더 역할에 맞게 설정하는것이
+@Controller
+@Service
+@Repository
+
+@Configuration은 Bean 정의 를 자바 프로그램에서 실행하는 JavaConfig용 어노테이션이다.
+
+* @Scope
+
+| value 속성  | 설명                                                    |
+|-------------|---------------------------------------------------------|
+| singleton   | 인스턴스를 싱글턴으로 함(default)                       |
+| prototype   | 이용할떄마다 인스턴스화                                 |
+| request     | Servlet API의 request 스코프인 동안만 인스턴스 생존     |
+| session     | Servlet API의 session 스코프인 동안만 인스턴스 생존     |
+| application | Servlet API의 application 스코프인 동안만 인스턴스 생존 |
+
+
+
+---
+
+
+###### 99
+
+생명주기 관리
+-
+
+스프링 DI 컨테이너는 인스턴스 생성과 소멸타이밍에 호출되는 메소드 설정을 위한 2개의 어노테이션이 있다.
+
+|어노테이션   |설명   |예제
+|---|---|---|
+|  @PostConstruct |초기 처리를 하는 메서드선언.   |@PostConstruct  public void start(){..}
+|@PreDestroy   |종료 처리를 하는 메서드   |@PreDestroy   public void stop(){...}
+
+@PostConstruct는 DI컨테이너에 의해 인스턴스 변수에 뭔가가 인젝션 된후에 호출된다. 인젝션된 값으로 초기처리를 할때 사용.
+
+자바에는 소멸자가 없으므로 종료 처리를 하려면 @PreDestroy를 사용해야.
+
+
+---
+
+
+###### 100
+
+Bean 정의 파일을 이용한 DI
+-
+
+대규모 개발일수록 어노테이션보다 Bean 정의 파일을 이용해서 DI를 관리하는경우가 많다.(어노테이션 관리가 힘들어서,부주의 예방)
+
+
+* BeanFactory
+
+DI 컨테이너의 핵심은 BeanFactory이다.
+실행시 컨네지는 Bean 정의 파일을 파탕으로 인스턴스를 생성하고 인스턴스의 인젝션을 처리한다.
+
+웹 개발에서 개발자가 직접 이용 하는 일은 별로없지만, DI 컨테이너로 부터 인스턴스를 얻는다는 말은 구체적으로 BeanFactory로 부터 인스턴스를 얻는다는것이다.
+
+ApplicationContext는 BeanFactory를 확장한것이다.
+
+기존의 어노테이션방식에서 Bean 정의 파일로 바꿔쓰려면
+기존의 클래스의 어노테이션이 사라지고, 인젝션을 위한 Setter 메서드가 필요해진다.
+```xml
+<bean id="productService" class= "....productServiceImpl"
+	autowire="byType"/>
+<bean id="productDao" class="....ProductDaoImpl" />
+
+```
+```java
+
+pricate ProductDao productDao;
+
+public void setProductDao(ProductDao productDao){
+this.productDao = productDao;
+```
+
+ ![](https://drive.google.com/uc?export=view&id=1esszuoYitLea8tbaZfC1w-dRDdhsQXKp)
+
+ ![](https://drive.google.com/uc?export=view&id=18-Ut86COVrWPcrwPUcsODtMvrENQ0sl1)
+
+
+* Bean 정의파일 분할
+
+기능별로 분할하고 다른 Bean 정의파일을 참조할수있다.
+
+```xml
+<beans>
+	<import resource="config/services.xml" />
+	<import resource="resources/dataaccess.xml"/>
+
+	<bean id="service" class="..."/>
+	<bean id="dao" class="..."/>
+</beans>
+```
+
+---
+
+
+###### 106
+
+프로퍼티 파일 이용
+-
+
+Bean 정의 파일에서 프로퍼티 파일을 이용할 수있다.
+
+ ![](https://drive.google.com/uc?export=view&id=11omnRkZBHruBmndkjNkqmszgfhRzav0M)
+
+ ![](https://drive.google.com/uc?export=view&id=1q3YPqKKh2QXQ-X8asapJkiI0ROAu9V3N)
+
+ ![](https://drive.google.com/uc?export=view&id=150P243ZGYctt03plXcj4cB3iysS7UxRV)
+
+ ![](https://drive.google.com/uc?export=view&id=1ctqj04zW8KkKoEyLWBJS9lPP4_IH5iyl)
+
+```
+// message.properties
+
+message = "Hello Spring"
+
+```
+
+---
+
+
+###### 108
+
+JavaConfig를 이용한 DI
+-
+
+스프링 3.1부터 xml이 아닌 Java 프로그램으로 정의를 기술할수있다.
+
+호불호가 갈린다. 하지만 순수 자바라서 앞으로 사용하는 경향이 커질 가능성이 있다.
+
+장단점이 있는데 혼자서 개발하는 경우 JavaConfig를, 리더가 이썽서 관리할 수있는 소규모 개발이면 어노테이션을, 대규모 개발이면 Bean 정의파일을 중심으로한 일부 어노테이션을 이용하는것이 권장된다.
+
+장점으로 타입 세이프(잘못작성되었을때 컴파일 에러로 검증)가 있는데,
+XML의 Bean정의도 실은 툴의 진화에 따라서 지적해주기도 한다.
+
+ ![](https://drive.google.com/uc?export=view&id=1FqBYpI7GF-HQW-iryriqg7OKzWAod42z)
+
+기타, @ComponentScan, @Import 등이있다.
+
+>'이후 javaconfig 관련 autowired 사용에 관한 설명등이 있는데, 일단 JavaConfig 사용할일이 없을것 같으므로 Pass
