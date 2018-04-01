@@ -28,6 +28,8 @@
 - [iterator](#iterator)
 - [List(ArrayList,LinkedList,Stack,Queue)](#list)
 - [컬렉션](#collection)
+- [javadoc](#javadoc)
+
 
 - [error]
   -[이클립스 import 안될때](#notworkingimport)
@@ -647,3 +649,43 @@ new - spring regacy project해서
 프로젝트 불러오기 지정해서 생성시켜서
 
 .project 만들면된다.
+
+
+---
+
+
+###### javadoc
+
+javadoc
+-
+
+JAVA API문서와 같은것이 javadoc으로 만들어진 문서라고 볼 수있다.
+```
+/** */과 같은 표시가 있다면 인식하고 도움말을 작성하게 된다.
+```
+주석문 앞에는 항상 * 마크가 있어야 인식한다.
+
+앞에 @로 표시된것은 각 이미 지정된 예약어로써의 기능을 한다. @ 파라메터 설명과 같은 형태로 쓰인다.
+
+@author 개발자
+@exception 메소드에서의 예외 확인
+@param 메소드의 매개변수
+@return 메소드의 반환값
+@see 다른 주제에 관한 링크 지정
+@serial 직렬화 필드
+@since 릴리즈 기록
+@throws 메소드에서의 예외
+@version 클래스의 버전
+
+* javadoc 만들기
+
+export -> java -> javadoc
+
+* error
+
+error massage:  unmappable character for encoding MS949
+
+-> javadoc 생성시 next해서 마지막페이지에 VM option에 -encoding UTF-8 기입
+
+이런옵션도 있다고한다.
+-locale ko_KR -encoding UTF-8 -charset UTF-8 -docencoding UTF-8
