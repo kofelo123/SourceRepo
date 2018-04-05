@@ -13,6 +13,8 @@
 - [Bean 정의 파일을 이용한 DI](#100)
 - [프로퍼티 파일 이용](#106)
 - [JavaConfig를 이용한 DI](#108)
+- [ApplicationContext](#115)
+- [스프링 로깅과 유닛테스트](#120)
 
 ## spring4
 ### 스프링입문4
@@ -466,4 +468,56 @@ XML의 Bean정의도 실은 툴의 진화에 따라서 지적해주기도 한다
 
 기타, @ComponentScan, @Import 등이있다.
 
->'이후 javaconfig 관련 autowired 사용에 관한 설명등이 있는데, 일단 JavaConfig 사용할일이 없을것 같으므로 Pass
+>'이후 javaconfig 관련 autowired 사용에 관한 설명등이 있는데, 일단 JavaConfig 사용할일이 없을것 같으므로 Pass'
+
+
+
+---
+
+###### 115
+
+ApplicationContext
+-
+
+BeanFactory를 확장한것.
+
+* 웹 애플리케이션에서 Bean 정의파일 읽기
+
+ ![](https://drive.google.com/uc?export=view&id=1TVLg-DlFjtH-cQwdGT6VWdf7bVGwLweI)
+
+bean 정의 파일이 여러개일떄는 공백이나 세미콜론, 콤마로 구분한다.
+
+ ![](https://drive.google.com/uc?export=view&id=1FxRFNkueNFOLTCj56k9Q4S5BRrIaRXgL)
+
+>'이하 javaconfig사용, 불필요해 보이는것들 생략'
+
+---
+
+
+###### 120
+
+스프링 로깅과 유닛테스트
+-
+
+* 스프링 로깅
+
+스프링은 기본적으로 Commons Logging으로 로그를 출력하며
+Log4j 라이브러리가 있으면 Commons Logging이 Log4j를 사용할 수있다.
+
+>"최근에는 slf4j + logback을 많이 사용되지만 이책에서는 다루지않는다."
+
+ ![](https://drive.google.com/uc?export=view&id=17QUJbtPTtbatPsMvGLm_frYkUwe_g8ng)
+
+
+* 스프링의 유닛 테스트
+
+스프링의 유닛테스트는 기본적으로 JUnit의 사용법을 이해하고 있으면 쉽게 알 수있다.
+
+ ![](https://drive.google.com/uc?export=view&id=1ILJSm13iPeKIwAjvaZlal0a34-YDcR9Q)
+
+ ![](https://drive.google.com/uc?export=view&id=1Up02w-XH2FtojBvStcp7KiR3qdHHqHUT)
+
+=======
+ ![](https://drive.google.com/uc?export=view&id=)
+
+~130p

@@ -1,6 +1,7 @@
 - [젠킨스 설치 및 세팅](#installsetting)
-
+- [에러](#error)
 ######installsetting
+
 젠킨스 설치 및 세팅
 -
 
@@ -32,9 +33,14 @@ Deploy to container Plugin 설치 (빌드후 톰캣에 배포하는 역할)
 
  ![](https://drive.google.com/uc?export=view&id=1-593QJQgeYIbABLmOmZtqe4Mq-pqY_q6)
 
+(원격서버도 http://jeongwon.me 이런식으로 도메인으로 세팅하면된다.)
+
+
 * Tomcat user 설정
 
 젠킨스의 배포를 담당하는 tomcat을 사용하기 위해 tomcat manager를 접근 할 수 있도록 tomcat-users.xml을 수정한다
+(aws나 원격 서버에 (deploy하려는서버) 세팅해주고 리스타트 해야 한다.)
+
 
 tomcat-users.xml을 열고
 
@@ -50,9 +56,24 @@ tomcat-users.xml을 열고
 
 여기서의 username 의 "admin" 과 password의 "admin"을 위의 프로젝트세팅의 Cridentials항목 (인증관련)에 기입한다.
 
+* war파일 이름변경
 
+war가 기본적으로 스냅샷 버전명으로 파일이름이 생성되어서 일일이 고치기 불편할때(ROOT.war등으로)
+
+pom.xml의 <build> 태그안, <plugins>태그밖에 태그로 <finalName>war파일이름</finalName>
+이렇게 지정해주면된다.
+
+```
+<build>
+		<finalName>smartit</finalName> //smartit.war로 deploy됨.
+		<plugins>
+			<plugin>
+```
+
+###### error
 
 에러
+-
 
 * massage: unmappable character for encoding MS949
 
@@ -101,7 +122,7 @@ git.exe관련 설정이 잘못됬을때.. git.exe 경로를 제대로 설정해�
 * massage: ContainerException: Failed to redeploy
 ConnectException: Connection refused: connect
 
-톰캣을 구동하지 않았을때 발생한다.
+톰캣을 구동하지 않았을때 발생한다 또는 톰캣의 tomcat-users.xml에 admin 접근 세팅을 안했을때도 발생.
 
 [참고1](http://hjw1456.tistory.com/21)
 [참고2](https://dukeom.wordpress.com/2017/03/20/jenkinsgithubmaven-%EC%9C%BC%EB%A1%9C-%EB%B9%8C%EB%93%9C%EB%B0%B0%ED%8F%AC%ED%95%98%EA%B8%B0-34/)

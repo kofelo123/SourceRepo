@@ -4,7 +4,9 @@
 - [@ModelAttibue()](#modelattribute)
 - [logger](#logger)
 - [@Resource 주입](#resource)
-### @RequestParam
+- [@autowired와 Resource 어노테이션의 차이](#autowiredresource)
+
+### requestparam
 
 > @RequestParam은 Null이 될떄 아래와 같은 에러가 발생한다.
 
@@ -68,3 +70,13 @@ private static final Logger logger = LoggerFactory.getLogger(현재클래스.cla
 
 
 ```
+
+---
+
+
+###### autowiredresource
+
+@autowired와 Resource 어노테이션의 차이
+-
+
+ ![](https://drive.google.com/uc?export=view&id=1Hs0mwVSliG0nVlnL58dfbwPY7icQvbt_)

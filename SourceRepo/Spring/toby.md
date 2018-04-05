@@ -858,3 +858,8 @@ DL이라고도 부른다.
 일반적으로는 DI가 권장되는데, DL의 경우 결국 코드에 오브젝트가 명시되기 때문인데, 가끔 써야하는 상황이 있긴하다. Test등에서.
 
 ~120p
+|   |자바 코드 설정정보   |XML 설정정보   |
+|---|---|---|
+|빈 설정파일  |@Configuration   | <beans>  |
+|빈의 이름   | @Bean methodName()  | <bean id="methodName"  |
+|빈의 클래스   | return new BeanClass()  | class="a.b.c... BeanClass">  |

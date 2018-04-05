@@ -43,7 +43,7 @@ indexOf(); 인덱스 검색
 
 aws 기존 hlw123@naver.com(중지시킴)
 
-aws 신규 gjwjddnjs012@daum.net  (pw+!)
+aws 신규 gjwjddnjs012@daum.net  (pw+a!)
 
 2/14 우분투 인스턴스2 생성
 

@@ -35,6 +35,8 @@
 - [Exception처리](#222)
 - [RedirectAttributes](#redirectattributes)
 - [Uri생성 - UriComponentBuilder](#uricomponentbuilder)
+- [검색처리와 동적SQL](#310)
+
 # Paging
 
 파라미터를 직접 입력 받는 방법 / 객체로 받는 방법
@@ -2093,4 +2095,86 @@ RedirectAttributes 사용
  <a href='/board/readPage${pageMaker.makeQuery(pageMaker.cri.page)}&bno=${boardVO.bno}'>
  ```
 
- 310p
+
+
+
+
+ ---
+
+
+ ###### 310
+
+ 검색처리와 동적SQL
+ -
+
+ ```html
+ <select name="searchType">
+ 	<option value="n"
+ 		<c:out value="${cri.searchType == null? 'selected' : ''}"/>>
+ 	---</option>
+ 	<option value="t"
+ 		<c:out value="${cri.searchType eq 't'?'selected' : ''}"/>>
+ 	Title</option>
+ 	...
+ </select>
+ ```
+ n:검색조건x
+ t:제목으로검색
+ c:내용으로검색
+ w:작성자로검색
+ tc:제목이나내용
+ cw:제목이나 작성자
+ tcw:제목이나 내용 혹은 작성자
+
+ ```java
+ //PageMaer.java
+
+ public String makeSearch(int page){
+
+ 	UriComponents uriComponents = UriCompoonentsBuilder.newInstance().queryParam("page",page)
+ 	.queryParam("perPageNum", cri.getPerPageNum())
+ 	.queryparam("searchType", ((SearchCriteria) cri).getSearchType())
+ 	.queryParam("keywrod", encoding(((SearchCriteria) cri).getKeyword())).build();
+
+ 	return uriComponents.toUriString();
+ }
+
+ private String encoding(String keyword){
+   if(keyword == null || keyword.trim().length() == 0){
+     return "";
+   }
+   try{
+     return URLEncoder.encode(keyword, "UTF-8");
+   }catch(UnsupportedEncodingException e){
+     return "";
+   }
+ }
+ //(검색키워드가 URL이 인코딩된 형태로 작성된다)
+ ```
+
+
+ ```js
+
+   $(document).ready(function(){
+
+     $('#searchBtn').on("click",function(event){
+       self.location = "list"
+       + '${pageMaker.makeQuery(1)}'
+       + "&searchType="
+       + $("select option:selected").val()
+       + "&keyword=" + encodeURIComponent($('#keywordInput').val());
+     });
+
+
+   });
+
+ ```
+
+ * MyBatis 동적 SQL
+
+ - if
+ - choose(when,otherwise)
+ - trim(where,set)
+ - foreach
+
+  ![](https://drive.google.com/uc?export=view&id=1i2i1CQS1rBhTA-xPi8Xm30GE3iXIEMR7)

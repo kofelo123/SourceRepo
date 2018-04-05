@@ -10,6 +10,8 @@
 - [의존성주입 어노테이션 종류](#diannotation)
 - [스프링 설정파일 나누기](#78)
 - [AOP와 횡단 관점](#81)
+- [AOP용어와 Spring의 AOP](#86)
+
 ---
 
 # 스프링 프레임워크 원리부터 실전까지 - 허진경
@@ -584,4 +586,183 @@ Appender 패턴을 이용하여 원하는 형식으로 로그를 출력가능
 
  매번 관점지향 프로그래밍을 위해 프락시 클래스를 만들어야한다면 부담스럽기 때문에, AOP 프레임워크는 부가적인 코드를 작성하지 않도록 해준다.
 
-~85
+
+ ---
+
+
+ ###### 86
+
+ AOP용어와 Spring의 AOP
+ -
+
+  ![](https://drive.google.com/uc?export=view&id=13aojeLoy2fcanG71xdSy-7nC7Yvjf9ZD)
+
+
+ * 위빙방법
+
+ 1.컴파일시 위빙
+
+ 2.클래스 로딩시 위빙
+
+ 3.런타임시 위빙
+ :Spring AOP의 방법으로, 프록시를 이용하여 런타임시에 위빙하는 방법으로 메서드 호출시만 AOP를 적용할 수있다.
+
+ * Spring에서 AOP
+
+ 스프링은 설정정보를 이용하여 런타임에 대상 객체에 대한 프록시 객체를 생성한다. 그리고 대상 객체를 프록시를 통한 간접접근을 한다.
+
+ 스프링에서는 3가지 방식으로 AOP를 구현한다.
+
+ 1.XML 기반의 POJO 클래스를 이용한 AOP 구현
+ 2. AspectJ에서 정의한 @Aspect 어노테이션 기반의 AOP 구현
+ (3. 스프링 API를 이용한 AOP구현(권장x))
+
+ * XML을 이용한 AOP
+
+  ![](https://drive.google.com/uc?export=view&id=1p3m87fWBB4dS9c0fiYTMNdK9tEmwUBlU)
+
+
+ * aop 태그설명
+
+ 1. <aop:config>
+
+ 최상위 태그이다.
+
+ <aop:pointcut>, <aop:aspect>,<aop:advisor> 태그를 포함시킬수있다.
+
+ 2. <aop:pointcut>
+
+ 포인트컷을 지정하기 위해 사용한다.
+
+ <aop:config>태그안 이나, <aop:aspect> 태그안에 정의 가능.
+
+ <aop:pointcut>태그는 id 속성과 expression 속성을 갖는다.
+
+ id 속성: 각 포인트컷의 고유 아이디값을 가져야함
+
+ expression: 포인트컷 표현식을 지정
+
+ ```
+ <aop:config>
+ 	<aop:pointcut
+ 		id="hello"
+ 		expressoin="excution(* com.coderby..HelloService.sayHello(..))/>
+
+ ```
+
+ 3.<aop:aspect>
+
+ 공통코드 객체를 지정하기 위한 태그, 어드바이스와 포인트컷을 연결한다.
+
+ id, order , ref 속성을 가짐
+
+ id속성은 고유아이디
+ order: 특정 포인트컷에 여러 개 어드바이스가 실행될 때 aspect의 순서를 제어함
+ ref: 포인트컷의 아이디를 지정
+
+ <aop:aspect>태그안에 <aop:pointcut> 태그와 <aop:after>,
+ <aop:after-returning>,<aop:after-throwing>,<aop:around>,<aop:before>등어드바이스 태그를 가질 수 있다.
+
+  ![](https://drive.google.com/uc?export=view&id=1ez8r69Vt5bZvINoIgEns6qXJXMPEg64e)
+
+
+ * 어드바이스
+
+ 어드바이스의 종류는 before, after, after-returning, after-throwing, around가 있다.
+ 각 어드바이스들은 <aop:before>,<aop:after>,<aop:after-returning>,<aop:after-throwing> 그리고 <aop:around> 태그를 이용해서 설정한다.
+
+ method, pointcut, pointcut-ref, arg-names 속성을 가진다.
+
+ 1. <aop:before>
+
+ before 어드바이스 설정하기 위해 사용. 핵심코드가 실행되기 전에 공통코드가 실행되도록 함.
+ ```
+  <aop:before pointcut-ref="hello" method="log" />
+ ```
+
+ 2.<aop:after>
+
+ after 어드바이스를 설정하기 위해 사용.
+ 핵심코드가 실행된 후 콩통코드가 실행되도록 함.
+
+ ```
+ <aop:after pointcut-ref="hello" method="log" />
+ ```
+
+ 3.<aop:after-returning>
+
+ after-returning 어드바이스 설정위해 사용
+ 핵심코드 메서드가 리턴한다음 공통코드가 실행되도록 한다.
+
+ returning 속성을 추가로 가진다.( 리턴 값이 전달될 공통코드의 메서드 파라미터 이름을 지정)
+
+ ```
+ public void resultLog(Object resultObj){...}
+
+
+ <aop:after-returning pointcut-ref="hello" method="resultLog" returning="resultObj" />
+ ```
+ 4.<aop:after-throwing>
+ 핵심코드에서 예외가 발생할 경우 공통코드가 실행
+
+ throwing 속성을 추가로 가진다.
+
+ ```
+ <aop:after-throwing pointcut-ref="xxx" method="exceptionLog" throwing="ex" />
+
+
+ ```
+ 5.<aop:around>
+
+ 핵심코드가 실행되는 동안 공통코드가 실행되도록 한다.
+
+ before, after, after-returning, after-throwing 어드바이스를 around 어드바이스 하나로 해결할수있다.
+ around 어드바이스에 지정할 공통코드 메서드는 반드시 ProceedingJoinPoint 변수를 파라미터로 선언해야한다.
+
+ ProceedingJoinPoint 객체의 getSignature() 메서드는 타겟(핵심코드) 객체의 메서드 원형을 리턴한다.
+
+
+
+ * <aop:advisor>
+
+ 어드바이스와 포인트컷을 지정하는 역할을 한다.
+
+ 주로 트랜잭션 처리를 위한 어드바이스(<tx:advice>)와 트랜잭션 처리대상을 포인트컷으로 지정후 이를 묶는역할을 한다.
+
+ <aop:advisor>태그를 이용하여 어드바이스와 포인트컷을 묶는
+ 예.
+ ```
+  <aop:config>
+ <aop:pointcut id="txPointcut" expression="execution(*
+ com.coderby.myapp..*Service.*(..))" />
+ <aop:advisor advice-ref="txAdvice" pointcut-ref="txPointcut" />
+ </aop:config>
+ ```
+
+
+ * Pointcut 표현식
+
+ 조인포인트의 부분집합이다. 어드바이스가 적용되는 조인포인트들을 의미한다.
+
+ 스프링에서는 정규 표현식이나 AspectJ 문법을 이용하여 포인트컷을 정의할 수있다.
+
+ excution,within, bean 표현식이사용가능
+
+ bean: 빈의 이름으로 포인트컷 지정
+ within: 지정판 패키지 또는 클래스내의 모든 메서드를 포인트컷으로 지정
+ excution: 일반적인 포인트컷 표현식으로 메서드 시그니처별로 포인트컷을 지정가능.
+
+ 1. excution
+
+  ![](https://drive.google.com/uc?export=view&id=1zerukbKpqF6x_7n1CI8eAODprJhxyCD7)
+
+ 2. within
+
+ 특정 타입에 속하는 메서드를 포인트컷으로 설정할때 사용.
+ 지정한 패키지 또는 클래스 내의 모든 메서드들을 포인트컷으로 지정
+
+  ![](https://drive.google.com/uc?export=view&id=1IL_UuPIUGBC1oDFhyDJfIAh1Hffvcnbm)
+
+ 3. bean
+
+  ![](https://drive.google.com/uc?export=view&id=1EKM82cWQjyy1t5hx_FSdQDKhWt2FWfIV)
