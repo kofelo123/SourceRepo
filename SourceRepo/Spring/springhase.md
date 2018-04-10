@@ -15,6 +15,10 @@
 - [JavaConfig를 이용한 DI](#108)
 - [ApplicationContext](#115)
 - [스프링 로깅과 유닛테스트](#120)
+- [스프링 AOP](#131)
+- [AOP를 사용하는 세가지방법](#140)
+- [데이터 액세스 층의설계와 구현](#155)
+
 
 ## spring4
 ### 스프링입문4
@@ -395,12 +399,14 @@ ApplicationContext는 BeanFactory를 확장한것이다.
 <bean id="productDao" class="....ProductDaoImpl" />
 
 ```
+
 ```java
 
 pricate ProductDao productDao;
 
 public void setProductDao(ProductDao productDao){
 this.productDao = productDao;
+}
 ```
 
  ![](https://drive.google.com/uc?export=view&id=1esszuoYitLea8tbaZfC1w-dRDdhsQXKp)
@@ -432,13 +438,13 @@ this.productDao = productDao;
 
 Bean 정의 파일에서 프로퍼티 파일을 이용할 수있다.
 
- ![](https://drive.google.com/uc?export=view&id=11omnRkZBHruBmndkjNkqmszgfhRzav0M)
+![](https://drive.google.com/uc?export=view&id=11omnRkZBHruBmndkjNkqmszgfhRzav0M)
 
- ![](https://drive.google.com/uc?export=view&id=1q3YPqKKh2QXQ-X8asapJkiI0ROAu9V3N)
+![](https://drive.google.com/uc?export=view&id=1q3YPqKKh2QXQ-X8asapJkiI0ROAu9V3N)
 
- ![](https://drive.google.com/uc?export=view&id=150P243ZGYctt03plXcj4cB3iysS7UxRV)
+![](https://drive.google.com/uc?export=view&id=150P243ZGYctt03plXcj4cB3iysS7UxRV)
 
- ![](https://drive.google.com/uc?export=view&id=1ctqj04zW8KkKoEyLWBJS9lPP4_IH5iyl)
+![](https://drive.google.com/uc?export=view&id=1ctqj04zW8KkKoEyLWBJS9lPP4_IH5iyl)
 
 ```
 // message.properties
@@ -464,7 +470,7 @@ JavaConfig를 이용한 DI
 장점으로 타입 세이프(잘못작성되었을때 컴파일 에러로 검증)가 있는데,
 XML의 Bean정의도 실은 툴의 진화에 따라서 지적해주기도 한다.
 
- ![](https://drive.google.com/uc?export=view&id=1FqBYpI7GF-HQW-iryriqg7OKzWAod42z)
+![](https://drive.google.com/uc?export=view&id=1FqBYpI7GF-HQW-iryriqg7OKzWAod42z)
 
 기타, @ComponentScan, @Import 등이있다.
 
@@ -483,11 +489,11 @@ BeanFactory를 확장한것.
 
 * 웹 애플리케이션에서 Bean 정의파일 읽기
 
- ![](https://drive.google.com/uc?export=view&id=1TVLg-DlFjtH-cQwdGT6VWdf7bVGwLweI)
+![](https://drive.google.com/uc?export=view&id=1TVLg-DlFjtH-cQwdGT6VWdf7bVGwLweI)
 
 bean 정의 파일이 여러개일떄는 공백이나 세미콜론, 콤마로 구분한다.
 
- ![](https://drive.google.com/uc?export=view&id=1FxRFNkueNFOLTCj56k9Q4S5BRrIaRXgL)
+![](https://drive.google.com/uc?export=view&id=1FxRFNkueNFOLTCj56k9Q4S5BRrIaRXgL)
 
 >'이하 javaconfig사용, 불필요해 보이는것들 생략'
 
@@ -506,18 +512,180 @@ Log4j 라이브러리가 있으면 Commons Logging이 Log4j를 사용할 수있�
 
 >"최근에는 slf4j + logback을 많이 사용되지만 이책에서는 다루지않는다."
 
- ![](https://drive.google.com/uc?export=view&id=17QUJbtPTtbatPsMvGLm_frYkUwe_g8ng)
+![](https://drive.google.com/uc?export=view&id=17QUJbtPTtbatPsMvGLm_frYkUwe_g8ng)
 
 
 * 스프링의 유닛 테스트
 
 스프링의 유닛테스트는 기본적으로 JUnit의 사용법을 이해하고 있으면 쉽게 알 수있다.
 
- ![](https://drive.google.com/uc?export=view&id=1ILJSm13iPeKIwAjvaZlal0a34-YDcR9Q)
+![](https://drive.google.com/uc?export=view&id=1ILJSm13iPeKIwAjvaZlal0a34-YDcR9Q)
 
- ![](https://drive.google.com/uc?export=view&id=1Up02w-XH2FtojBvStcp7KiR3qdHHqHUT)
+![](https://drive.google.com/uc?export=view&id=1Up02w-XH2FtojBvStcp7KiR3qdHHqHUT)
 
-=======
- ![](https://drive.google.com/uc?export=view&id=)
 
-~130p
+---
+
+
+###### 131
+
+스프링 AOP
+-
+
+AOP는 모듈의 본질적인 처리만 기술하고 , 공통되는 본질적이지 않은 처리를 밖으로 꺼내는 기술.
+
+* AOP의 용어
+
+Aspect
+: 횡단 관심사의 동작과 그 횡단 관심사를 적용하는 소스 코드상의 포인트를 모은 것.
+하나 또는 그이상의 어드바이스(동작)과 포인트컷(동작을 적용하는 조건)을 조합한것.
+
+Join Point
+:어드바이스가 실행하는 동작을 끼워 넣을 수 있는 때를 말한다.
+(설명이 조잡해서 뭐라는지모르겟다)
+어드바이스를 추가할수 있을때가 조인포인트가된다.
+
+
+Advice
+: 조인 포인트에서 실행되는 코드를 말한다.
+어드바이스는 조인 포인트가 호출되면 반드시 실행된다.
+
+Pointcut
+:조인 포인트와 어드바이스 중간에 있으면서 처리가 조인 포인트에 이르렀을때 어드바이스를 호출할지 선별한다.
+
+![](https://drive.google.com/uc?export=view&id=1heTzjdfKdXEa4M9c2l7t2BEocXFHWg8w)
+
+* 스프링이 제공하는 어드바이스
+
+![](https://drive.google.com/uc?export=view&id=1DbF3MZ9k_iSLMnNhK7IJMWn2LMNaGIdL)
+
+
+
+
+---
+
+###### 140
+
+AOP를 사용하는 세가지방법
+-
+
+AOP를 사용하는 세가지방법은
+1.DI와 같이 어노테이션을 사용하는 방법
+2.Bean 정의 파일에 설정을 두는 방법
+3.JavaConfig로 작성하는 방법
+
+* 어노테이션을 활용한 AOP
+
+![](https://drive.google.com/uc?export=view&id=1VTNTWZGYDfzW7XrDxc8AngfflWyw7aVM)
+
+
+![](https://drive.google.com/uc?export=view&id=1VuqHKdYaMbFu7sh4nRd17L_lN8UZ_YEY)
+
+
+포인트컷 기술 방법
+
+어노테이션 괄호안에 excution ( * findProduct(String)) 형식으로 기술한다.
+
+AspectJ라는 유명한 AOP 제품에서 사용하는 포인트컷 지정법을 스프링에 도입한것.
+
+excution 기본 구문
+
+- 메서드의 수식자(public or private)나 throws 예외는 생략가능
+
+- 메서드의 반환값형, 패키지와 클래스명, 인터페이스명에는 와일드카드(* )를 이용가능
+
+- * 는 .(패키지구분문자)와 일치하지 않으므로 복수 패키지와 일치시키려면 .. 를 사용
+
+- 메서드 인수에 .. 를 기술하면 모든 인수와 일치시킬수 있음.
+
+
+포인트컷은 몇개의 포인트컷을 조합해서 설정할 수도있다.
+
+이때 조건의 지정에 논리 연산자를 이용할 수있다.
+
+and, or, not은 AspectJ에서 이요할 수 없는 스프링 고유의 표기법이다.
+
+Bean정의 파일에서는 &&를 나타낼떄 &amp;&amp; 로 써야하므로 되도록 and, or ,not으로 통일하는 편이 바람직하다.
+
+![](https://drive.google.com/uc?export=view&id=1GBI3JX_t2kD5eDOcgijpHEQ99CV4-GuX)
+
+* 어노테이션으로 어드바이스 만들기
+
+![](https://drive.google.com/uc?export=view&id=1O4rFt3xszzsQhCmYPHCWeuKIp9g5mExq)
+
+위 코드에서 아쉬운점은 어느 메서드에서 로그를 출력하는지 메서드의 이름조차 알 수없다면 제대로된 로그하고 할 수없다.
+
+메서드의 인수에 JoinPoint를 설정하고 사용한다.
+
+![](https://drive.google.com/uc?export=view&id=1uxdCzLeGB_JIM_tin3HgZb0kWR4k3U9W)
+
+AfterReturning 어드바이스
+: 앞의 Before,After 어드바이스처럼 JoinPoin 가 필요하면 사용할수있다.
+
+![](https://drive.google.com/uc?export=view&id=1ZkGkg5diPvwrWpxdNEZ_vQMhm02idSnJ)
+
+
+Around 어드바이스
+
+특수한점이 있는데, 다른 어드바이스와 달리 AOP 대상이 되는 메서드의 호출을 어드바이스 안에서 직접해야한다.
+
+메서드 호출은 ProceedingJoinPoint 클래스의 Object proceed 메서드를 이용해서 이루어진다.
+
+![](https://drive.google.com/uc?export=view&id=1dD8oCtE1hahB37iN3fRAqS5E07vA3smL)
+
+Around 어드바이스가 되는 메서드의 인수 ProceedingJoinPoint 는 앞어 등장한 조인포인트를 상속받으므로 AOP 의 대상인 메서드의 이름등도 가져올 수있다. 아래처럼
+
+```
+@Around("execution(* findProduct(String))")
+public Product fuga(ProceedingJoinPoint pjp) throws Throwable{
+	//메서드 호출 전후에 동작하는 어드바이스
+	System.out.println("Hello Around! before *** 메서드 호출 전에 나온다!");
+
+// 메서드 이름 출력
+Signature sig  = pjp.getSignature();
+System.out.println("----> aop:around 메서드 이름:" + sig.getName());
+Product p = (Product)pjp.proceed();
+System.out.println("Hello Around! after *** 메서드를 호출한 후에 나온다");
+return p;
+}
+```
+Around 어드바이스를 쓰면 다른 어드바이스를 쓰지않아도 된다.
+proceed 메서드 앞에 처리를 기술하면 Before 어드바이스가 되고 proceed 메서드를 try-catch 구문으로 묶으면 이 뒤에 설명할 AfterThrowing 어듭이스가 된다.
+
+그러나 복잡해질수 있으니 꼭 필요한 경우에만 사용하도록한다.
+
+
+AfterThrowing 어드바이스
+
+예외발생시만 동작하는 어드바이스.
+
+![](https://drive.google.com/uc?export=view&id=1Sd2kAlp4GC97L0UC207qRyL7GTdAGtzn)
+
+* JavaConfig를 이용한 AOP
+
+이전까지의 내용은 어노테이션을 이용한 AOP인데,
+규모가 작을때는 더욱이 JavaConfig의 이용도 고려해볼만하다.
+
+![](https://drive.google.com/uc?export=view&id=1OLAmxxulYMtyNBMQq2cQwxFsmn1wmmt8)
+
+* Bean 정의 파일을 이용한 AOP
+
+한정된 규모의 경우 AOP도 어노테이션으로개발하면 관리가 편하지만,
+사내 프레임워크 등에서 공통의 어드바이스를 준비할때는 Bean 정의파일에 포인트컷을 사용하는것이 편리하다.
+
+![](https://drive.google.com/uc?export=view&id=1C37RVttZqYg2TF3mbbL3npKW6PEpgW1s)
+
+![](https://drive.google.com/uc?export=view&id=1A9dw-r-vvHqUoLjGbc_quXtg0QrHvRmE)
+
+
+---
+
+
+###### 155
+
+데이터 액세스 층의설계와 구현
+-
+
+DAO가 있는 이유는 데이터관련 처리를 비즈니스 로직과 분리하기 위함
+
+DAO는 데이터베이스의 테이블별로 만들어지는 것이 보통이다.

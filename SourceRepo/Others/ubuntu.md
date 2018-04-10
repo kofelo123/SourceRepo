@@ -1,6 +1,7 @@
 - [기타](#else)
 - [설치(apt-get)](#aptget)
 - [vim 에디터종료](#vimediterend)
+- [vim에서 단어찾기](#vimsearch)
 - [디렉터리 권한](#directorypermission)
 - [디렉터리 생성](#directorycreate)
 - [디렉터리/파일 삭제](#directorydelete)
@@ -18,6 +19,8 @@
 - [톰캣 8 설치](#tomcat8install)
 - [Mysql 설치](#mysqlinstall)
 - [패키지 파일 삭제](#packagedelete)
+
+
 - [에러]
   - [write error in swap file](#error1)
 ## else
@@ -896,3 +899,39 @@ sudo vim /etc/mysql/mysql.conf.d/mysqld.cnf
 워크밴치에서 접속여부를 확인 (aws에서는 mysql포트열어 놔야함)
 
 [서버쪽 인코딩설정](https://github.com/kofelo123/SourceRepo/blob/master/SourceRepo/Others/ubuntu.md#koreansetting)
+
+
+
+---
+
+
+###### vimsearch
+
+vim에서 단어찾기
+-
+
+vim 관련
+
+간단 찾기 /찾을단어 -> n누르면 다음,
+
+?찾을단어 (아래에서 위로찾음)
+
+
+문자열 바꾸기(치환)
+
+* 현재 문서를 편집중이라면, 키보드의 Esc 키를 눌러 편집모드에서 빠져나옵니다.
+
+* 콜론(:)을 누르고 %s/foo/bar 라고 하면 모든 foo라는 문자열이 bar로 한꺼번에 치환됩니다.
+
+다음과 같이 c 라는 옵션을 붙이면
+:%s/foo/bar/c
+바꿀 때마다 바꾸어도 좋은지 물어보기에 더 안전합니다. y를 누르면 바꾸고, n을 누르면 다음으로 건너뛰고, a를 누르면 모두 바꿉니다.
+
+
+:%s/\<foo\>/bar
+
+이렇게 하면 정확하게 foo에 일치될 때만 바꿉니다. 즉 foo는 바꾸지만, foo 앞뒤로 다른 문자열이 붙어 있는 경우, 예를 들어
+fooZZZ
+ZZZfoo
+ZZZfooZZZ
+이런 문자열 속의 foo 는 바꾸지 않습니다.

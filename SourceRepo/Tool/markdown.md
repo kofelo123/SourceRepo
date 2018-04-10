@@ -32,3 +32,5 @@
 |   |   |   |
 ```
 [테이블생성사이트](http://www.tablesgenerator.com/markdown_tables)
+
+>'<코드 (O)  <코드> (X) '

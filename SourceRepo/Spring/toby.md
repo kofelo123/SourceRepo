@@ -15,6 +15,11 @@
 - [싱글톤 레지스트리로서의 애플리케이션 컨텍스트](#107)
 - [스프링 빈의 스코프](#111)
 - [의존관계주입](#1111)
+- [XML을 이용한 설정](#129)
+- [2장 테스트](#145)
+- [댓글처리와 REST](#362)
+- [자동수행 테스트 코드](#151)
+
 
 # seperationofconcerns
 ## 관심사의 분리 1.2.1
@@ -857,16 +862,167 @@ DL이라고도 부른다.
 
 일반적으로는 DI가 권장되는데, DL의 경우 결국 코드에 오브젝트가 명시되기 때문인데, 가끔 써야하는 상황이 있긴하다. Test등에서.
 
-~120p
+
+---
+
+
+###### 129
+
+XML을 이용한 설정
+-
+
+-자바 설정클래스와 자바 설정XML비교-
 
 |   |자바 코드 설정정보   |XML 설정정보   |
 |---|---|---|
-|빈 설정파일  |@Configuration   | <beans>  |
+|빈 설정파일   |@Configuration   | <beans  |
 |빈의 이름   | @Bean methodName()  | <bean id="methodName"  |
 |빈의 클래스   | return new BeanClass()  | class="a.b.c... BeanClass">  |
 
-|             | 자바 코드 설정정보     | XML 설정정보               |
-|-------------|------------------------|----------------------------|
-| 빈 설정파일 | @Configuration         | <beans>                    |
-| 빈의 이름   | @Bean methodName()     | <bean id="methodName"      |
-| 빈의 클래스 | return new BeanClass() | class="a.b.c... BeanClass" |
+```
+@Bean
+public ConnectionMaker connectionMaker(){
+	return new DConnectionMaker();
+}
+
+->
+
+<bean id = "connectionmaker" class="springbook...DConnectionMaker" />
+
+//수정자(setter)
+
+userDao.setConnectionMaker(connectionMaker());
+
+->
+<bean id="userDao" class="springbook.dao.UserDao">
+	<property name = "connectionMaker" ref="connectionMaker" />
+</bean>
+
+````
+
+
+ ![](https://drive.google.com/uc?export=view&id=1TEUikjfdl0tjqJMn7f7MvyTABfc0kJPF)
+
+
+>"참고: 클래스패스를 넣을떄는 시작하는 /는 넣을 수도있고 생략할 수도 있다. 시작하는 /가 없는 경우에도 항상 루트에서부터 시작하는 클래스패스라는점을 기억해두자"
+
+
+ ![](https://drive.google.com/uc?export=view&id=1XAST1evv85A_LjMtBgIvJ6fEZnGutB-n)
+
+xml에 "com.mysql.jdbc.Driver"와 같은 String value는 스프링에서
+자동으로 오브젝트로 자동 변경해주기 때문에 가능하다.
+즉 스프링 내부적으로 프로퍼티 값을, 수정자 메소드의 파라미터타입을 참고로 해서 적절한 형태로 변환해주는
+```
+Class driverClass = Class.forName("com.mysql.jdbc.Driver");
+dataSource.setDriverClass(driverClass);
+```
+이런 작업이 자동으로 일어나는 것이다.
+
+
+---
+
+
+###### 145
+
+2장 테스트
+-
+
+변화에 대응 하는 첫번쨰 전략이 IoC/DI와 같은 기술이라면
+두번째 전략은 만들어진 코드를 확신하게 해주고, 변화에 유연하게 대처할 수있는 자신감을 주는 테스트 기술이다.
+
+테스트란 내가 예쌍 하고 의도했던 대로 코드가 정확히 동작하는지를 확인해서 만든 코드를 확신할 수 있게 하는 작업이다.
+
+이를 통해 코드의 결함을 제거해가는 작업, 일명 디버깅을 거치고, 최종적으로 테스트가 성공하면 모든 결함이 제거됐다는 확신을 얻을수있다.
+
+* 웹을 통한 DAO 테스트 방법의 문제점
+
+DAO - 서비스 - MVC 프레젠테이션 - 모든것을 만들고
+WAS에 배치한뒤, 웹 화면에서 확인
+
+이런 방법은 DAO에 대한 테스트로서는 단점이 너무 많다.
+
+모든 레이어의 기능을 다 만들고 나서야 테스트가 가능하다는 점.
+
+이러한 테스트 도중 문제가 생겼을때 어디서 문제가 났는지 찾아야하는 수고도 필요하다.
+
+하나의 테스트에 수많은 코드와 클래스가 존재하기 때문.
+
+사실 테스트의도는 UserDao였는데 다른 계층,서버의 설정까지 모두 테스트에 영향을 줄수 있는 상태이다.
+
+이런 방식은 번거롭고, 정확하고 빠른 대응이 힘들어진다.
+
+* 작은 단위의 테스트
+
+가능하면 작은 단위로 쪼개서 테스트하는 대사에만 집중하게 한다.  관심사의 분리라는 원리가 테스트에도 적용된다.
+
+이런 작은 단위코드에 대한 테스트수행을 단위 테스트(unit test)라고 한다.
+
+단위 테스트를 하는 목적은 개발자가 설계하고 만든 코드가 원래 의도대로 동작하는지를 개발자 스스로 빨리 확인받기 위해서이다.
+
+전문적인 테스터나 고객을 대상으로 한 테스트는 시간이 많이걸린다는 문제가 있다.
+테스트는 개발직후 빠르게 진행되는것이 개발자에게 좋다.
+
+
+
+---
+
+
+###### 151
+
+자동수행 테스트 코드
+-
+
+웹을 띄우고 버튼을 누르고 값을 넣고 이렇게 번거로우면 안좋다.
+
+테스트는 자동으로 수행되도록 코드로 만들어 지는것이 중요하다.
+
+
+테스트의 성공과 실패에 있어서
+
+실패는 두가지로 나뉜다.
+
+1.에러가 발생한 실패
+
+2.결과가 기대한 값과 다른경우
+
+
+
+* jUnit 테스트
+
+main() 메소드로만 하는데 한계가 있다. 테스트 수가 많아지고 많은 기능을 갖춘 테스트 지원 도구가 필요할떄
+프로그래머를 위한 자바 테스팅 프레임워크 라 부리는 JUnit을 사용할수 있다.
+자바로 단위 테스트를 만들떄 유용하게 쓰인다.
+
+JUnit 프레임워크를 쓰기 위해서
+
+1. 메소드가 public으로 선언
+2. 메소드에 @Test라는 애너테이션을 붙임
+
+* assertThat 스태틱 메소드
+
+```java
+assertThat(user2.getName(), is(user.getName()));
+// 첫번째 파라미터의 값을 뒤에 나오는 매처 조건으로 비교해서 일치하면 다음으로 넘어가고, 아니면 테스트가 실패하도록 만들어준다.
+```
+
+JUnit 테스트 실행
+```java
+public static void main(String[] args){
+	JUnitCore.main("springbook.user.dao.UserDaoTest");
+}
+```
+>'IDE에서 실행 가능하지만, JUnitCore를 사용해서 실행 가능하다는것만 알아두자'
+
+테스트들을 특정 패키지에 두고 패키지로 JUnit 테스트를 한번에 실행할 수 있다.
+
+단축키: Alt + Shift + X와 T를 누르면 선택해둔 클래스,패키지,프로젝트의 테스트가 실행됨.
+
+* 테스트 결과의 일관성에 대한 문제
+
+매번 테스트 마다 DB의 User 테이블 데이터를 삭제해줘야 되는 등
+
+이런 외부 상태에 따라 성공하기도 하고 실패하는 점은 문제가있다.
+
+이전 테스트수행으로 인해 DB의 등록된 중복 데이터가 있을수 있다는것.
+
+항상 테스트를 마치면 테스트가 등록한 정보를 삭제해서, 테스트 수행 이전의 상태로 만들어주는것이 좋다.

@@ -36,6 +36,16 @@
 - [RedirectAttributes](#redirectattributes)
 - [Uri생성 - UriComponentBuilder](#uricomponentbuilder)
 - [검색처리와 동적SQL](#310)
+- [동적SQL문의 추가](#327)
+- [RestController와 Ajax](#346)
+- [REST 방식의 ReplyController](#377)
+- [HiddenMethod의 활용](#385)
+- [댓글의 페이징처리](#389)
+- [화면에서의 Ajax 호출](#395)
+
+-
+
+- [properties사용](#properties)
 
 # Paging
 
@@ -2178,3 +2188,555 @@ RedirectAttributes 사용
  - foreach
 
   ![](https://drive.google.com/uc?export=view&id=1i2i1CQS1rBhTA-xPi8Xm30GE3iXIEMR7)
+
+
+
+  ---
+
+
+  ###### properties
+
+  properties사용
+  -
+
+  >'properties는 자바코드상에서 변경될수있는 값을 주입해서 사용하려는 목적, 상수로 쓰려는 목적으로 사용되어 왔던것 같다.
+  xml로 대체가능한 옛날 방식이라는것 같기도하다. egov에서 xml의 값을 properties에서 주입받는식으로 쓰길래 따라해봤다.'
+
+  기본적으로 new - properties 파일생성이 없어서, 일반파일로 생성후
+  확장자명만 바꿔서 사용했더니 , 유니코드로 값을 저장한다
+  이것을 한글이나 영문으로 변환해서 보여주는 플러그인이
+  "properties editor"
+
+  Help -> Install New Software
+
+  Location: http://propedit.sourceforge.jp/eclipse/updates/
+
+  설치하면된다.
+
+  ```
+  #-----------------------------------------------------------------------
+  #
+  #   setting.properties : 시스템
+  #   
+  #-----------------------------------------------------------------------
+  #   1.  key = value 구조입니다.
+  #   2.  key값은 공백문자를 포함불가, value값은 공백문자를 가능
+  #   3.  key값으로 한글을 사용불가,   value값은 한글사용이 가능
+  #   4.  줄을 바꿀 필요가 있으면 '\'를 라인의 끝에 추가(만약  '\'문자를 사용해야 하는 경우는 '\\'를 사용)
+  #   5.  Windows에서의 디렉토리 표시 : '\\' or '/'  ('\' 사용하면 안됨)
+  #   6.  Unix에서의 디렉토리 표시 : '/'
+  #   7.  주석문 처리는  #사용
+  #   8.  value값 뒤에 스페이스가 존재하는 경우 서블릿에서 참조할때는 에러발생할 수 있으므로 trim()하거나 마지막 공백없이 properties 값을 설정할것
+  #-----------------------------------------------------------------------
+
+
+
+  # ipAddress - local
+  Local.IpAddress = localhost
+
+  # ipAddress - server
+  Server.IpAddress = jeongwon.me
+
+  //xml에서 로컬작업환경 - 서버환경 변경으로 인한 value값 변경시
+  properties 에서 각 local,server 의 key를 변경해주는 방법으로 사용
+
+
+  //root-context.xml
+
+
+  <bean id="configProperties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+          <property name="locations">
+              <list>
+              	<value>/WEB-INF/spring/setting.properties</value>
+
+              </list>
+          </property>
+      </bean>
+
+  <property name="url" value="${Local.Url}"></property>
+  			<property name="username" value="${Local.UserName}"></property>
+  			<property name="password" value="${Local.Password}"></property>
+
+  ```
+
+
+  ---
+
+
+  ###### 327
+
+  동적SQL문의 추가
+  -
+
+  if test 는 test 속성에 있는 표현식이 boolean으로 나오는 결과야 한다.
+  ```
+  <sql id="search">
+  		<if test="cri.searchType != null">
+  			<if test="cri.searchType == 't'.toString()">
+  				and title like CONCAT('%', #{cri.keyword}, '%')
+  			</if>
+  			<if test="cri.searchType == 'c'.toString()">
+  				and content like CONCAT('%', #{cri.keyword}, '%')
+  			</if>
+  			<if test="cri.searchType == 'w'.toString()">
+  				and writer like CONCAT('%', #{cri.keyword}, '%')
+  			</if>
+  			<if test="cri.searchType == 'tc'.toString()">
+  				and ( title like CONCAT('%', #{cri.keyword}, '%') OR content like
+  				CONCAT('%', #{cri.keyword}, '%'))
+  			</if>
+  			<if test="cri.searchType == 'cw'.toString()">
+  				and ( content like CONCAT('%', #{cri.keyword}, '%') OR writer like
+  				CONCAT('%', #{cri.keyword}, '%'))
+  			</if>
+  			<if test="cri.searchType == 'tcw'.toString()">
+  				and ( title like CONCAT('%', #{cri.keyword}, '%')
+  				OR
+  				content like CONCAT('%', #{cri.keyword}, '%')
+  				OR
+  				writer like CONCAT('%', #{cri.keyword}, '%'))
+  			</if>
+  		</if>
+  	</sql>
+
+  ```
+  ```
+  	<select id="listSearch" resultType="BoardVO">
+  <![CDATA[  
+    select *
+    from tbl_board
+    where bno > 0 and category = #{category}
+  ]]>
+
+  		<include refid="search"></include>
+  ```
+
+
+###### 346
+
+RestController와 Ajax
+-
+
+REST는 특정한 URI는 반드시 그에 상응하는 데이터 자체라는것을 의미하는 방식이다. (/boards/123)
+
+REST API 는 외부에서 URI를 통해서 사용자가 원하는 정보를 제공하는 방식이다.
+
+스프링은 3버전부터 @ResponseBody 어노테이션으로 본격적으로 REST방식의 처리를 지원하기 시작하여
+스프링 4부터 @RestController가 본격적으로 소개됨.
+
+@RestController는 기존의 JSP와같은 뷰를 만들어내는게 목적이 아닌 REST 방식의 데이터 처리를 위해서 사용한다.
+(모든메소드가 자동으로 @ResponseBody처리됨)
+
+스프링3까지는 @Controller 에 데이터 자체의 서비스하려면
+메소드나 리턴타입에 @ResponseBody를 사용.
+
+스프링4부터는 컨트롤러 자체의 용도를 지정한다
+
+(MessageConverter가 데이터를 가공해서 브라우저에 전송,
+(과거에는 개발자가 직접 MIME 타입지정, 데이터를 만드는 방식에서 자동화된 처리방식이다.))
+
+데이터 자체를 반환하는데, 주로 사용되는것은 단순 문자열, JSON,XML 등으로 나눈다.
+
+1) 단순문자열일 경우
+
+@RestController에서 문자열 데이터는 기본적으로 브라우저에는 'text/html'타입으로 처리된다.
+
+```
+public String sayHello(){
+  return "Hello World"; //경로가 아닌 문자열
+}
+```
+
+2) 객체를 JSON으로 반환하는 경우
+
+별도의 처리가 없어도 객체는 자동적으로 JSON으로 처리 될 수있다.
+
+```java
+public class SampleVO{
+  ...
+}
+
+//Controller
+public SampleVO sendVO(){
+  SampleVO vo = new SampleVO();
+  vo.set~~
+  ...
+return vo;
+}
+```
+
+error message: 406 Not Accepetable 상태 에러.
+-> 스프링에서 객체 변환에 실패
+
+jackson-databind 라이브러리를 추가하지 않아서 그렇다.
+
+jackson-databind 는 객체를 JSON 타입의 데이터로 변환하거나,반대의 작업을 할 때 사용.
+
+* ResponseEntity 타입
+
+@RestContoller는 별도의 뷰를 제공하지 않는 형태로 서비스를 실행-> 예외적인 상황에서 문제가 발생할 수 있다.
+
+웹의 경우 HTTP의 상태코드가 이러한 정보를 나타낸다.
+
+스프링에서 제공하는  ResponseEntity 타입은 개발자가 직접결과데이터 + HTTP의 상태코드를 직접 제어할수 있따.
+
+즉 상태코드를 데이터와 함께 전송할 수있다.
+
+```
+~ ...
+
+return new ResponseEntity<>(list,HttpStatus.NOT_FOUND);
+```
+
+@RestController를 이용해서 결과 데이터만서버에서 제공하는 방식은 데이터를 이용하는 클라이언트의 기능이 많아 질 경우 사용된다.
+ex) Ajax
+
+
+---
+
+
+###### 362
+
+댓글처리와 REST
+-
+
+
+REST 방식을 사용하는 원칙
+1. URI가 원하는 리소스를 의미한다.
+ex) /baord/123 123번게시물 조회
+
+2. URI에는 식별할 수 있는 데이터를 같이 전달하는 것이 일반적
+(HTTP의 전송방식(method)이 실제 작업의 종류를 의미
+ex) get(조회), delete(삭제), post(등록), put(수정or등록) ,patch(put 방식대용)
+
+REST는 화면이 없어서 결과를 체크하기 위해 REST 클라이언트 프로그램을 통해 테스트가 가능한데,
+
+Chrome 브루아저의 앱으로 존재하는 Advanced REST Client나 PostMan 등의 프로그램이 있다.
+
+* REST와 Ajax
+
+REST방식이 많이 쓰이는 형태는  Ajax와 결합 될때이다.
+
+
+
+---
+
+###### 377
+
+REST 방식의 ReplyController
+-
+
+ReplyController는 @RestController를 이용해서 작성한다.
+
+
+|  URI | 전송방식  | 설명  |
+|---|---|---|
+| /replies/ + JSON 데이터  | POST  |  새로운댓글등록 |
+|  /replies/ + JSON 데이터   |  PUT,PATCH |  댓글 수정 |
+| /replies/댓글번호  | DELETE  |  댓글 삭제 |
+
+
+REST 방식 처리에 사용하는 애노테이션
+
+@PathVariable - URI 경로에서 원하는 데이터를 추출하는 용도
+
+@RequestBody - 전송된 JSON 데이터를 객체로 변환해주는 애노테이션, @ModelAttribute와 유사한 역할을 하지만 JSON에서 사용된다는 점이 차이.
+
+* 등록처리
+
+```
+@RestController
+@RequestMapping("/replies")
+public class ReplyController{
+
+	@Inject
+	private ReplyService service;
+
+	@Requestmapping(value = "", method = RequestMethod.POST)
+	public ResponseEntity<String> register(@RequestBody ReplyVO vo){
+
+	ResponseEntity<String> entity = null;
+	try{
+		service.addReply(vo);
+		entity = new ResponseEntity<String>("SUCCESS",HttpStatus.OK);
+	}catch(Exception e){
+		e.printStackTrace();
+		entity = new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+	}
+	return entity;		
+	}
+}
+```
+
+* 특정 게시물의 전체 댓글 목록
+
+```java
+@RequestMapping(value = "/all/{bno}", method = RequestMethod.GET)
+public ResponseEntity<List<ReplyVO>> list(@PathVariable("bno") Integer bno){
+
+	ResponseEntity<List<ReplyVO>> entity = null;
+	try{
+			entity = new ResponseEntity<>(service.listReply(bno),HttpStatus.OK);
+
+	}catch(Exception e){
+		e.printStackTrace();
+		entity = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	}
+	return entity;
+}
+```
+
+Advanced REST Client로 테스트 했을떄
+
+/replies/all/6127
+
+결과 화면에 JSON 타입으로 데이터가 전송된것을 확인가능하다.
+
+
+* 수정 처리
+
+REST 방식에서 update 작업은 PUT, PATCH 방식을 이요해서 처리한다.
+
+일반적으로 전체 데이터 수정은 PUT, 일부 데이터 수정은 PATCH를 사용.
+
+
+```java
+@RequestMapping(value = "/{rno}", method = {RequestMethod.PUT, RequestMethod.PATCH})
+public ResponseEntity<String> update(@PathVariable("rno") Integer rno, @RequestBody ReplyVO vo){
+
+	ResponseEntity<String> entity = null;
+	try{
+		vo.setRno(rno);
+		service.modifyReply(vo);
+
+		entity = new REsponseEntity<String>("SUCCESS", HttpStatus.OK);
+	}catch(Exception e){
+		e.printStackTrace();
+		entity = new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+	}
+	return entity;
+}
+```
+
+---
+
+###### 385
+
+HiddenMethod의 활용
+-
+
+브라우저에 따라서 PUT, PATCH, DELETE 방식을 지원하지 않는 경우가 있다.
+
+많은 브라우저가 GET, POST 방식만 지원하기 때문에 REST 방식을 제대로 사용하려면 브라우저가 지원하지 않는 상황에 대해서 고려해야 한다.
+
+대부분의 해결책은 브라우저에서 POST 방식으로 전송하고, 추가적인 정보를 이용해서 PUT, PATCH, DELETE와 같은 정보를 같이 전송하는 것이다.
+
+이를 'OverloadedPOST' 라고 한다.
+
+Ajax를 이용해서 전송하는 경우 추가적인 정보는 아래와 같이 처리한다.
+
+```
+$.ajax({
+	type:'delete',
+	url:'/replies/'+rno
+	headers: {
+			"Content-Type" : "application/json",
+			"X-HTTP-Method-Override": "DELETE" },
+	dataType:'text',
+	success:function(result){
+		console.log("result: " + result);
+		if(result == 'SUCCESS'){
+			alert("삭제 되었습니다.");
+			getPage("/replies/" + bno +"/"+replyPage);
+		}
+	}
+});
+```
+
+<form> 태그를 이용해서 데이터를 전송하는 겨웅에는 POST 방식으로 전송하되, ```_method``` 라는 추가적인 정보를 이용한다.
+
+스프링은 이를 위해 HiddenHttpMethodFilter라는 것을 제공한다.
+
+이는 <form> 태그 내에서
+```
+<input type='hidden' name="_method" value='PUT'>
+```
+ 과 같은 형태로 사용해서 GET/POST 방식만 지원하는 브라우저에서 REST 방식을 사용할 수 있도록 설정할 때 사용한다.
+```
+- POST + _method value=put' => PUT 방식
+
+- POST +_method value='delete' => DELETE 방식
+```
+
+웹 애플리케이션 내에서 Filter로 설정해서 처리한다.
+
+ ![](https://drive.google.com/uc?export=view&id=1-Z6A4kA-A0Dnx6xxNNF-jO-Q38rt9dyO)
+
+
+---
+
+
+###### 389
+
+댓글의 페이징처리
+-
+
+REST 방식의 경우 전통적인 Model 객체에 데이터를 담지 않고 객체를 처리할 수 있기 때문에 파라미터가 조금 달리지긴 해도 간단히 처리가능하다.
+
+(기존의 Criteria 사용)
+
+컨트롤러의 경우 두 개의 @PathVariable을 이용해서 처리한다.
+
+- '/replies'/게시물번호/페이지번호'
+
+- GET 방식의 처리
+
+ ![](https://drive.google.com/uc?export=view&id=1zeeV_wfwGpuH2t27dypyxAJlHQ1O3dVU)
+
+Ajax로 호출 될것이므로 Model을 사용하지 못한다는 점을 신경써야한다.
+
+전달해야 하는 데이터들을 담기 위해서 Map 타입의 객체를 별도로 생성해야한다.
+
+
+
+
+---
+
+
+###### 395
+
+화면에서의 Ajax 호출
+-
+
+jsp 쪽에 jQuery 라이브러리를 사용할수 있게 처리해야한다.
+
+
+@RestController의 경우 객체를 JSON 방식으로 전달하기 때문에 jQuery를 이용해서 호출할때는 getJSON()을 이용한다
+
+
+Ajax 전체 목록에 대한 함수처리
+```js
+function getAllList(){
+
+	$.getJSON("/replies/all/" + bno, function(data){
+
+		var str ="";
+		console.log(data.length);
+
+		$(data).each(
+			function(){
+				str += "<li data-rno='"+this.rno+"' class='replyLi'>"
+						+ this.rno + ":" + this.replytext
+						+ "</li>";
+			});
+
+		$("#replies").html(str);
+	});
+}
+```
+
+사용자가 ADD REPLY 버튼을 누를때 이벤트 처리
+
+```js
+
+$("#replyAddBtn").on("click", function(){
+
+		var replyer = $("#newReplyWriter").val();
+		var replytext = $("#newReplyText").val();
+
+		$.ajax({
+			type : 'post',
+			url : '/replies',
+			headers : {
+				"Content-Type" : "application/json",
+				"X-HTTP-Method-Override" : "POST"
+			},
+			dataType : 'text',
+			data : JSON.stringify({
+				bno : bno,
+				replyer : replyer,
+				replytext : replytext
+			}),
+			success : function(result) {
+
+				if (result == 'SUCCESS'){
+					alert("등록 되었습니다.");
+getAllList();
+				}
+			}
+		});
+	});
+```
+
+jQuery를 이용하여 $.ajax() 를 통해 서버를 호출한다.
+전송하는 데이터는 JSON으로 구성된 문자열을 사용하고, 전송 받은 결과는 단순 문자열이다.
+
+특이한 점은 jQuery가 제공하는 $.post() 등을 사용하지 않고, $.ajax()를 이용해서 다양한 옵션으로 구성된 것을 볼 수있다.
+
+* jQuery의 $.post()를 사용하지 않는 이유
+
+$.post()의 경우 일반적인 데이터 전송 방식에는 적합하다.
+예를 들어 위의 호출을 $.post()를 이용하도록 작성하면 아래와 같다.
+
+```js
+$("#replyAddBtn").on("click", function(){
+
+	var replyer = $("#newReplyWriter").val();
+	var replytext = $("#newReplyText").val();
+
+	$.post("/replies",
+		{replyer:replyer, replytext:replytext},
+		function(result){
+			alert(result);
+		}
+);
+
+});
+```
+
+이 코드를 실행한 결과는 제대로 호출되지 않고 415(지원되지 않는 타입)상태 코드가 전송된다.
+
+이렇게 전송하는 경우 RestController에서는 @RequestBody 애너테이션이 제대로 처리되지 못하게 되는 문제가 생긴다.
+
+@RequestBody는 JSON으로 전송된 데이터를 ReplyVO 타입의 객체를 변환해주는 역할을 하는데, 이때의 데이터는 일반 데이터가 아닌 JSON으로 구성된 문자열 데이터이다.
+
+$.ajax()를 사용한 코드에서
+
+HTTP 헤더정보에 'application/json'이라고 명시한 상태에서 데이터를 전송하고,
+
+전송되는 데이터는 JSON.stringify()를 이용해 JSON 데이터를 구성해서 전송하므로 실제 전송시에는 아래와 같이 문자열이 전송된다.
+
+{"bno":122875, "replyer":"user13","replytext" : "테스트 댓글입니다."}
+
+즉 데이터를 전송할때와 동일하게 직접 문자열로 처리되어서 전송된다.
+
+
+위의 리스트(getAllList())로 나온 리스트 화면에서
+
+특정 댓글을 선택하면 수정과 삭제가 가능한 화면을 보여줄 필요가 있다.
+이를 위해 getAllList() 내부의 각 댓글에 버튼을 추가한다.
+
+```js
+$(data).each(function(){
+	str+= "<li data-rno='"+this.rno+"' class='replyLi'>"
+	+ this.rno+":" + this.replytext+
+	"<button>MOD</button></li>";
+});
+```
+
+각 버튼에 대한 이벤트를 처리하는 작업은 다음과 같이 처리한다.
+
+
+```js
+
+$("#replies").on("click", ".replyLi button", function(){
+
+	var reply = $(this).parent();
+
+	var rno = reply.attr("data-rno");
+	var replytext = reply.text();
+
+	alert(rno + " : " + replytext);
+});
+
+```
