@@ -5,6 +5,8 @@
 - [logger](#logger)
 - [@Resource 주입](#resource)
 - [@autowired와 Resource 어노테이션의 차이](#autowiredresource)
+- [root-context와 servlet-context](#rootcontextservletcontext)
+
 
 ### requestparam
 
@@ -80,3 +82,20 @@ private static final Logger logger = LoggerFactory.getLogger(현재클래스.cla
 -
 
  ![](https://drive.google.com/uc?export=view&id=1Hs0mwVSliG0nVlnL58dfbwPY7icQvbt_)
+
+
+---
+
+###### rootcontextservletcontext
+
+root-context와 servlet-context
+-
+
+servlet context의 경우 web application의 client의 요청을 받기 위한 entry point로서의 서블릿의 context 설정이라고 볼 수 있습니다.
+따라서 해당 context의 설정에는 요청에 대한 처리를 해줄 controller의 매핑설정(handler mapping)과 요청처리 후 view처리를 어떻게 할 것인가에 대한 설정(view resolver) 등이 존재하게 됩니다.
+
+root context의 경우 web application의 실제 비지니스 혹은 목적을 위한 service layer와 해당 service layer에서 조회 및 처리에 필요한 database 와 연결되는 repository layer를 구성하는 bean들에 대한 설정을 하게 됩니다.
+
+위 두개의 context는 계층구조를 가지게 되는데 아래의 그림처럼  serlvet context에서 root context에 등록된 bean들에 대한 참조를 가지는 구조로 형성됩니다.(반대의 참조는 불가능합니다.)
+
+ ![](https://drive.google.com/uc?export=view&id=1eNiyTtNuNMN9WUsHPLbAV1OoyY1dkHap)

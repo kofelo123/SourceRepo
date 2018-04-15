@@ -11,6 +11,10 @@
 ```
 ---
 
+
+
+
+
 ```java
 public String makeSearch(int page){
 
@@ -34,6 +38,9 @@ private String encoding(String keyword){
 }
 ```
 
+
+
+
 ---
 
 ```html
@@ -50,6 +57,9 @@ private String encoding(String keyword){
 </ul>
 
 ```
+
+
+
 
 ```js
 <script>
@@ -69,13 +79,13 @@ private String encoding(String keyword){
 
 ---
 
-```
+```sql
 <if test="title != null">
   AND title like #{title}
 </if>
 ```
 
-```
+```sql
 <choose>
   <when test="title != null">
     AND title like #{title""
@@ -235,5 +245,19 @@ $("#replies").on("click", ".replyLi button", function(){
 
 	alert(rno + " : " + replytext);
 });
+
+```
+
+---
+```java
+List<Integer> list = Arrays.asList(1,2,3,4,5);
+for(Integer i : list){ //for each
+	System.out.println(i);
+}
+//아래처럼 해도 에러없다 - Iterable - Collection - List
+Iterable<Integer> iter = Arrays.asList(1,2,3,4,5);
+for(Integer i : iter){ //for each
+	System.out.println(i);
+}
 
 ```
