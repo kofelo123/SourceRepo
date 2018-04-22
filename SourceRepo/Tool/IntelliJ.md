@@ -1,6 +1,10 @@
+- [메이븐 프로젝트 생성](#mavenproject)
 - [인텔리제이 - 깃허브연동](#intellijgithub)
 - [톰캣 디플로이 미지정에러](#tomcatnotdeploy)
 - [dispatcher-servlet.xml, applicationContext.xml](#intellijcontext)
+- [properties 한글인코딩](#propertiesencoding)
+- [빌드 버전에러](#buildsversionerror)
+
 ---
 
 
@@ -67,7 +71,7 @@ VCS -> Checkout from Version Control - Git
 
 
  ---
- - [메이븐 프로젝트 생성](#mavenproject)
+
 
  ###### mavenproject
 
@@ -182,3 +186,33 @@ STS의 비즈니스 계층, DAO 계층 등을 구성하는 root-context는  (Con
  </servlet-mapping>
 
 ```
+
+---
+
+
+###### propertiesencoding
+
+properties 한글 인코딩
+-
+
+다국어 또는 정적 설정 등의 이유로 아직 * .properties 파일을 사용하는데 이 파일에서 한글을 보려면 Eclipse의 경우엔 Properties 플러그인을 설치해야 볼 수 있다. IntelliJ IDEA에서는 간단한 설정을 통해 한글을 볼 수 있는데 방법은 다음과 같다.
+
+Preferences -> Editor -> File Encodings 에서 'Transparent native-to-ascii conversion'를 체크하면 된다.
+
+ ![](https://drive.google.com/uc?export=view&id=1xI81L3mZTmTZ4HlfCOsyKWNKMEoruR-o)
+
+
+ ---
+
+
+###### buildsversionerror
+
+ 빌드 버전에러
+ -
+
+ error message : source release 8 requires target release 1.8
+
+ pom.xml에 명시된  빌드의 버전이 1.6으로 되어있거나 해서 자바8 이나 jdk 1.8로 지정된 프로젝트와 맞지않을경우 수정해줘야함
+
+
+ -> pom.xml에 build 관련 정의가없으면 매번 5로 변하거나, 매번 arifact에 lib등록해줘야 하는걸로 보인다.

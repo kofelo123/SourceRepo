@@ -6,7 +6,7 @@
 - [원하는것만 push](#selectpush)
 - [git add -p](#gitaddp)
 - [git fetch,pull / add,clone](#fetchpulladdclone)
-
+- [git ignore](#gitignore)
 - [에러](#error)
   - [add - 줄바꿈관련에러](#adderror)
   - [두개의 히스토리 가진 프로젝트병합](#refusingtomerge)
@@ -180,3 +180,30 @@ git pull,fetch
 pull 을 실행하면, 원격 저장소의 내용을 가져와 자동으로 병합 작업을 실행하게 됩니다. 그러나 단순히 원격 저장소의 내용을 확인만 하고 로컬 데이터와 병합은 하고 싶지 않은 경우에는 fetch 명령어를 사용할 수 있습니다.
 
  fetch 후 merge 를 수행하면, pull 명령을 실행했을 때와 같은 이력이 만들어집니다. 사실 pull 이라는 것은 내부적으로 보면 fetch + merge 이기 때문이죠!
+
+---
+
+## gitignore
+
+```
+# : comments
+
+# no .a files
+*.a
+
+# but do track lib.a, even though you're ignoring .a files above
+!lib.a
+
+# only ignore the TODO file in the current directory, not subdir/TODO
+/TODO
+
+# ignore all files in the build/ directory
+build/
+
+# ignore doc/notes.txt, but not doc/server/arch.txt
+doc/*.txt
+
+# ignore all .pdf files in the doc/ directory
+doc/**/*.pdf
+
+```

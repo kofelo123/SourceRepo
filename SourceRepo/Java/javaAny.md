@@ -689,3 +689,78 @@ error massage:  unmappable character for encoding MS949
 
 이런옵션도 있다고한다.
 -locale ko_KR -encoding UTF-8 -charset UTF-8 -docencoding UTF-8
+
+
+---
+- [주석처리에 대한것](#comment)
+
+######comment
+주석처리에 대한것
+-
+1.메소드
+
+```
+	/**
+	 * 정의된 메세지 조회
+	 * @param code - 메세지 코드
+	 * @return String
+	 */
+	public String getMessage(String code) {
+		return getReloadableResourceBundleMessageSource().getMessage(code, null, Locale.getDefault());
+	}
+
+///
+
+   /**
+     * 조직정보를 코드형태로 리턴한다.
+     *
+     * @param 조회조건정보 vo
+     * @return 조직정보 List
+     * @throws Exception
+     */
+    public List<CmmnDetailCode> selectOgrnztIdDetail(ComDefaultCodeVO vo) throws Exception;
+```
+
+2.인스턴스
+```
+	/** 검색조건 */
+    private String searchCondition = "";
+
+    /** 검색Keyword */
+    private String searchKeyword = "";
+```
+3.클래스
+```
+/**
+ * 메시지 리소스 사용을 위한 MessageSource 인터페이스 및 ReloadableResourceBundleMessageSource 클래스의 구현체
+ * @author 공통서비스 개발팀 이문준
+ * @since 2009.06.01
+ * @version 1.0
+ * @see
+ *
+ * <pre>
+ * << 개정이력(Modification Information) >>
+ *
+ *   수정일      수정자           수정내용
+ *  -------    --------    ---------------------------
+ *   2009.03.11  이문준          최초 생성
+ *
+ * </pre>
+ */
+```
+
+4. js
+```
+/****************************************************************
+ *
+ * 파일명 : EgovBBSMng.js
+ * 설  명 : 전자정부 공통서비스 로그관리 기능 사용 JavaScript
+ *
+ *    수정일      수정자     Version        Function 명
+ * ------------    ---------   -------------  ----------------------------
+ * 2009.03.10    이삼섭       1.0             최초생성
+ *
+ *
+ * **************************************************************/
+```
+---

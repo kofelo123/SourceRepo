@@ -3,6 +3,7 @@
 - [vim 에디터종료](#vimediterend)
 - [vim에서 단어찾기](#vimsearch)
 - [디렉터리 권한](#directorypermission)
+- [현재 사용자로 디렉터리 권한지정](#chown)
 - [디렉터리 생성](#directorycreate)
 - [디렉터리/파일 삭제](#directorydelete)
 - [톰캣로그확인](#tomcatlog)
@@ -80,6 +81,26 @@ chomod 755 ./filename
 
 //(소유자는 모든권한, 그룹과 방문자는 읽기와실행만 가능)
 ```
+
+---
+
+
+
+
+###### chown
+
+현재 사용자로 디렉터리 권한지정
+-
+
+
+ubuntu에서
+
+id 를 입력하면 사용자 관련 해서 이름이 나오고(ubuntu)
+
+sudo chown ubuntu .
+입력하면 현재 디렉터리의 권한을 우분투로 만드는것이다.
+permission denied에 대해 이런식으로도 접근 가능.
+
 
 ---
 

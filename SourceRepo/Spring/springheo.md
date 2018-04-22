@@ -14,6 +14,9 @@
 - [Annotation을 이용한 AOP](#102)
 - [스프링 JDBC](#114)
 - [Spring JDBC 설정](#118)
+- [트랜잭션 처리-XML](#143)
+- [트랜잭션 처리 - 어노테이션](#150)
+- [JDBC 연결 정보 암호화](#155)
 
 ---
 
@@ -944,3 +947,215 @@ src/main/resources/database/jdbc.properties 위치로둠.
 
 
  ![](https://drive.google.com/uc?export=view&id=1eAaeJGD9sp2OEu50KTQDZncoaO6bV_44)
+
+ ---
+
+###### 143
+
+ 트랜잭션 처리 -XML
+ -
+
+  ![](https://drive.google.com/uc?export=view&id=1daHvPz7emNo9ccW0A2sMdx4nYW3QpNP1)
+
+ (FK로 연결된 두테이블간의 부모 테이블?의 레코드가 먼저 삭제되어야 자식의 레코드가 삭제가 된다는 이야기, 삭제할떄 두가지를 동시에 트랜잭션 처리해서 삭제시켜야한다는 이야기를 함)
+
+ * XML을 이용한 트랜잭션 설정
+
+ 트랜잭션 설정을 위해 AOP 설정을 해줘야한다.
+
+ 1. pom.xml - dependency
+
+  ![](https://drive.google.com/uc?export=view&id=1BZf01njSCxiMqeW56H4p6r_Hx3W075Ex)
+
+  ![](https://drive.google.com/uc?export=view&id=1id4WYrnP4PRdVAt12_DXi5T6F-RFa55T)
+
+ 2. 네임스페이스 추가
+
+ 스프링 컨텍스트(root-context)의 aop, tx 네임스페이스 추가
+
+ 3. TransactionManager 빈 설정
+
+ TransactionManager 빈은 스프링 트랜잭션 처리를 위한 핵심 클래스이다. xml 뿐만아니라 어노테이션 기반 트랜잭션 처리에도 사용됨.
+ ```xml
+ <bean id="txManager"
+ class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+ <property name="dataSource" ref="dataSource" />
+ </bean>
+ ```
+
+ 4. Advisor 설정
+
+ 스프링은 XML기반 AOP를 이용한 트랜잭션 설정을 사용하고 있다.
+
+ 트랜잭션을 설정하기 위해서 <tx:advice>태그와 <aop:config> 태그를 이용한다.
+
+
+
+ * <tx:advice>
+
+ <tx:advice>태그는 트랜잭션 실행과 관련된 설정
+
+  ![](https://drive.google.com/uc?export=view&id=18ldNRTYOes_la6lNuqarLnI_W6uiQySF)
+
+
+ * <aop:config>
+
+ <aop:config>는 트랜잭션이 처리되야 할 포인트컷 지정과 트랜잭션 어드바이스,포인트컷을 연결하기 위한 어드바이서를 설정하기 위한 태그이다.
+
+ 트랜잭션 설정을 위해 <aop:config>의 서브태그 <aop:pointcut> 태그로 트랜잭션 처리가 되어야 할 포인트 컷 표현식을 기술한다.
+ <aop:advisor> 태그는 앞서 설정했던 어드바이스와 포인트컷을 연결하기 위해 사용한다.
+
+  ![](https://drive.google.com/uc?export=view&id=1Xo0XplRuY4jzYKWIELLyrc3xSxQri48e)
+
+  ![](https://drive.google.com/uc?export=view&id=1XmSTzboRRwyFKgt8luO6njFW5r1uN-6p)
+
+  ![](https://drive.google.com/uc?export=view&id=1psrEJVU-ivzP36TAy3FFax-l57TPcZme)
+
+
+
+ ---
+
+###### 150
+
+ 트랜잭션 처리 - 어노테이션
+ -
+
+ 클래스의 public method 앞에 @Transactional 어노테이션을 둘 수있다.
+ <tx:annotation-driven> 태그는 @Transactional 애너테이션을 설정한 곳에 트랜잭션 동작을 활성화시킨다.
+
+ 1. <tx:annotation-dirven>
+
+
+ ```
+ <tx:annotation-driven transaction-manager="txManager" />
+ ```
+ 만일 트랜잭션 매니저의 빈 이름이transactionManager
+ 일경우에는 다음과 같이 transaction-manager 속성을
+ 생략할 수 있다.
+ ```
+ <tx:annotation-driven />
+ ```
+  ![](https://drive.google.com/uc?export=view&id=1FhzCY_LfqxRrUYxOSXPe6VU2Om7Lldsk)
+
+ 설정파일(root-context.xml)
+  ![](https://drive.google.com/uc?export=view&id=1F6SXh4_98EAE4kIN6I58a2BKPrudE_L7)
+
+
+ 2. @Transactional 어노테이션
+
+ : 메서드레벨과 클래스 레벨에 사용할 수있다.
+ 클래스 선언부 위에 사용할 경우 클래스 내의 모든 메소드에 트랜잭션 속성이 추가된다.
+
+ @Transational 어노테이션은 트랜잭션 매니저 이름을 입력해 줘야한다.
+ 그런데 TransactionManager 빈의 아이디가 transactionmanager일 경우 매니저이름 생략이 가능하다.
+
+  ![](https://drive.google.com/uc?export=view&id=1g20eJuYAZ495_2k-cA5dyO2Fcp0xvTxY)
+
+ 메서드 트랜잭션 설정을 평가할떄 가장 깊은위치의 설정을 우선시한다.(패키지 등의 경로 깊이를 말하는건지..)
+
+  ![](https://drive.google.com/uc?export=view&id=1C6Rzkc0vl5C8UHKL4617ZkUyHUiDk3q-)
+
+ 스프링은 인터페이스에 어노테이션을 붙인느 것과는 반대로 구현 클래스와 메소드에만 @Transactional 어노테이션을 붙이기를 권장한다.
+ 인터페이스에도 붙일수 있지만, 인터페이스 기반의 프록시를 사용하는 경우에만 제대로 동작한다(무슨말인지..)
+ ('... 프록시 연관된 얘기들이 있다')
+
+ ---
+
+
+###### 155
+
+ JDBC 연결 정보 암호화
+ -
+
+ 평문으로된(Plain Text) 상태로 코딩하면 개발단에 보안 취약점이 존재한다.
+
+ Jasypt(Java Simplified Encryption) 라이브러리를 사용하여
+ properties 파일을 암호화 할 수있다.
+ 비밀번호 인코딩에도 사용할 수 있다.
+
+ 우선 dependency를 기입해준다.
+
+ (jasypt , version 1.9.0)
+ (jasypt-spring31 , version 1.9.0)
+
+ ```xml
+ 	<dependency>
+ 			<groupId>org.jasypt</groupId>
+ 			<artifactId>jasypt</artifactId>
+ 			<version>1.9.0</version>
+ 		</dependency>
+ 		<dependency>
+ 			<groupId>org.jasypt</groupId>
+ 			<artifactId>jasypt-spring31</artifactId>
+ 			<version>1.9.0</version>
+ 		</dependency>
+ ```
+
+ 스프링 설정파일에서 properties를 암호화 하기위한 빈 설정을 추가한다.
+
+ 기존의 프로퍼티 위치를 지정하는 <context:property>태그는 삭제하고 jasypt 라이브러리의 EncryptablePropertyPlaceholderconfigurer을 이용하여 설정파일 위치를 지정한다.
+
+ EnvironmentStringPBEConfig 빈을 정의할 때 algorithm과 passwordEnvname 속성을 설정할 수 있다.
+ standardPGEStringEncrytor 빈을 설정할 때 password 속성에 설정하는 값은 인코딩할 키를 지정한다. 이 키는 JDBC 연결 정보를인코딩 할 떄 사용한다.
+
+  ![](https://drive.google.com/uc?export=view&id=1ylDzSg_QYZouDvtiUrCx_Nmjzt-nAd-v)
+
+  ![](https://drive.google.com/uc?export=view&id=1H8VsOrW7nloV70rMGPsXM9wXhxfiyp0M)
+
+
+ >'properties를 사용하는 기본방법이 있었고 이번에 보안을 적용하기 위한 jasypt를 쓰는건데 이게 내가 egov에서 처음 접하게된 properties 쓰는 방식과 비슷한빈인 것 같다.'
+
+ ~160
+
+ ```xml
+ //root-context.xml
+
+ <bean id="propertyConfigurer" class="org.jasypt.spring31.properties.EncryptablePropertyPlaceholderConfigurer">
+ 		<constructor-arg ref="configurationEncryptor" />
+ 		<property name="locations">
+ 			<list>
+ 				<value>/WEB-INF/spring/setting.properties</value>
+ 			</list>
+ 		</property>
+ 	</bean>
+
+ 	<bean id="environmentVariablesConfiguration" class="org.jasypt.encryption.pbe.config.EnvironmentStringPBEConfig">
+ 		<property name="algorithm" value="PBEWithMD5AndDES" />
+ 		<property name="passwordEnvName" value="APP_ENCRYPTION_PASSWORD" />
+ 	</bean>
+
+ 	<bean id="configurationEncryptor" class="org.jasypt.encryption.pbe.StandardPBEStringEncryptor">
+ 		<property name="config" ref="environmentVariablesConfiguration" />
+ 		<property name="password" value="rktwlsrud" />
+ 	</bean>
+
+ ```
+
+ ```java
+ import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
+
+ public class JDBCEncryptor {
+
+ 	public static void main(String[] args) {
+ 		// TODO Auto-generated method stub
+ 		StandardPBEStringEncryptor enc = new StandardPBEStringEncryptor();
+ 		enc.setPassword("rktwlsrud");
+ 		System.out.println(enc.encrypt("인코딩할 value"));
+ 		System.out.println(enc.encrypt("인코딩할 value"));
+
+ 	}
+
+ }
+
+
+ ```
+
+ ```
+ //properties
+
+
+ # database - local
+ Local.Url = ENC(7uUQ327caOu/a3F7nD/YxSqRCgdhXlpqrtwHpANNAfKmmjD29bLYMvapLyBQKaAPtFiW64v1VuI=)
+
+ ```
+ 값에 ENC(인코딩값)

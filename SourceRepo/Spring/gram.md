@@ -6,7 +6,11 @@
 - [@Resource 주입](#resource)
 - [@autowired와 Resource 어노테이션의 차이](#autowiredresource)
 - [root-context와 servlet-context](#rootcontextservletcontext)
+- [dependency 설정에서 scope 종류와 설명](#dependencyscope)
 
+- [error]
+  - [NoClassDefFoundError](#noclassdeffounderror)
+  - [slf4j 로그 못찍을떄 에러](#slf4jlogerror)
 
 ### requestparam
 
@@ -99,3 +103,75 @@ root context의 경우 web application의 실제 비지니스 혹은 목적을 �
 위 두개의 context는 계층구조를 가지게 되는데 아래의 그림처럼  serlvet context에서 root context에 등록된 bean들에 대한 참조를 가지는 구조로 형성됩니다.(반대의 참조는 불가능합니다.)
 
  ![](https://drive.google.com/uc?export=view&id=1eNiyTtNuNMN9WUsHPLbAV1OoyY1dkHap)
+
+
+
+ ---
+
+
+ ###### dependencyscope
+
+ dependency 설정에서 scope 종류와 설명
+ -
+
+ pom.xml 설정시 dependency 설정에서 scorp 종류와 설명.
+
+ compile : 컴파일 할때 필요. 테스트 및 런타임에도 클래스 패스에 포함 된다. scorp 을 설정 하지 않는 경우 기본값이다.
+ runtime : 런타임에 필요. JDBC 드라이버 등이 예가 된다. 컴파일 시에는 필요하지 않지만, 실행 시에 필요한 경우.
+ provided : 컴파일 시에 필요하지만, 실제 런타임 때에는 컨테이너 같은 것에서 제공되는 모듈. servlet, jsp api 등이 이에 해당. 배포시 제외된다.
+ test : 테스트 코드를 컴파일 할때 필요. 테스트시 클래스 패스에 포함되며, 배포시 제외된다.
+ ```
+ 예시)
+  <dependency>
+    <groupId>javax.servlet</groupId>
+    <artifactId>servlet-api</artifactId>
+    <version>2.5</version>
+    <scope>provided</scope>
+   </dependency>
+
+   <dependency>
+    <groupId>javax.servlet.jsp</groupId>
+    <artifactId>jsp-api</artifactId>
+    <version>2.1</version>
+    <scope>provided</scope>
+   </dependency>
+
+```
+
+
+---
+
+
+###### noclassdeffounderror
+
+NoClassDefFoundError: javax/servlet/ServletContext
+
+javax.servlet.ServletContext lib관련 에러가 있다는말인데
+
+artifactId에 오타가 있었다.
+
+그런데 그게 원래도 있는 artifactId고 없는 버전이 되니 pom.xml에 에러표시는 따로 안나고 lib를 가져오는데 문제가 생기는 것인데
+
+메뉴의 View -Tool Windows - Maven Project를 들어가보면
+
+GUI로 dependency관련 창이 나타나는데 거기서 어떤 jar파일 에러가 났는지 볼수 있었다.
+
+---
+
+
+###### slf4jlogerror
+
+slf4j 로그 못찍을떄 에러
+-
+
+error message: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+
+-> dependency에 slf4j-log4j12 추가
+
+error message:
+log4j:WARN No appenders could be found for logger (org.springframework.test.context.junit4.SpringJUnit4ClassRunner).
+log4j:WARN Please initialize the log4j system properly.
+
+-> log4j.xml , log4jdbc.log4j2.properties, logback.xml 등 log4j관련 설정파일 resources폴더에 넣어줘야(log4j.xml만 넣어도 돌아가긴한다)
+
+-> log4jdbc.log4j2.properties, logback.xml 는 MyBatis관련 로그찍을떄 필요

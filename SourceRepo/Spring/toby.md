@@ -23,6 +23,8 @@
 - [테스트를 위한 애플리케이션 컨텍스트 관리](#184)
 - [테스트 코드에 의한 DI](#190)
 - [학습 테스트로 배우는 스프링](#197)
+- [3장_템플릿](#209)
+- [변하는것과 변하지 않는것](#214)
 
 
 # seperationofconcerns
@@ -1335,6 +1337,7 @@ public class UserDaoTest{
 	DataSource dataSource = new SingleConnectionDataSource("jdbc:mysql://localhost/testdb", "spring", "book", true); //테스트에서 UserDao가 사용할 DataSource 오브젝트를 직접 생성
 	dao.setDataSource(dataSource); // 코드에 의한 수동DI
 }
+}
 ````
 이 방법의 장점은, XML 설정파일을 수정하지 않고도 테스트 코드를 통해 오브젝트 관계를 재구성할 수 있다는 것이다.
 
@@ -1449,18 +1452,19 @@ public class JUnitTest{
 
 	@Test
 	public void test1(){
-	assertTest(this, is(not(sameInstance(testObject)));
+	assertTest(this, is(not(sameInstance(testObject))));
 }
 	@Test
 	public void test2(){
-	assertTest(this, is(not(sameInstance(testObject)));
+	assertTest(this, is(not(sameInstance(testObject))));
 }
 	@Test
 	public void test3(){
-	assertTest(this, is(not(sameInstance(testObject)));
-}
+	assertTest(this, is(not(sameInstance(testObject))));
+  }
 }
 ```
+## fef
 is()는 equals() 비교를 해서 같으면 성공이지만
 
 is(not())은 반대로 같지 않아야 성공하는 매처이다.
@@ -1488,7 +1492,7 @@ public class JUnitTest{
 	@Test
 	assertThat(testObjects, not(hasItem(this)));
 	testObjects.add(this);
-}
+
 }
 ```
 컬렉션으로 등록한 스태틱 변수에 현재 테스트 오브젝트가 컬렉션에 이미 있는지 확인한고 없으면 추가한다.
@@ -1546,3 +1550,163 @@ is()는 타입만 일치하면 어떤 값이든 검증할 수있다.
 동등분할: 같은 결과를 내는 값의 범위를 구분해서 각 대표값으로 테스트를 한다.
 
 경계값분석: 에러는 동등분할 범위의 경계에서 주로 많이 발생한다는 특징을 이용해서 경계의 근처 값을 통해 테스트함.
+
+
+
+---
+
+###### 209
+
+3장_템플릿
+-
+
+템플릿이란 바뀌는 성질이 다른 코드중에서 변경이 거의 일어나지 않으며 일정한 패턴으로 유지되는 특성을 가진 부분을 자유롭게 변경되는 성질을 가진 부부능로 부터 독립시켜서 효과적으로 활용하는 방법
+
+* UserDao 개선점 - 예외처리 기능
+
+예외상황에 대한 처리가 필요하다.
+
+JDBC 코드의 원칙으로 예외처리를 해야한다. 예외발생시 사용한 리소스를 반드시 반환하도록 만들어야 하기때문.
+
+ ![](https://drive.google.com/uc?export=view&id=1fRGWtY734ce_iQ0mpx6izt5kZrIbOQG2)
+
+이 코드의 문제는 Connection과 PreparedStatement의 공유 리소스 사용중 에러발생시 close()가 수행되지 않아서
+리소스반환이 되지않아 쌓이면, 커넥션 풀에 여유가 없어지고 리소스가 모자란 심각한 오류를 야기할 수 있다.
+
+( 리소스 반환과 close()
+Connection, PreparedStatement는 close()가 있는데
+이 메소드는 닫는다는 의미보다 리소스를 반환하는 의미가 더 중요하다.
+Connection, PreparedStatement는  보통 풀(pool)방식으로 운영되는데 미리 정해진 풀안에 제한된 수의 리소스(Connection,Statement)를 만들어 두고 필요할떄 이를 할당하고 ,반환하면 다시 풀에 넣는 방식으로 운영된다.
+요청이 많은 서버환경에서는 매번 새로운 리소스를 만들기보다 풀에 미리 만들어둔 리소스를 돌려가며 사용하는 편이 훨씬 유리하다. 대신 사용한 리소스는 빠르게 반환해야한다.
+close()는 리소스를 풀로 돌려주는 역할을 한다.)
+
+그래서 어떠한 상황에서도 가져온 리소스를 반환시키기 위해  try/catch/finally 구문 사용이 권장된다.
+
+ ![](https://drive.google.com/uc?export=view&id=1rY7G1A6Cg5WMKilAaGSrGoIwLZcNER7I)
+
+위코드에서 ps,c가 null인지확인하는 부분은 만약 생성전에 에러발생시 null인 상태에서 close()를 하면 NullPointException이 발생할수 있어서 null여부를 확인하는것이다.
+
+close()또한 SQLException이 발생할 수 있는 메소드라는것을 인지해야한다.
+
+---
+
+###### 214
+
+변하는것과 변하지 않는것
+-
+
+코드를 전체 훑어보면 복잡한 try/catch/finallly 블록이 2중으로 중첩까지 되어 나오고, 모든 메소드에 반복된다.
+
+이런경우 실수가 생겼을때 문제가 커질수있다. 방대한 프로젝트에서 C&P로 마구 복붙하다가 문제가 생겼을때 보수하는것은 끔찍한 일이다.
+
+문제의 핵심은 변하지않는 중복되는 코드와 로직에 따라 확장되고 변하는 코드를 잘 분리하는 것이다.
+
+1장에서 봤던것 처럼 비슷하게 접근을 하지만 이번 코드는 DAO와 DB 연결기능을 분리하는 것과는 성격이 다르기 때문에 해결방법이 좀 다르다
+
+ ![](https://drive.google.com/uc?export=view&id=1Fl4sCnMASSt1u-RjD_yJNX9U7EU6DuCi)
+
+변하는 부분을 변하지 않는 나머지 코드에서 분리하는것을 시도해본다.
+
+* 메소드추출
+
+
+변하는 부분을 변하지않는 부분이 감싸고 있기에
+
+변하는 부분을 메소드로 추출하는 방법을 시도해본다.
+
+ ![](https://drive.google.com/uc?export=view&id=1VEy0ypNb2_KZmghos5rHuLUHNLxMSi3b)
+
+그러나 변하는 부분을 메소드로 추출하는것은 잘못된 생각이다. 메소드 추출은 반복되는 즉 변하지 않는 부분을 추출해야하기 떄문.
+
+* 템플릿 메소드 패턴의 적용
+
+템플릿 메소드 패턴은 상속을 통해 기능을 확장해서 사용하는 부분이다. 변하지 않는 부분을 슈퍼클래스로 두고 변하는 부분은 추상 메소드로 정의해둬서 서브클래스에서 오버라이드 하여 새롭게 정의해 쓰도록 하는것이다.
+
+추출해서 별도의 메소드로 독립시킨 makeStatement() 메소드를 다음과 같이 추상메소드 선언으로 변경한다.
+물론 UserDao 클래스도 추상 크래스가 되야 한다.
+```
+abstract protected PrepredStatement makeStatement(Connection c)throws SQLException;
+
+```
+이를 상속하는 서브클래스를 만들어서 이 메소드를 구현한다.
+
+try/catch/finally 고정된 블록을 가진  슈퍼클래스메소드와,
+필요에 따라 상속을 통해 구체적인 preparedStatement를 바꿔서 사용할 수있게 만드는 서브클래스로 깔끔하게 분리한다.
+
+![](https://drive.google.com/uc?export=view&id=1UoaqhAHeEgdqf0d9M7kD8C-jQPyv2S9y)
+
+확장하고 싶을떄마다 상속을 통해 자유롭게 확장할수있고 불필요한 변화는 막았으니 개방폐쇄원칙(OCP) 을 그럭저럭 지킨 구조라고 할 수있다.
+
+하지만 템플릿 메소드 패턴으로의 접근은 제한이 많다.
+가장큰문제는 DAO 로직마다 상속을 통해 새로운 클래스를 만들어야 한다는 점이다.
+만약 이방식대로라면 UserDao의 JDBC 메소드가 4개일 경우 4개의 서브클래스를 만들어야 하니 단점이 더 많아진다.
+
+![](https://drive.google.com/uc?export=view&id=1z0HhDgDvGgaTCBznNNW4nJKHdFo9xGpm)
+
+또한 확장구조가 이미 클래스 설계시점에서 고정되어버린다.
+
+불변의 UserDao의 JDBC try/catch/finally 블록과 가변의 PreparedStatement를 담는 서브클래스들이 이미 클래스 레벨에서 컴파일 시컴에 이미 그 관계가 형성되어있다.
+그로인해 유연성이 떨어지고, 상속을 통해 확장을 꾀하는 템플릿 메소드 패턴의 단점이 고스란히 드러난다.
+
+* 전략패턴의 적용
+
+OCP(개방폐쇄원칙)을 잘 지키는 구조이며서 템플릿 메소드보다 유연하고 확장성이 뛰어난 것이, 오브젝트를 아예 둘로 분리하고 클래스 레벨에서는 인터페이스를 통해서만 의존하도록 만드는 전략패턴이다.
+
+OCP 관점에서 보면 확장에 해당하는 변하는 부분을 별도의 클래스로 만들어 추상화된 인터페이스를 통해 위임하는 방식이다.
+
+그림의 좌측에 Context의 contextMethod()에서 일정한 구조를 가지고 동작하다가 특정 확장 기능은 Strategy 인터페이스를 통해 외부의 독립된 전략 클래스에 위임한다.
+
+![](https://drive.google.com/uc?export=view&id=1vtrQhJDlvNbiW6FxvyAIfXzCpnB0oTj6)
+
+deleteAll() 메소드에서 변하지 않는 부분이라고 명시한것이 바로 contextMethod()가 된다.
+deleteAll()은 JDBC를 이용해 DB를 업데이트하는 작업이라는 변하지 않는 맥락(context)를 갖는다. deleteAll()의 컨텍스트를 정리해보면 다음과 같다.
+
+- DB 커넥션 가져오기
+- PreparedStatement를 만들어줄 외부 기능 호출하기
+- 전달받은 PreparedStatement 실행하기
+- 예외발생시 이를 메소드 밖으로 던지기
+- 모든 경우에 만들어진 PreparedStatement와Connection을 적절히 닫아주기
+
+두번쨰 작업의 PreparedStatement 만들어주는 외부기능이 바로 전략패턴에서 말하는 전략이라고 볼 수있다.
+
+전략패턴의 구조를 따라 이 기능을 인터페이스로 만들어두고 이터페이스의 메소드를 통해 PreparedStatement 생성전략을 호출해주면 된다.
+여기서 눈여겨 볼것은 PreparedStatement 를 생성하는 전략을 호출할때는 이 컨텍스트내에서 만들어둔 DB커넥션을 전달해야한다는 점이다.
+커넥션이 없으면 PreparedStatement도 만들수가 없을테니 ..
+
+PreparedStatement를 만드는 전략의 인터페이스는 컨텍스트가 만들어둔 Connection을 전달받아서 PreparedStatement를 만들고 만들어진 PreparedStatement 오브젝트트 돌려준다.
+
+![](https://drive.google.com/uc?export=view&id=1wLjzWAokLOKbluLCzGCOky26izxOdV24)
+
+
+![](https://drive.google.com/uc?export=view&id=1rp5Xd4s0aJQXcQp0sixPVCxouKSq5J3h)
+
+하지만 전략패턴은 필요에 따라 컨텍스트는 그대로 유지되면서(OCP의 폐쇄원칙) 전략을 바꿔쓸 수 있다(OCP의 개방원칙)는 것인데, 이렇게 컨텍스트 안에서 이미 구체적인 전략클래스인 DeleteAllStatement를 사용하도록 고정되어있다면 뭔가 이상하다.
+ 컨텍스트가 StatementStrategy 인터페이스 뿐만 아니라 특정 구현 클래스인 DeleteAllStatement를 직접 알고 있다는것은 전략패턴에도 OCP에도 잘 들어맞다고 볼 수 없기 때문
+
+* DI 적용을 위한 클라이언트/컨텍스트 분리
+
+이 문제를 해결하기 위한 전략 패턴의 실제적인 사용방법을 본다.
+
+Context가 어떤 전략을 사용하게 할 것인가는 Context를 사용하는 앞단의 Client가 결정하는 게 일반적이다.
+
+Client가 구체적인 전략의 하나를 선택하고 오브젝트로 만들어서 Context에 전달하는 것이다. Context는 전달받은 Stategy 구현클래스의 오브젝트를 사용한다.
+
+![](https://drive.google.com/uc?export=view&id=1HeDzpwtT5NHAhzSRiZ1VvJhiosfEAIx8)
+
+이는 1장에서 사용한바있다. ( 컨텍스트(UserDao)가 필요로 ㅗ하는 전략(connectionMaker)의 특정 구현 클래스(DConnectionMaker) 오브젝트를 클라이언트(UserDaoTest)가 만들어서 제공하는 방법)
+
+이 구조에서 전략 오브젝트 생성과 컨텍스트로의 전달을 담당하는 책임을 분리한것이 ObjectFactoryㅇ며 , 이를 일반화한것이 의존관계 주입(DI)이다. 즉 DI란 이러한 전략패턴의 강점을 일반적으로 활용할 수 있도록만든구조이다.
+
+적용해보는데, 중요한것은 이 컨텍스트에 해당하는 JDBC try/catch/finally 코드를 클라이언트 코드인 StatementStrategy를 만드는 부분에서 독립시켜야 한다는 점이다.
+
+현재 deleteAll() 메소드에서 다음 코드는 클라이언트에 들어가야할 코드이다. deleteAll()의 나머지 코드는 컨텍스트 코드이므로 분리해야함
+```
+//클라이언트에 들어가야하는 코드
+StatementStrategy strategy = new DeleteAllStatement();
+```
+
+컨텍스트에 해당되는 코드는 별도의 메소드로 독립시켜본다.
+
+클라이언트는 DeleteAllStatement 오브젝트같은 전략클래스의 오브젝트를 컨텍스트 메소드로 전달해야한다. 그래서 파타리터로 지정한다.
+
+![](https://drive.google.com/uc?export=view&id=1xiq700jDpHM9pVnWATp8ENCV1If7AxZ7)
