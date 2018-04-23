@@ -4,6 +4,8 @@
 - [dispatcher-servlet.xml, applicationContext.xml](#intellijcontext)
 - [properties 한글인코딩](#propertiesencoding)
 - [빌드 버전에러](#buildsversionerror)
+- [Maven 강제 업데이트](#mavenupdate)
+
 
 ---
 
@@ -216,3 +218,14 @@ Preferences -> Editor -> File Encodings 에서 'Transparent native-to-ascii conv
 
 
  -> pom.xml에 build 관련 정의가없으면 매번 5로 변하거나, 매번 arifact에 lib등록해줘야 하는걸로 보인다.
+
+---
+
+
+
+###### mavenupdate
+
+Maven 강제 업데이트
+-
+
+file-> settings - Build,Execution,Deployment - Build Tools ->Maven -> Repositories - update
