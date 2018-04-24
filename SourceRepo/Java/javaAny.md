@@ -22,14 +22,14 @@
 - [hashCode()](#hashcode)
 - [쓰레드](#thread)
 - [enum](#enum)
-- [지넥스](#generics)
+- [지네릭스](#generics)
+- [컬렉션](#collection)
 - [Map(HashMap,Hashtable)](#map)
 - [set(HashSet,TreeSet)](#set)
 - [iterator](#iterator)
 - [List(ArrayList,LinkedList,Stack,Queue)](#list)
-- [컬렉션](#collection)
 - [javadoc](#javadoc)
-
+- [주석처리에 대한것](#comment)
 
 - [error]
   -[이클립스 import 안될때](#notworkingimport)
@@ -692,7 +692,7 @@ error massage:  unmappable character for encoding MS949
 
 
 ---
-- [주석처리에 대한것](#comment)
+
 
 ######comment
 주석처리에 대한것
