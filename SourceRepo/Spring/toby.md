@@ -17,7 +17,6 @@
 - [의존관계주입](#1111)
 - [XML을 이용한 설정](#129)
 - [2장 테스트](#145)
-- [댓글처리와 REST](#362)
 - [자동수행 테스트 코드](#151)
 - [테스트가 이끄는 개발](#175)
 - [테스트를 위한 애플리케이션 컨텍스트 관리](#184)
@@ -25,7 +24,7 @@
 - [학습 테스트로 배우는 스프링](#197)
 - [3장_템플릿](#209)
 - [변하는것과 변하지 않는것](#214)
-
+- [정리](#2155)
 
 # seperationofconcerns
 ## 관심사의 분리 1.2.1
@@ -1735,3 +1734,92 @@ StatementStrategy strategy = new DeleteAllStatement();
 클라이언트는 DeleteAllStatement 오브젝트같은 전략클래스의 오브젝트를 컨텍스트 메소드로 전달해야한다. 그래서 파타리터로 지정한다.
 
 ![](https://drive.google.com/uc?export=view&id=1xiq700jDpHM9pVnWATp8ENCV1If7AxZ7)
+
+
+```java
+public void deleteAll() throws SQLException{
+  StaementStrategy st = new DeleteAllStatement();
+  jdbcContextWithStatementStrategy(st);
+}
+
+정리-> 가변적인 요소인 c.PreparedStatement("delete from users") 이부분을
+
+StatementStrategy 전략 인터페이스의 메소드로 한후
+
+그를 구현하는 클래스에서 구현하고 PreparedStatement 반환
+
+deleteAll에서 반환된것을 사용
+
+```
+
+
+---
+
+###### 2155
+
+정리
+-
+
+가변 -> TemplateMethod -> DAO로직마다 상속을통해 새 클래스, 클래스 레벨에서 컴파일시점에 관계가 결정되는 문제
+
+전략패턴 -> OCP지키면서 유연,확장성 뛰어나
+
+컨텍스트안에서 구체적 전략 클래스가 고정되어 드러남
+-> Client 필요성
+
+컨텍스트에 해당하는 부분을 메소드로 분리, 파라미터로 전략을 클라이언트로부터 받도록함.
+
+/
+
+add()에도 적용
+
+User 부가 정보가 필요-> 인스턴스,생성자 추가해서 파라미터로 메소드에 넣음
+
+개선사항: DAO 메소드마다 새로운 전략 구현클래스 필요. -> 클래스 과다
+
+로컬 클래스
+
+UserDao안에서 전략클래스를 내부클래스로 정의
+
+이는 UserDao에서만 쓰인다는 확신이 있고, 내부 로직을 사용(User)할떄 쓰면 좋다.
+
+(내부클래스에서 외부변수 쓸때 반드시 final로 선언해줘야함)
+
+개선사항: add() 메소드에만 씀 -> 더 간결하게 익명내부클래스
+
+///
+
+클래스분리 : 기존의 jdbcContextWithStatementStrategy()는 다른 DAO 재사용가능 -> 독립적 클래스로 JdbcContext
+
+DataSource는 기존의 UserDao -> JdbcContext가 필요하게된다.
+
+UserDao는 인터페이스 x 클래스 레벨에서 JdbcContext를 주입받아 사용.
+
+DI의 온전한 방식x , but 넓은 의미에선 o(IOC-제어권한 외부위임)
+
+인터페이스x - 굳이 DI로 하는이유
+
+1. 싱글톤빈
+2. JdbcContext가 DI - 다른빈에 의존하기 때문(DataSource , DI위해 양쪽에 빈으로 등록되야햔다.)
+
+인터페이스 x 이유
+강한결합 , 응집도 , 변경가능성x
+
+1. 인터페이스x이나 스프링빈 등록 - 설정파일에 실제 의존관계가 드러남.
+단점: 구체적 클래스와의 관계가 설정에 직접 노출
+
+2.. 인터페이스x, Dao의 코드로 자체 수동 DI
+: 내부에서 만들어지면서 관계가 외부로 드러나지않음
+단점: 싱글톤으로 만들수 없고, DI 작업을 위한 부가코드필요
+
+(2번의 과정)
+
+UserDao내부 - 직접DI
+
+1.싱글톤포기 : but 매번생성하는건 아니고 Dao마다 하나씩 JdbcContext만듬. 누군가는 생성해줘야 -> UserDao 자신이 생성
+
+2.DataSource를 DI받을수없음(스프링빈이 아니라서)
+: UserDao에게 DI까지 맡김(임시 DI컨테이너역할)
+UserDao는 DataSource를 DI받아 JdbcContext에 넘겨준다.
+
+스프링빈은 DataSource와 UserDao기때문에 DataSource를 userDao가 DI받아서 JdbcContext에 전달

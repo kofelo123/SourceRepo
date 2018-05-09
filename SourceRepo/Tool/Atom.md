@@ -5,6 +5,7 @@
 - [gitclone](#gitclone)
 - [git단축키](#git단축키)
 - [split](#split)
+- [key binding](#keybinding)
 
 
 ### AutoComplete
@@ -93,3 +94,24 @@ ctrl + p(이걸쓰니까 잘된다.)
 <img src="https://drive.google.com/uc?export=view&id=1k9uZ45bnK0rtH41iI8BlDeGRip5lUXQe" width="400" height="300" />
 
 ![split](https://drive.google.com/uc?export=view&id=1tUq7_bKgVwqhWGdS8UO70ymCajSIcUgR)
+
+---
+
+
+###### keybinding
+
+아톰 - key binding
+-
+
+아톰 - key binding
+
+설정 - 메뉴에서 install 밑에 Open Config Folder가 있고 그중에서 keymap.cson을 연다.
+
+설정 - Keybindings에 설치한 패키지에 해당하는 Selector와 Command 값을 가지고 keymap.cson에서 수정해주면된다.
+
+error Masage : [stdin]:17:1: error: missing indentation
+
+-> keymap.cson에서 값입력할때 앞에 한칸 띄우고 쓰면된다.
+
+혹은 Keybindings에 들어가지않고 패키지설치할때
+패키지 여백공간에 클릭했을떄 뜨는 패키지관련 정보중에 패키지에서 쓰이는 Keymap을 모아놓은게 있어서 그 정보를 사용해도 된다.

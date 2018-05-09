@@ -177,7 +177,7 @@ $.ajax({
 ```
 
 ---
-Ajax 전체 목록에 대한 함수처리
+Ajax 전체 목록에 대한 함수처리(getJSON -> html 뿌리기)
 
 ```js
 function getAllList(){

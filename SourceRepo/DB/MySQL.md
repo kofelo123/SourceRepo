@@ -1,13 +1,38 @@
 ## MySQL
 
+- [사용자생성및 권한](#createuserprivilige)
 - [Limit](#limit)
 - [더미 데이터 생성](#dummy-data)
 - [백업하기-MysqlDump](#mysqldump)
 - [mysql 원격접속](#mysqlremoteconnect)
+- [전체사용자조회,현재사용자](#selectuser)
+- [DB조회,사용](#showdatabase)
+- [특정사용자권한보기](#showgrant)
 
 - [Error]
   - [버퍼풀 메모리 관련 오류](#bufferpoolmemoryisuue)
   - [mysql접속 오류1045](#mysqlconnectissue)
+
+---
+
+###### createuserprivilige
+
+사용자생성및 권한
+-
+
+```sql
+
+create user 'id'@'localhost' identified by 'password';
+GRANT ALL PRIVILEGES ON *.* TO 'momstouch'@'localhost' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+```
+
+기존에 사용하던 계정에 외부 접근 권한을 부여하려면, Host를 '%' 로 하여 똑같은 계정을 추가한다
+
+mysql > create user 'userid'@'%' identified by '비밀번호';  // '%' 의 의미는 외부에서의 접근을 허용
+
+
+---
 
 ### Limit
 
@@ -71,8 +96,12 @@ mysqldump: [Warning] Using a password on the command line interface can be insec
 ---
 ## mysqlRemoteConnect
 //원격접속할떄는 -h 아이피를 넣음
-mysqldump -h 192.168.12.1 -u 아이디 -p패스워드 DB명 > dump.sql
 
+```
+//MyLocal - CMD
+C:\Program Files\MySQL\MySQL Server 5.7\bin>mysql -h jeongwon.me -uroot -p(pw)
+```
+mysqldump -h 192.168.12.1 -u 아이디 -p패스워드 DB명 > dump.sql
 
 //sql문 실행시키는것 (오라클의 @이것과같은듯)	(워크밴치에서 쓰는 방법은 아니고 mysql 접속후 cmd에서 쓰는방법..)
 source d:\mysql\test.sql;
@@ -129,3 +158,50 @@ ERROR 1045 (28000): Access denied for user
 -p 옵션을 붙여 패스워드를 입력하자.
 
 ---
+
+###### selectuser
+
+사용자조회
+-
+
+//전체 사용자
+```
+select * from mysql.user;
+```
+
+//현재사용자
+```
+select user();
+```
+
+---
+
+###### showdatabase
+
+DB조회
+-
+
+```
+show databases;
+```
+
+
+```
+user DBName;
+```
+
+
+###### showgrant
+
+특정사용자권한보기
+-
+
+
+현재 우분투 ec2에 root 사용자가 2개가 있다(root@localhost, root@%)
+원래 localhost가 기본적으로 있는데 원격접속을 위해서 뒤에껄 만든것으로 보인다.
+(root의 경우는 '%'(모든외부접근허용)를 사용자 추가로 따로 만들어야 하는 것 같다.)
+
+
+```
+SHOW GRANTS FOR 'root'@'localhost';
+```

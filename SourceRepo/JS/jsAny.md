@@ -10,6 +10,7 @@
 - [명시적(선언)함수와 익명함수차이](#function)
 - [onblur](#onblur)
 - [원 단위 찍기](#numformat)
+- [1회만 새로고침하기](#oncereload)
 ### radio check
 
 ```html
@@ -251,4 +252,26 @@ function NumFormat(t) // 원 단위, 찍어주기
 	t.value = s;
 	return t;
 }
+```
+
+
+---
+
+
+
+
+###### oncereload
+
+1회만 새로고침하기
+-
+
+```js
+ <script>
+
+				     if (self.name != 'reload') {
+				         self.name = 'reload';
+				         self.location.reload(true);
+				     }
+				     else self.name = '';
+					 </script>
 ```

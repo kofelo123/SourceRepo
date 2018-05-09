@@ -6,6 +6,10 @@
 - [빌드 버전에러](#buildsversionerror)
 - [Maven 강제 업데이트](#mavenupdate)
 
+-[에러](#)
+  - [잘못된 컨텍스트 지정으로 인한 에러](#wrongcontext)
+  - [프로젝트 경로 변경시 스프링컨텍스트의 스키마 에러](#pathmdifyerror)
+  - [could not autowired no beans of](#couldnotautowired)
 
 ---
 
@@ -229,3 +233,60 @@ Maven 강제 업데이트
 -
 
 file-> settings - Build,Execution,Deployment - Build Tools ->Maven -> Repositories - update
+
+
+---
+
+
+###### wrongcontext
+
+잘못된 컨텍스트 지정으로 인한 에러
+-
+
+Unable to locate Spring NamespaceHandler for XML schema namespace [http://xmlns.jcp.org/xml/ns/javaee]
+
+
+@ContextConfiguration( locations ={"file:web/WEB-INF/** .xml"})
+
+두개의 컨텍스트를 동시에 쓰려고 이런식으로 쓰다가
+web.xml까지 읽어서 생긴에러
+
+---
+
+
+###### pathmdifyerror
+
+프로젝트 경로 변경시 스프링컨텍스트의 에러
+-
+
+프로젝트를 통쨰로 옮기고 난뒤 에러가 났다.
+
+applicationContext와 dispatcher-servlet에서
+
+xmlns:context="http://www.springframework.org/schema/context"
+
+이부분에 에러가 났는데,
+
+uri is not registered (settings languages & frameworks schemas and dtds
+
+안되서 다양한 관점으로 시도해보다가
+
+에러난 코드의 Alt - Enter -> Fetch external resource 로 해결함
+
+
+---
+
+
+###### couldnotautowired
+-
+
+에러: could not autowired no beans of
+
+전혀 문제가 없는 코드인데 (실행도 잘됨) 인텔리제이 컴파일 에러가 표기되고 있어서 Alt+Enter에서 권장되는 방법중 하나였던 방법이(Edit inspections profile setting) 스택오버플로우에도 해결법으로 나와있어서 해결했다.
+
+ Settings>Inspections>Spring Core>Code
+
+ ![](https://drive.google.com/uc?export=view&id=1SwnlVNpjKN-e8czckPPj8l9Ne5WFmTPJ)
+
+error-> warning으로..
+(이걸로 안되면 스프링 모델도 waning)
