@@ -1,6 +1,9 @@
 - [@GetMapping, @PostMapping](#getmappingpostmapping)
 - [날짜(Date타입)변환처리](#datetimeformat)
 
+- [에러](#error)
+    - [415에러-format not supported](#formatnotsupported)
+
 ---
 
 
@@ -59,3 +62,22 @@ public class SampleController {
 스프링 3.0 부터 존재하는 날짜 변환을 위해 사용하는 어노테이션
 
 parameter를 문자열로 전송해도 Date타입으로 처리됨.
+
+
+---
+
+
+###### formatnotsupported
+-
+
+error message :  HTTP Status 415 - request entity is in a format not supported
+
+- 곰곰히 생각해보니 jason 타입 변환해주는 dependency를 넣지 않았다.
+
+```xml
+<dependency>
+	<groupId>com.fasterxml.jackson.core</groupId>
+	<artifactId>jackson-databind</artifactId>
+	<version>2.5.4</version>
+</dependency>
+```

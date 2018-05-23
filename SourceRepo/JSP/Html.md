@@ -3,6 +3,10 @@
 - [링크 새창 열기(blank)](#blank)
 - [onclick에 return 함수](#onclickfunction)
 - [span사용](#span)
+- [버튼 submit 되지않게](#buttondefaultsubmit)
+
+---
+
 ### Http errorcode
 
 | 200 | OK, 에러 없이 전송 성공                                                    |
@@ -150,3 +154,21 @@ onClick에서 이벤트에 return 없을을경우
            </span>         
 
 span(인라인)이 있어야 이미지를 한줄에 끝내고 텍스트를 그 우측에 배치한다.
+
+
+
+---
+
+
+###### buttondefaultsubmit
+
+버튼 submit 되지않게
+-
+
+<!-- 클릭시 form(data_form)의 submit 동작을 하게 됨 -->
+<button id="btn_example1">버튼 예제1</button>
+ 
+<!-- 클릭시 submit 동작하지 않고 아무 반응 없음 -->
+<button type="button" id="btn_example2">버튼 예제2</button>
+ 
+

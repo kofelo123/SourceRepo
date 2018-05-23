@@ -1,6 +1,6 @@
 ## SpringGrammars
 
-- [@RequestParam이 Null일떄](#requestparam)
+
 - [@ModelAttibue()](#modelattribute)
 - [logger](#logger)
 - [@Resource 주입](#resource)
@@ -8,9 +8,23 @@
 - [root-context와 servlet-context](#rootcontextservletcontext)
 - [dependency 설정에서 scope 종류와 설명](#dependencyscope)
 
+- [AOP기본](#aopbasic)
+	- [aop설정](#aopsetting)
+	- [JoinPoint](#joinpoint)
+	- [Around](#around)
+	
+- [Transaction](#Transaction)
+
 - [error]
-  - [NoClassDefFoundError](#noclassdeffounderror)
-  - [slf4j 로그 못찍을떄 에러](#slf4jlogerror)
+	- [@RequestParam이 Null일떄](#requestparam)
+	- [NoClassDefFoundError](#noclassdeffounderror)
+	- [slf4j 로그 못찍을떄 에러](#slf4jlogerror)
+	- [invalid CEN header](#invalidcenheader)
+	- [failOnMissingWebXml](#failOnMissingWebXml)
+	- [log4jdbc-log4j2](#log4jdbclog4j2)
+
+
+---
 
 ### requestparam
 
@@ -175,3 +189,370 @@ log4j:WARN Please initialize the log4j system properly.
 -> log4j.xml , log4jdbc.log4j2.properties, logback.xml 등 log4j관련 설정파일 resources폴더에 넣어줘야(log4j.xml만 넣어도 돌아가긴한다)
 
 -> log4jdbc.log4j2.properties, logback.xml 는 MyBatis관련 로그찍을떄 필요
+
+
+---
+
+
+###### aopbasic
+
+AOP 기본
+-
+
+Aspect : 공통 관심사에 대한 추상적 명칭
+
+Advice: 실제로 기능을 구현한 객체, 클래스 제작후 @Advice를 붙여 적용
+
+Join points : 공통관심사 적용할 수 있는 대상 Spring AOP에서 각 객체의 메소드 . 활약할수 있는 대상
+
+Pointcuts: 여러 메소드중 실제 Advice가 적용될 대상 메소드 . 여러 JoinPoint중에서 Advice를 적용할 대상
+
+target : 대상 메소드를 가지는 객체
+
+Proxy : Advice가 적용되었을때 만들어지는 객체
+
+Introduction : target에는 없는 새로운 메소드나 인스턴스 변수를 추가하는 기능
+
+Weaving: Advice와 target이 결합되어서 프록시 객체를 만드는 과정
+
+
+<Advice종류>
+
+Advice는 실제 구현된클래스로 생각할 수 있고 아래와 같이 분류
+
+Before Advice : target의 메소드 호출 전에 적용
+After retuning: target의 메소드 호출 이후 적용
+After throwing: target의 예외 발생 후 적용
+After : target의 메소드 호출 후 예외의 발생에관계없이 적용
+Around : target의 메소드 호출 이전과 이후 모두 적용(가장 광범위함)
+
+
+
+---
+
+
+###### aopsetting
+
+설정
+-
+
+AOP 관련 라이브러리, 트랜잭션을 위한 'spring-tx' 라이브러리가 필요
+
+```xml
+//pom.xml
+	<properties>
+		<java-version>1.8</java-version>
+		<org.springframework-version>4.3.3.RELEASE</org.springframework-version>
+		<org.aspectj-version>1.8.9</org.aspectj-version>
+		<org.slf4j-version>1.6.6</org.slf4j-version>
+	</properties>
+
+	
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
+
+
+
+	<!-- AspectJ -->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>${org.aspectj-version}</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjtools</artifactId>
+			<version>${org.aspectj-version}</version>
+		</dependency>
+
+
+```
+
+Spring AOP - 애노테이션,XML 두가지 방법
+
+XML 이용한 설정시 servlet-context.xml 이나 root-context.xml에서 사용하는 xml 네임스페이스가 필요-> aop, tx 에 대한 네임스페이스 추가
+
+
+root-context.xml - AOP 설정을 통한 자동적인 Proxy 객체 생성을 위해
+
+```
+//root-context.xml
+
+//자동으로 AspectJ 라이브러리를 이용해 Proxy 객체생성한다.
+<aop:aspectj-autoproxy></aop:aspectj-autoproxy>
+
+
+//xml방식으로 AOP 기능을 설정할떄 사용함.(zerock에서 어노테이션으로 설정함.)
+<aop:config>
+</aop:config>
+```
+
+ex)
+```java
+package com.aop.aop;
+
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+@Component
+@Aspect
+public class SampleAdvice {
+
+	private static final Logger logger = LoggerFactory.getLogger(SampleAdvice.class);
+	
+	//target 메소드 실행전에 실행될 메소드 / execution으로 시작하는 구문 - Pointcut 지정문법, AjspectJ 문법사용
+	@Before("execution(* com.aop.service.MessageService*.*(..))")
+	public void startLog() { //제대로 설정되면 메소드 좌측에 aop아이콘이 뜬다.
+		
+	logger.info("--------------");
+	logger.info("--------------");
+	
+	}
+	
+}
+```
+
+
+
+
+---
+
+
+###### invalidcenheader
+
+invalid CEN header
+-
+
+error message: java.util.zip.ZipError: invalid CEN header (bad signature)
+
+검색해보니 jar문제인데, maven repository(.m2) 쪽 다 지우고 maven update 하라고 해서 했는데 여전히 에러나서
+
+project - clean 한후에
+
+maven - update project 하니 해결되었다.
+
+
+
+---
+
+
+###### failOnMissingWebXml
+
+failOnMissingWebXml
+-
+
+error message : failOnMissingWebXml
+
+상황: intellj의 프로젝트를 이클립스에 가져오는데, .project 파일이 없어서 불러오지 못함 - new project해서 .project파일 포함해서 eclipse 스타일의 폴더구조가 부가적으로 생성되었고 그것들을 지운상태.
+
+인텔리제이의 프로젝트구조와 이클립스의 프로젝트의 기본구조가 달라서 web.xml을 찾지 못해서 발생한 에러로 보인다.
+("web.xml 이 존재하지 않는 프로젝트를 maven 으로 패키징할때 아래와 같은 메시지를 던지면서 에러가 발생한다.") 
+
+플러그인에 아래 속성 추가
+```xml
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-war-plugin</artifactId>
+      <configuration>
+         <failOnMissingWebXml>false</failOnMissingWebXml>
+      </configuration>
+</plugin>
+```
+그리고 maven - update project해준다
+
+
+=> 애초에 new project 안하는게 나은거같다. git에서 바로 받아올떄 Import as general project하면 .project 생성된다. 에러도없다. (그러나 일반 프로젝트로 생성되는데, configure -> maven project 하면 일반 스프링 프로젝트 구조로 된다).
+
+아니면 .project .classpath만 빈거 같다 넣는방법.
+
+new project하면 인텔리제이 프로젝트구조와 이클립스 프로젝트구조가 둘다 생겨버림.
+
+
+---
+
+
+###### log4jdbclog4j2
+
+log4jdbc-log4j2
+-
+
+MyBatis 사용 - 자세한 로그 
+
+```xml
+<dependency>
+			<groupId>org.bgee.log4jdbc-log4j2</groupId>
+			<artifactId>log4jdbc-log4j2-jdbc4</artifactId>
+			<version>1.16</version>
+		</dependency>
+
+```
+```xml
+<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"></property>
+		<property name="url" value="jdbc:log4jdbc:mysql://127.0.0.1:3306/studydb?useSSL=false&amp;serverTimezone=UTC"></property>
+		<property name="username" value="..."></property>
+		<property name="password" value="..."></property>
+	</bean>
+```
+
+제대로 동작하기 위해 별도의 로그 관련 설정 파일 필요.
+
+/src/main/resources  경로에 log4jdbc.log4j2.propertgies 파일과 logback.xml 파일을 추가
+
+```
+//log4jdbc.log4j2.properties
+
+log4jdbc.spylogdelegator.name=net.sf.log4jdbc.log.slf4j.Slf4jSpyLogDelegator
+
+```
+
+```
+//logback.xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+    <!-- log4jdbc-log4j2 -->
+	<logger name="jdbc.sqlonly"        level="INFO"/>
+    <logger name="jdbc.sqltiming"      level="INFO"/>
+    <logger name="jdbc.audit"          level="WARN"/>
+    <logger name="jdbc.resultset"      level="ERROR"/>
+    <logger name="jdbc.resultsettable" level="ERROR"/>
+    <logger name="jdbc.connection"     level="INFO"/>
+</configuration>
+
+```
+
+---
+
+
+###### joinpoint
+
+JoinPoint
+-
+
+|  메소드 | 설명  |
+|---|---|
+| Object[] getArgs()  | 전달되는 모든 파라미터들을 Object의 배열로 가져온다.  |
+|  String getKind() |  해당 Advice의 타입을 알아낸다. |
+| Signature getSignature()  | 실행하는 대상 객체의 메소드에 대한 정보를 알아낼 떄 사용  |
+| Object getTarget()  |  target 객체를 알아냄 |
+|  Object getThis() | Advice를 행하는 객체를 알아낼 떄 사용  |
+
+```java
+@Before("execution(* com.aop.service.MessageService*.*(..))")
+	public void startLog(JoinPoint jp) {
+		
+	logger.info("--------------");
+	logger.info("--------------");
+	logger.info(Arrays.toString(jp.getArgs()));
+	}
+	
+```
+
+---
+
+
+###### around
+
+Around
+-
+
+가장 강력하게 사용할 수 있다.
+
+메소드 실행에 직접관여, 앞뒤를 감싸서 특정 기능을 실행할 수 있다.
+
+메소드
+Object proceed() : 다음 Advice를 실행하거나, 실제 target 객체의 메소드를 직접 실행하는 기능
+
+
+'ProceedingJoinPoint'는 JoinPoint의 하위 인터페이스이다. 따라서 모든 JoinPoint의 메소드를 가지면서도 직접 target 객체의 메소드를 실행할 수있는 기능이 추가된 형태이다.
+
+proceed()는 특이하게 Exception보다 상위의 Throwable을 처리해야하므로 시간을 체크하는 기능은 다음과 같이 작성됨.
+
+```java
+	@Around("execution(* com.aop.service.MessageService*.*(..))")
+	public Object timeLog(ProceedingJoinPoint pjp)throws Throwable{
+		
+		long startTime = System.currentTimeMillis();
+		logger.info(Arrays.toString(pjp.getArgs()));
+		
+		Object result = pjp.proceed(); //실제 메소드 호출
+		
+		long endTime = System.currentTimeMillis();
+		logger.info(pjp.getSignature().getName()+ " : " + (endTime - startTime));
+		logger.info("====================================");
+		
+		return result;
+	
+	}
+```
+
+
+@Around를 사용하는 메소드의 리턴은Object로 해야함.
+다른 Advice와 달리 메소드를 직접 호출하고 결과를 반환해야 정상적으로 처리됨
+
+
+---
+
+
+###### Transaction
+-
+
+<트랜잭션>
+
+xml방식(trasaction-context.xml사용), 애너테이션 방식(DAO나 Mapper등을 이용하는 xxxService 클래스에 어노테이션 처리)
+
+DB 정규화와 트랜잭션은 관련이 있는 경우가많다.
+정규화가 잘되어 있을수록, 관련맺는 데이터는 줄어든다.
+반면, 성능상 이유나 구현상 복잡함으로 반정규화가 많이 진행되는 경우 트랜잭션을 처리해야하는 상황이 많아진다.
+
+@Transactional (속성이 많이 있다,검색)
+
+```xml
+//root-context.xml
+
+<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>		
+
+<tx:annotation-driven/> 
+```
+하나의 DataSource를 사용하는경우 스프링에서 제공하는 DataSourceTransactionManager를 이용한다.
+
+<tx:annotation-driven /> 은 @Transactional 애노테이션을 이용한 트랜잭션 관리가 가능하다.
+
+
+@Transactional 우선순위 : 인터페이스<클래스<메소드
+
+```java
+//예제
+
+@Transactional
+	@Override
+	public void addMessage(MessageVO vo) throws Exception {
+		
+		messageDAO.create(vo);
+		pointDAO.updatePoint(vo.getSender(), 10);
+	}
+
+```
+
+로그를 보면 하나의 커넥션이 열리고 두개의 메소드가 실행된다

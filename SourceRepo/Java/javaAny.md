@@ -638,6 +638,8 @@ enum:열거형
 
 ## notworkingimport
 
+errormesage: No projects are found to import
+
 이클립스를 import할떄 안될때는
 
 .project, .classpath 없이 소스있는 경우인데

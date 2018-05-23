@@ -48,6 +48,26 @@
 
 - [properties사용](#properties)
 
+
+---
+
+- [Upload]
+  - [파일업로드 설정](#fileuploadsetting)
+  - [이미지축소 - imgScalr](#imgScalr)
+  - [FileCopyUtils,UUID](#FileCopyUtils)  
+  - [Drag & Drop Ajax 파일업로드](#dropfileupload)
+  - [년/월/일 폴더생성](#makedir)
+  - [파일다운로드처리](#filedownload)
+  - [미디어타입 체크](#checkMediaType)
+  - [삭제로직](#deletelogic)
+  - [handlebars 템플릿](#handlebarsTemplate)
+  - [폼 submit 제어](#formsubmitcontrol)
+  - [읽기페이지-첨부파일 가져오기](#readpagefileload)
+  - [원본이미지 큰화면 띄우기](#originalimage)
+  - [글삭제-업로드파일삭제](#boarduploadfiledelete)
+
+---
+
 # Paging
 
 파라미터를 직접 입력 받는 방법 / 객체로 받는 방법
@@ -2948,4 +2968,653 @@ JS템플릿-Handlebars
 {{/each}}
 </script>
 
+```
+
+
+
+
+---
+
+
+###### fileuploadsetting
+
+파일업로드 설정
+-
+
+-사용자가 업로드 하는 시간에 따른 자동적인 폴더생성
+-업로드 되는 파일의 고유이름 생성
+-이미지 파일의 업로드시 썸네일 이미지 생성
+-이미지 파일일 경우 서버에서 저장된 파일을 읽어서 적당한 MIME 타입으로 서비스
+-일반 파일의 경우 다운로드 타입으로 파일 데이터 서비스
+
+
+K: 파일업로드에 필요한 commons-fileupload , multipart 지원기능 사용을 위한 multipartResulver(스프링- CommonsMultipartResolver)
+
+```xml
+//pom.xml
+
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>1.3.2</version>
+		</dependency>
+
+
+//servlet-context.xml
+
+<beans:bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<beans:property name="maxUploadSize" value="10485760"></beans:property>
+	</beans:bean>
+
+
+<beans:bean id="uploadPath" class="java.lang.String">
+		<beans:constructor-arg value="C:\\zzz\\upload">
+		</beans:constructor-arg>
+	</beans:bean>
+
+//using controller(Resource=name firtst)
+//@Resource(name = "uploadPath")
+//private String uploadPath;
+```
+
+
+ex)
+```html
+<form id='form1' action="uploadForm" method="post" enctype="multipart/form-data">
+	<input type='file' name='file'> <input type='submit'>
+</form>
+```
+```java
+	@RequestMapping(value="/uploadForm" ,method= RequestMethod.POST)
+	public void uploadForm(MultipartFile file, Model model)throws Exception{
+		
+		logger.info("originalName:" + file.getOriginalFilename());
+		logger.info("size: " + file.getSize());
+		logger.info("contentType: " + file.getContentType());
+
+}
+```
+
+
+
+
+---
+
+
+###### imgScalr
+
+이미지축소 - imgScalr
+-
+
+
+	<dependency>
+			<groupId>org.imgscalr</groupId>
+			<artifactId>imgscalr-lib</artifactId>
+			<version>4.2</version>
+		</dependency>
+
+
+```java
+	//썸네일생성
+	private static String makeThumbnail(String uploadPath,String path, String fileName)throws Exception{
+		//이미지 읽기
+		BufferedImage sourceImg = ImageIO.read(new File(uploadPath + path, fileName));
+		//썸네일생성
+		BufferedImage destImg = Scalr.resize(sourceImg, Scalr.Method.AUTOMATIC, Scalr.Mode.FIT_TO_HEIGHT,100);
+		//썸네일이름생성
+		String thumbnailName = uploadPath + path + File.separator +"s_"+ fileName;
+		//썸네일 이름으로 된 파일객체 생성
+		File newFile = new File(thumbnailName);
+		//포맷이름
+		String formatName = fileName.substring(fileName.lastIndexOf(".")+1);
+		//이미지쓰기
+		ImageIO.write(destImg,  formatName.toUpperCase(), newFile);
+		//이름반환, replace는 윈도우같은 OS 에서쓰는 ('\')에서 -> browser('/')에서 쓰는걸로 교체
+		return thumbnailName.substring(uploadPath.length()).replace(File.separatorChar, '/');
+	}
+```
+
+
+
+---
+
+
+###### FileCopyUtils
+
+FileCopyUtils , UUID
+-
+
+org.springframework.util 패키지
+
+파일의 데이터를 파일로 처리, 복사하는 등의 작업
+
+[](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/util/FileCopyUtils.html)
+
+
+```java
+
+	private String uploadFile(String originalName, byte[] fileData)throws Exception{
+		
+		UUID uid = UUID.randomUUID();
+		
+		String savedName = uid.toString() + "_"+ originalName;
+		
+		File target = new File(uploadPath,savedName);
+		
+		FileCopyUtils.copy(fileData,  target);
+		
+		return savedName;
+		
+	}
+```
+
+
+
+---
+
+
+###### dropfileupload
+
+Drag & Drop Ajax 파일업로드
+-
+
+> drop - get file - formdata - ajax (sendServer & getData to add htmlcode)
+
+```js
+
+//dragenter dragover 없으면 drop 작동하지 않았다.
+$(".fileDrop").on("dragenter dragover", function(event) {
+			event.preventDefault();
+		});
+
+		$(".fileDrop").on("drop", function(event){
+			event.preventDefault();
+			
+//jQuery는 event가 순수 DOM이벤트가 아니므로 원래 DOM이벤트를 가져온다.
+			var files = event.originalEvent.dataTransfer.files;
+			
+			var file = files[0];
+
+			//console.log(file);
+			
+			var formData = new FormData();
+			
+			formData.append("file", file);
+			
+//옵션을 주기 위해 $.post() 대신 $.ajax() 사용 , processData,contentType을 false로 해야 form방식 파일업로드 
+			$.ajax({
+				  url: '/uploadAjax',
+				  data: formData,
+				  dataType:'text',
+				  processData: false, 
+				  contentType: false,
+				  type: 'POST',
+				  success: function(data){
+					  
+//... 이하 이미지/일반파일 여부에 따라 업로드 목록에  html코드 만들어 넣어주는 로직
+
+}
+```
+
+
+
+---
+
+
+###### makedir
+
+년/월/일 폴더생성
+-
+
+```java
+
+    //년 월 일 생성
+    private static void calcPath(String uploadpath){
+        Calendar cal = Calendar.getInstance();
+
+        String yearPath = File.separator() + cal.get(Calendar.YEAR);
+        String monthPath = yearPath + File.separator() + new DecimalFormat("00").format(cal.get(Calendar.MONTH)+1);
+        String datePath = monthPath + File.separator() + new DecimalFormat("00").format(cal.get(Calendar.DATE));
+        
+        mkdir(uploadPath,yearPath+monthPath,datePath);
+    }        
+
+//폴더생성
+    private static void mkdir(String uploadPath, String... paths){
+
+        if(new File(uploadPath+paths[paths.length-1]).exists())
+            return;
+
+        for(String path : paths){
+
+            File dirPath = new File(uploadPath+path);
+
+            if(! dirpath.exists()){
+                dirPath.mkdir();
+            }
+        }
+    }
+        
+```
+
+
+---
+
+
+###### filedownload
+
+파일다운로드처리
+-
+
+```java
+
+  @ResponseBody
+  @RequestMapping("/displayFile")
+  public ResponseEntity<byte[]>  displayFile(String fileName)throws Exception{
+    
+    InputStream in = null; 
+    ResponseEntity<byte[]> entity = null;
+    
+    logger.info("FILE NAME: " + fileName);
+    
+    try{
+
+      String formatName = fileName.substring(fileName.lastIndexOf(".")+1);
+  	//포맷이름으로 미디어타입추출      
+      MediaType mType = MediaUtils.getMediaType(formatName);
+      //헤더생성
+      HttpHeaders headers = new HttpHeaders();
+      //파일입력스트림생성
+      in = new FileInputStream(uploadPath+fileName);
+      
+      //이미지면
+      if(mType != null){
+        headers.setContentType(mType);
+      }else{//일반파일이면
+        //(UUID_파일이름 - 파일이름 추출)
+        fileName = fileName.substring(fileName.indexOf("_")+1);       
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM); //다운로드 미디어타입
+        headers.add("Content-Disposition", "attachment; filename=\""+ 
+          new String(fileName.getBytes("UTF-8"), "ISO-8859-1")+"\"");
+      }
+
+        entity = new ResponseEntity<byte[]>(IOUtils.toByteArray(in), 
+          headers, 
+          HttpStatus.CREATED);
+    }catch(Exception e){
+      e.printStackTrace();
+      entity = new ResponseEntity<byte[]>(HttpStatus.BAD_REQUEST);
+    }finally{
+      in.close();
+    }
+      return entity;    
+  }
+```
+
+---
+
+
+###### checkMediaType
+
+미디어타입 체크
+-
+
+```java
+private static Map<String, MediaType> mediaMap;
+	
+	static{
+		
+		mediaMap = new HashMap<String, MediaType>();		
+		mediaMap.put("JPG", MediaType.IMAGE_JPEG);
+		mediaMap.put("GIF", MediaType.IMAGE_GIF);
+		mediaMap.put("PNG", MediaType.IMAGE_PNG);
+	}
+	
+	public static MediaType getMediaType(String type){
+		
+		return mediaMap.get(type.toUpperCase());
+	}
+
+```
+
+
+```js
+<script>
+    function checkImageType(fileName){
+        var pattern = /jpg$|gif$|png$|jpeg$/i;
+
+        return fileName.match(pattern);
+    }
+</script>
+```
+
+
+
+---
+
+
+###### deletelogic
+
+삭제로직
+-
+
+```js
+
+
+// 업로드 목록- 파일옆 x클릭 -> 삭제 
+		$(".uploadedList").on("click", "small", function(event){
+			
+				 var that = $(this);
+				console.log($(this).attr("data-src"));
+				
+			   $.ajax({
+				   url:"deleteFile",
+				   type:"post",
+				   data: {fileName:$(this).attr("data-src")}, // data-src에 들어있는 파일이름  값뽑아옴
+				   dataType:"text",
+				   success:function(result){
+					   if(result == 'deleted'){ //성공시 서버에서 ResponseEntity에서 deleted를 반환하도록 했음
+						   that.parent("div").remove(); //부모인 div를 코드를 삭제
+					   }
+				   }
+			   });
+		});
+		
+```
+
+```java
+
+    //삭제로직 (업로드목록-삭제버튼시 ajax로 호출됨)
+  @ResponseBody
+  @RequestMapping(value="/deleteFile", method=RequestMethod.POST)
+  public ResponseEntity<String> deleteFile(String fileName){
+    
+    logger.info("delete file: "+ fileName);
+    
+    String formatName = fileName.substring(fileName.lastIndexOf(".")+1);
+    //포맷이름으로 이미지 미디어타입이 있으면 뽑아옴
+    MediaType mType = MediaUtils.getMediaType(formatName);
+    
+    //이미지파일이면 썸네일도삭제
+    if(mType != null){      
+      
+      String front = fileName.substring(0,12);
+      String end = fileName.substring(14);
+      new File(uploadPath + (front+end).replace('/', File.separatorChar)).delete();
+    }
+    //이미지,일반파일의 삭제
+    new File(uploadPath + fileName.replace('/', File.separatorChar)).delete();
+    
+    
+    return new ResponseEntity<String>("deleted", HttpStatus.OK);
+  }  
+  
+```
+
+
+
+
+
+---
+
+
+###### handlebarsTemplate
+
+handlebars 템플릿
+-
+
+
+```js
+<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
+
+//템플릿 틀이 되는 부분
+<script id="template" type="text/x-handlebars-template">
+<li>
+  <span class="mailbox-attachment-icon has-img"><img src="{{imgsrc}}" alt="Attachment"></span>
+  <div class="mailbox-attachment-info">
+	<a href="{{getLink}}" class="mailbox-attachment-name">{{fileName}}</a>
+	<a href="{{fullName}}" 
+     class="btn btn-default btn-xs pull-right delbtn"><i class="fa fa-fw fa-remove"></i></a>
+	</span>
+  </div>
+</li>                
+</script>    
+
+```
+
+```js
+//틀을 setting 해놓는다.
+var template = Handlebars.compile($("#template").html());
+
+
+$(".fileDrop").on("dragenter dragover", function(event){
+	event.preventDefault();
+});
+
+
+$(".fileDrop").on("drop", function(event){
+	event.preventDefault();
+	
+	var files = event.originalEvent.dataTransfer.files;
+	
+	var file = files[0];
+
+	var formData = new FormData();
+	
+	formData.append("file", file);	
+	
+	
+	$.ajax({
+		  url: '/uploadAjax',
+		  data: formData,
+		  dataType:'text',
+		  processData: false,
+		  contentType: false,
+		  type: 'POST',
+		  success: function(data){
+				//서버로부터 받은 data를 가지고 템플릿에 넣을 데이터를 가공해서 가져온다			  
+			  var fileInfo = getFileInfo(data);
+			  //가공한 데이터를 템플릿에 넣어 html 코드생성
+			  var html = template(fileInfo);			  
+			  $(".uploadedList").append(html);
+		  }
+		});	
+});
+
+
+...
+
+function getFileInfo(fullName){
+		
+	var fileName,imgsrc, getLink;
+	
+	var fileLink;
+	
+	if(checkImageType(fullName)){
+		imgsrc = "/displayFile?fileName="+fullName;
+		fileLink = fullName.substr(14);
+		
+		var front = fullName.substr(0,12); // /2015/07/01/ 
+		var end = fullName.substr(14);
+		
+		getLink = "/displayFile?fileName="+front + end;
+		
+	}else{
+		imgsrc ="/resources/dist/img/file.png";
+		fileLink = fullName.substr(12);
+		getLink = "/displayFile?fileName="+fullName;
+	}
+	fileName = fileLink.substr(fileLink.indexOf("_")+1);
+	
+	//fileName:파일명.확장자 / imgsrc:썸네일 이미지표시 / getLink:실제 이미지링크 , fullName: 날짜(디렉터리)+UUID+_+파일명.확장자(fileName)
+	return  {fileName:fileName, imgsrc:imgsrc, getLink:getLink, fullName:fullName};
+	
+}
+
+}
+
+```
+
+
+
+---
+
+
+###### formsubmitcontrol
+
+폼 submit 제어
+-
+
+```js
+// 폼 submit - 파일 업로드를 위한 file 코드처리
+$("#registerForm").submit(function(event){
+	event.preventDefault();
+	
+	var that = $(this);
+	
+	var str ="";
+	
+	//업로드목록하위 모든 delbtn요소들로 부터 href 속성값을 추출해 hidden타입으로 file html코드들을 만들어준다.
+	$(".uploadedList .delbtn").each(function(index){
+		 str += "<input type='hidden' name='files["+index+"]' value='"+$(this).attr("href") +"'> ";
+	});
+	
+	that.append(str);
+
+	// jQuery의 get(0)는 순수한 DOM객체를 얻어내기 위해 하용
+	that.get(0).submit();
+});
+```
+
+
+
+---
+
+
+###### readpagefileload
+
+읽기페이지-첨부파일 가져오기
+-
+
+```js
+	// 읽기페이지-첨부파일 가져오기	
+	// 서버로 부터 업로드된 파일리스트를 가져옴
+	$.getJSON("/sboard/getAttach/"+bno,function(list){ 
+		$(list).each(function(){
+			//파일이름으로부터 템플릿에 필요한 데이터들 가공해서 가져옴
+			var fileInfo = getFileInfo(this);
+			//템플릿처리- html코드생성
+			var html = template(fileInfo);
+			
+			 $(".uploadedList").append(html);
+			
+		});
+	});
+	
+	
+		
+```
+
+
+
+---
+
+
+###### originalimage
+
+원본이미지 큰화면 띄우기
+-
+
+```css
+ <style type="text/css">
+    .popup {position: absolute;}
+    .back { background-color: gray; opacity:0.5; width: 100%; height: 300%; overflow:hidden;  z-index:1101;}
+    .front { 
+       z-index:1110; opacity:1; boarder:1px; margin: auto; 
+      }
+     .show{
+       position:relative;
+       max-width: 1200px; 
+       max-height: 800px; 
+       overflow: auto;       
+     } 
+  	
+    </style>
+```
+
+```html
+    <div class='popup back' style="display:none;"></div>
+    <div id="popup_front" class='popup front' style="display:none;">
+     <img id="popup_img">
+    </div>
+```
+
+```js
+	//업로드  클릭
+	$(".uploadedList").on("click", ".mailbox-attachment-info a", function(event){
+		
+		//href 값을 가져옴
+		var fileLink = $(this).attr("href");
+		
+		//이미지여부 검사
+		if(checkImageType(fileLink)){
+			
+			event.preventDefault();
+					
+			//팝업 div에 src속성으로 href값 넣어줌
+			var imgTag = $("#popup_img");
+			imgTag.attr("src", fileLink);
+			
+			console.log(imgTag.attr("src"));
+			
+			//팝업 div를 show, 팝업 div에 css에 정의된 show가 적용되도록 addclass
+			$(".popup").show('slow');
+			imgTag.addClass("show");		
+		}	
+	});
+	
+	//show되어있는 팝업창 클릭시 숨김
+	$("#popup_img").on("click", function(){
+		
+		$(".popup").hide('slow');
+			
+	});	
+```	
+
+
+
+---
+
+
+###### boarduploadfiledelete
+
+글삭제-업로드파일삭제
+-
+
+```java
+	//게시글삭제 - 업로드 파일삭제
+	$("#removeBtn").on("click", function(){
+		//댓글번호 , 숫자가 아닌값은 null값으로 대체함(태그를 말하는듯.)
+		var replyCnt =  $("#replycntSmall").html().replace(/[^0-9]/g,"");
+		
+		if(replyCnt > 0 ){
+			alert("댓글이 달린 게시물을 삭제할 수 없습니다.");
+			return;
+		}	
+		
+		var arr = [];
+		//data-src를 뽑아서 arr에 push
+		$(".uploadedList li").each(function(index){
+			 arr.push($(this).attr("data-src"));
+		});
+		//ajax post방식으로 데이터 담아서 전송 - 업로드파일삭제
+		if(arr.length > 0){
+			$.post("/deleteAllFiles",{files:arr}, function(){
+				
+			});
+		}
+		//게시글의 삭제
+		formObj.attr("action", "/sboard/removePage");
+		formObj.submit();
+	});	
 ```
