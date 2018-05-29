@@ -23,6 +23,9 @@
 - [keypress,엔터키인식](#keypress)
 - [is()참,거짓여부](#is)
 - [html,text,val,attr차이](#htmltextvalattr)
+- [부모요소 선택 방법 parent(),parents(),closest()](#parentparentsclosest)
+
+---
 
 ### Form control
 
@@ -745,3 +748,19 @@ $('#greatphoto').attr({
 
 ```
 여러 속성을 부여할 때, 속성명에 따옴표는 선택사항입니다.단, 'class' 속성을 세팅할 때는 반드시 따옴표를 사용해야 합니다.(그냥 항상 사용하면 되겠네요.)
+
+
+---
+
+
+###### parentparentsclosest
+
+부모요소 선택 방법 parent(),parents(),closest()
+-
+
+parent : 바로 위 부모요소
+
+parents : 모든부모요소( 바로위 뿐만아니라 그 상위까지 모두 포함)
+
+closest : 모든 부모 요소 대상으로 원하는 요소만 선택자로 가져올 수 있음.
+

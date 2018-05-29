@@ -1,3 +1,13 @@
+- [Interceptor]
+  - [인터셉터 설정](#interceptorsetting)
+  - [HandlerMethod](#handlerMethod)
+  - [세션쿠키](#sessioncookie)
+  - [로그인여부](#login)
+  - [기존 URI 세션에 담아두기](#savedest)
+  - [자동로그인](#autologin)
+  - [자동 로그인 여부에 따른 인터셉터의 인증](#autologinauth)
+  - [로그아웃 처리](#logout)
+
 - [jUnit 메소드](#junitmethod)
 - [스프링 프로젝트 세팅 Al](#springsettingal)
 - [페이징](#paging)
@@ -65,6 +75,7 @@
   - [읽기페이지-첨부파일 가져오기](#readpagefileload)
   - [원본이미지 큰화면 띄우기](#originalimage)
   - [글삭제-업로드파일삭제](#boarduploadfiledelete)
+
 
 ---
 
@@ -3578,7 +3589,7 @@ $("#registerForm").submit(function(event){
 		
 		$(".popup").hide('slow');
 			
-	});	
+	});	  
 ```	
 
 
@@ -3618,3 +3629,401 @@ $("#registerForm").submit(function(event){
 		formObj.submit();
 	});	
 ```
+
+
+---
+
+
+###### interceptorsetting
+
+인터셉터 설정
+-
+
+인터셉터와 필터는 특정 URI 접근을 제어하는 공통점이 있음.
+필터는 웹 어플리케이션 영역내에서 존재하지만,
+인터셉터는 스프링 컨텍스트에 존재하므로 spring내의 모든 객체에 접근이 가능하다.
+
+HandlerInterceptor 인터페이스를 구현한 추상클래스인
+HandlerInterceptorAdaptor를 상속해서 사용한다.
+
+```java
+
+public class SampleInterceptor extends HandlerInterceptorAdapter{
+
+	
+	@Override
+	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
+			ModelAndView modelAndView) throws Exception {
+		
+		System.out.println("post handle...");
+	
+	}
+	
+	@Override
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+			throws Exception {
+		
+		System.out.println("pre handle...");
+		
+		return true;
+	}
+}
+```
+
+```xml
+
+<beans:bean id="sampleInterceptor" 
+class="com.jeongwon.interceptor.SampleInterceptor"></beans:bean>
+
+	
+	<interceptors>
+		<interceptor>
+			<mapping path="/doA"/>
+			<mapping path="/doB"/>
+			<beans:ref bean="sampleInterceptor"/>
+		</interceptor>
+	</interceptors>
+```
+
+
+
+
+---
+
+
+###### handlerMethod
+
+handlerMethod
+-
+
+인터셉터에서 메소드와 빈을 알 수있도록 하는 역할을 한다.
+
+// handler는 HandlerMethod 타입으로 캐스팅 한후 원래 메소드와 객체(빈)를 확인 할 수있다.
+
+```java
+	@Override
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+			throws Exception {
+		
+		System.out.println("pre handle...");
+		
+		HandlerMethod method = (HandlerMethod) handler;
+		Method methodObj = method.getMethod();
+		
+		System.out.println("Bean:" + method.getBean());
+		System.out.println("Method: " + methodObj);
+		
+		return true;
+	}
+```
+
+
+
+
+
+---
+
+
+###### sessioncookie
+
+세션쿠키
+-
+
+자물쇠 : HttpSession
+
+열쇠 : Session Cookie
+
+자물쇠들이 있는 보관함 : Session Repository
+
+세션과다 -> 서버 성능 영향 -> 세션 자동 정리 기능
+(web.xml에서 HttpSession의 timeout을 지정가능)
+
+public class LoginInterceptor extends HandlerInterceptorAdapter{
+	
+	private static final String LOGIN = "login";
+	private static final Logger logger = LoggerFactory.getLogger(LoginInterceptor.class);
+	
+	//로그인 전처리
+	@Override
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+			throws Exception {
+		//세션을 가져와서
+		HttpSession session = request.getSession();
+		//세션이 있으면 세션을 지워준다
+		if(session.getAttribute(LOGIN) != null) {
+			logger.info("clear login data before");
+			session.removeAttribute(LOGIN);
+		}
+		return true;
+	}
+	//로그인 후처리
+	@Override
+	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
+			ModelAndView modelAndView) throws Exception {
+		//세션을 가져와서 , userVO 객체를 가져오는 과정을 거친다
+		HttpSession session = request.getSession();
+		ModelMap modelMap = modelAndView.getModelMap();
+		Object userVO = modelMap.get("userVO");
+		
+		//userVO가 있으면 세션에 넣어주고 리다이렉트한다.
+		if(userVO != null) {
+			logger.info("new login success");
+			session.setAttribute(LOGIN, userVO);
+			
+			// 기존 URI 저장된게 있으면 redirect
+			Object dest = session.getAttribute("dest");
+			response.sendRedirect(dest != null ? (String)dest:"/");
+		}
+	}
+}
+
+```xml
+//servlet-context.xml
+
+	<beans:bean id="loginInterceptor" class="com.jeongwon.interceptor.LoginInterceptor"></beans:bean>
+	
+	<interceptors>
+		<interceptor>
+			<mapping path="/user/loginPost"/>
+			<beans:ref bean="loginInterceptor"/>
+		</interceptor>
+	</interceptors>
+	
+
+```
+
+// JSP에서 사용되는 EL의 경우 자동으로 HttpSession에 있는 'login'을 찾아서 사용하기때문에
+
+${login.uid} 와 같은형태로 사용할 수있다.
+
+<c:if test="${login.uid == boardVO.writer}">
+/
+<c:if test="${not empty login}">
+
+---
+
+
+###### login
+
+로그인여부
+-
+
+로그인여부
+
+```java
+public class AuthInterceptor extends HandlerInterceptorAdapter {
+	
+	private static final Logger logger = LoggerFactory.getLogger(AuthInterceptor.class);
+	
+	// 로그인여부검사(인증)  
+	@Override
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+			throws Exception {
+
+		HttpSession session = request.getSession();
+		//세션의 로그인 여부검사 - 비로그인시 로그인페이지로 리다이렉트
+		if(session.getAttribute("login") == null) {
+			
+			logger.info("current user is not logined");
+			
+			//기존 URI 세션에 저장하기 (돌아가기위한)
+			saveDest(request);
+
+			response.sendRedirect("/user/login");
+			return false;
+		}
+		return true;
+	}
+}
+```
+
+```xml
+	
+	<beans:bean id="authIntercepter" class="com.jeongwon.interceptor.AuthInterceptor"></beans:bean>
+
+	<interceptors>
+		<interceptor>
+			<mapping path="/sboard/register" />
+			<beans:ref bean="authInterceptor"/>
+		</interceptor>
+	</interceptors>
+
+```
+
+
+---
+
+
+###### savedest
+
+기존 URI 세션에 담아두기
+-
+
+```java
+//AutoInterceptor.java
+
+	//기존 URI 세션에 저장하기
+	private void saveDest(HttpServletRequest req) {
+		//uri와 쿼리스트링을 가져와서
+		String uri = req.getRequestURI();
+		String query = req.getQueryString();
+		//쿼리스트링이 null이 아닐때 ?을 붙여준다
+		if (query == null || query == "null") {
+			query = "";
+		}else {
+			query = "?" + query;
+		}
+		//get메소드일때 세션에 담아준다(uri+query)
+		if(req.getMethod().equals("GET")) {
+		logger.info("dest : " + (uri + query));
+		req.getSession().setAttribute("dest", uri + query);
+		}
+	}
+```
+
+
+
+---
+
+
+###### autologin
+
+자동로그인
+-
+
+자동로그인 - 특정쿠키전송, HttpSession에서 사용되는 세션쿠키와 다름 , 
+개발자가 만들어내는 쿠키 -> 만료기한을 정할 수 있어 오래보관가능.
+
+세션 = 서버 내부에서만 사용 / 쿠키는 브라우저-서버 주고받아 보안취약, 길이제한,문자열만 보관
+
+모바일에서 매번 로그인 번거로움->
+로그인 정보 오래 유지할수있는 쿠키가 다시 유행
+
+
+```java
+// postHandle 메소드(로그인 후처리)
+
+...
+
+//userVO가 있으면
+		if(userVO != null) {
+			
+			//로그인에 성공, 세션에 담아준다
+			logger.info("new login success!");
+			session.setAttribute(LOGIN, userVO);
+			
+			// 자동로그인 기능을 사용하면
+			if(request.getParameter("useCookie") != null) {
+				//쿠키생성과 속성추가, 생성한 쿠키추가해주기
+				logger.info("remember me....");
+				Cookie loginCookie = new Cookie("loginCookie",session.getId());
+				loginCookie.setPath("/");
+				loginCookie.setMaxAge(60 * 60 * 24 * 7);
+				response.addCookie(loginCookie);
+			}
+		
+...
+
+```
+
+쿠키는 개발자도구 - Application 에서 전달됨을 확인할수 있다.
+JSESSIONID는 톰캣에서 발행된 세션쿠기이고, loginCookie는 인터셉터에 의해 만들어진 쿠키이다.
+
+브라우저 종료 세션끊김-> JSESSIONID인 세션쿠키가 없어도 loginCookie는 값을 유지한다.
+
+
+   //로그인
+    @Requestmapping(value="loginPost", method=RequestMethod.POST)
+    public void loginPost(Model model,LoginDTO dto , HTtpSession session){
+        
+        UserVO vo = service.login(dto);
+        //로그인 실패시 종료
+        if(vo == null){return;}
+        //자동로그인 활성화시에 시간을 지정하고 넘김
+        if(dto.isUseCookie()){
+            int amount = 60 * 60 * 24 * 7;
+            Date sessionLimit = new Date(System.currentTimemillis() + (amount*1000));
+            service.keepLogin(dto.uid, sessionLimit, session.getId());
+        }
+    }
+
+
+
+
+---
+
+
+###### autologinauth
+
+자동 로그인 여부에 따른 인터셉터의 인증
+-
+
+```java
+ //자동로그인 여부에 따른 인터셉터의 인증
+
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler){
+        HttpSession session = request.getSession();
+        //세션에서 가져온 로그인값이 없을떄
+        if(session.getAttribute("login") == null){
+            //되돌아가기 위한 목적지를 담아놓고
+            saveDest(request);
+            Cookie loginCookie = Webkit.getCookie(request,"loginCookie");
+            //쿠키를 가져와서 로그인 쿠키가 있으면
+            if(cookie != null){
+                //쿠키의 값을 DB에 넘겨 체크해서 있으면 사용자 객체를 가져온다.
+                UserVO vo = service.checkLogincookieSession(loginCookie.getValue());
+                //그 객체가 있으면 세션에 로그인으로 담는다+ 리턴으로 true해준다.
+                if(vo != null){
+                    
+                    session.setAttribute("login", vo);
+                    return true;
+                }
+            
+            }
+            //로그인쿠키가 없으면 로그인 페이지로 리다이렉트 시키고 리턴으로 false처리한다
+            response.sendRedirect("/user/login");
+            return false;
+        }
+        // 로그인이 되어있으면 바로 리턴으로 true시킨다.
+        return true;
+    }
+
+```java
+
+
+
+---
+
+
+###### logout
+
+로그아웃 처리
+-
+
+
+    //로그아웃 처리
+    @RequestMapping(value="logout", method=RequestMethod.POST)
+    public String logout(HttpServletRequest request, HttpServletResponse response, HttpSession session)throws Exception{
+        //로그인 세션가져온다
+        Object obj = session.getAttribute("login");
+
+        if(obj != null){
+              // 있으면사용자객체에 담고
+            UserVO vo = (UserVO)obj;
+            // 세션을 지운다
+            session.removeAttribute("login");
+             // 세션을 무효화 시킨다.
+            session.invalidate();
+            // 로그인 쿠키를 가져와서
+            Cookie loginCookie = WebUtils.getCookie(request,"loginCookie");
+             
+            if(loginCookie != null){// 있으면 path, 기간을 설정하고 쿠키를 담아준다 / db에 넣어준다
+                loginCookie.setPath("/");
+                loginCookie.setMaxAge(0);
+                response.addCookie(loginCookie);
+                service.keepLogin(vo.getUid(),session.getId(),new Date());
+            }
+        }
+        return "user/logout";
+    }

@@ -10,6 +10,9 @@
 - [에러](#error)
   - [add - 줄바꿈관련에러](#adderror)
   - [두개의 히스토리 가진 프로젝트병합](#refusingtomerge)
+
+---
+
 ### Pull request
 > 깃허브의 아주 강력한 협업기능이다.
 > 머지 전 리뷰를 통한 공동학습가능.
@@ -207,3 +210,25 @@ doc/*.txt
 doc/**/*.pdf
 
 ```
+
+
+[](https://www.gitignore.io/) 에 들어가서 ide, os , 언어 등에 따라 기본 ignore 세팅된 것을 가져올수있다.
+
+gitignore 파일 생성 안될때 .gitignore. 으로 생성하면 만들어진다(윈도우)
+
+gitignore에 푸시된 내용이 삭제되지 않는 문제는 아래와 같이 해결할 수있다.
+
+$ git rm -r --cached .
+$ git add .
+$ git commit -m "fixed untracked files”
+$ 푸시
+
+git rm => 원격 저장소와 로컬 저장소에 있는 파일을 삭제한다.
+
+git rm --cached => 원격 저장소에 있는 파일을 삭제한다. 로컬 저장소에 있는 파일은 삭제하지 않는다.
+
+
+
+
+
+

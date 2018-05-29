@@ -551,6 +551,18 @@ HashSet
 :Set인터페이스를 구현한 가장 대표적인 컬렉션이며, Set의 특징처럼 중복된 요소를 저장하지 않는다.
 저장순서를 유지하지 않으므로 저장순서를 유지하고자 한다면 LinkedHashSet을 사용해야 한다.
 
+```java
+Set<Integer> hashSet= new HashSet<>();
+
+hashSet.add(1);
+hashSet.add(2);
+
+Iterator iterator = hashSet.iterator();
+while(iterator.hasNext()){
+	System.out.println(iterator.next());
+}
+```
+
 TreeSet
 :이진 검색 트리라는 자료구조의 형태로 데이터를 저장하는 컬렉션 클래스이다.
 Set 인터페이스를 구현했으므로 중복된 데이터의 저장을 허용하지 않으며 정렬된 위치에 저장하므로 저자순서를 유지하지 않아도 된다.
