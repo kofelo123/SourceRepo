@@ -3,8 +3,15 @@
 - [null의 사용](#usenull)
 - [CONCATENATION ( CONCAT) - 합성연산자](#concat)
 - [USER_OBJECTS](#userobjects)
+- [모두 만족하는 조건절 사용](#wheresatisfied)
+- [ORDER BY](#orderby)
+- [연산자](#operator)
 
 
+- [알아두기]
+    - [옵티마이저와 실행계획(알아두기)](#optimizerExcutionPaln)
+    - [INDEX 조회-DATA DICTIONARY(알아두기)](#dataDictionary)
+    - [DB BLOCK 의 구조(알아두기)](#dbblock)
 ---
 
 
@@ -194,4 +201,318 @@ DROP SEQUENCE QNA_SEQ;
 DROP TABLE SA_BOARD;
 ...
 -
+
+
+---
+
+
+###### wheresatisfied
+
+모두 만족하는 조건절 사용
+-
+
+조건절 WHERE이 모든 레코드를 만족할때는
+내부적으로 해당 칼럼에 INDEX가 존재하면 실행계획에 포함된다.
+
+WHERE이 없을때와 레코드 정렬이 다를수 있다.
+
+
+
+---
+
+
+###### optimizerExcutionPaln
+
+옵티마이저와 실행계획(알아두기)
+-
+
+DML 수행시 옵티마이저가 관여,
+
+최적화 경로를 찾아내기 위해 내부적으로 많은 요인 고려.
+
+어떤 테이블을 먼저읽으며 그때 인덱스 이용여부, 어떤인덱스 , 어떻게 조인 등
+
+실행계획에 의해 DML 수행, 옵티마이저가 선택한 최적화 경로 => PLAN으로 들여다 볼수있음.
+
+PLAN: DML- 어떤 경로로 DB를 Access? 순서도
+
+오라클 제공 UTLXPLAN.SQL 실행 - PLAN_TABLE 테이블 생성됨 -> 특정 SQL의 수행경로 볼때 SQL 앞에 다음 명령어 실행
+
+EXPLAIN PLAN SET STATEMENT_ID = '임의지정' FOR
+
+수행 -> 수행경로가 PLAN_TABLE에 결과남음
+
+STATEMENT_ID 컬럼에 값이 들어감
+
+아래의 sql에 대한 실행계획의 경로를 본다
+
+```sql
+SELECT EMP_ID,EMP_NAME
+
+FROM TEMP
+
+WHERE EMP_ID > 0;
+```
+
+1. SQL의 PLAN작성
+
+```sql
+EXPLAIN PLAN SET STATEMENT_ID = '임의지정' FOR
+SELECT EMP_ID,EMP_NAME
+FROM temp
+WHERE emp_id > 0;
+
+```
+2. 실행계획 검색
+
+```sql
+
+ SELECT lpad(operation, length(operation)+2*(level-1))||
+
+                         decode(id,0,'Cost Estimate:'||decode(position,'0',
+
+                         'N/A',position), null)||''||options||
+
+                         decode(object_name,null,null,':')||rpad(object_owner,
+
+                         length(object_name)+1,',')||object_name||
+
+                         decode(object_type,'UNIQUE',' (U) ', 'NIN_UNIQUE',
+
+                        '(NU)',null)||decode(object_instance,null,null,'('||object_instance||')') PLAN
+
+                 FROM PLAN_TABLE
+
+                 START with ID=0 AND STATEMENT_ID='임의지정'
+
+CONNECT BY PRIOR ID=PARENT_ID AND STATEMENT_ID='임의지정'
+
+```
+
+
+
+---
+
+
+###### dataDictionary
+
+INDEX 조회-DATA DICTIONARY(알아두기)
+-
+
+실행계획 - INDEX이름 나옴 -> 어떤 테이블에 대해 생성되되어 있고, 
+어떤 칼럼으로 구성되어있는지에 대한 정보 - DICTIONARY VIEW 에서 찾을 수있음. 
+->(ORACLE의 SYS USER가 소유 - DB관련 정보제공 READ-ONLY VIEW)
+
+자신의 USER가 소유하고 있는 INDEX 조회해봄.
+
+USER_INDEXES 와 USER_IND_COLUMNS
+
+USER_INDEXES 는 테이블이 소유하고 있는 INDEX 가 어떤 것이 있는지 알아볼 때 편함.
+
+```
+SELECT INDEX_NAME
+FROM USER_INDEXES
+WHERE TABLE_NAME = 'TEMP';
+```
+
+결과)
+
+
+                  INDEX_NAME                   
+
+                  -------------
+
+ SYS_C002696
+
+
+USER_IND_COLUMNS는 인덱스가 어떤 컬럼들로 구성 되어 있는가를 확인 할 때 주로 사용
+
+```sql
+SELECT index_name, column_name
+FROM user_ind_columns
+WHERE table_name = 'TEMP';
+```
+
+결과)
+
+INDEX_NAME    COLUMN_NAME
+
+------------ ------------
+
+SYS_C002696    EMP_ID     
+
+
+
+
+
+---
+
+
+###### orderby
+
+ORDER BY
+-
+
+자료양이 늘어나고, 삭제,입력 등이 진행되면서 자료는 무작위로 저장된다.
+
+순서정렬위해 ORDER BY를 쓰며, 그외에도 query시 내부적으로 sort가 일어나는경우, index 사용되는 경우 등이 있다.
+
+기본은 asc(오름차순)
+
+컬럼명 대신 컬럼 순서를 기술해도 사용가능
+
+```sql
+SELECT lev,emp_id,emp_name
+FROM temp
+ORDER BY 1,2 DESC;
+```
+
+
+
+
+---
+
+
+###### dbblock
+
+DB BLOCK 의 구조(알아두기)
+-
+
+DB BLOCK: 오라클 물리적 저장단위로서 입출력시의 최소단위
+
+HEADER : 블록의 주소와 같은 BLOCK에 대한 일반정보를 포함
+
+TABLE DIRECTORY : 블록안 ROW를 소유하는 테이블에 대한 정보를 포함
+
+FREE SPACE : 널 칼럼의 값이 NOT NULL로 UPDATE 될 때 추가적인 공간을 요구하게 된다.
+이때처럼 ROW의 변경이나 새로운 ROW 삽입 시 필요로 하게되는 추가공간을 위해 확보된 영역
+
+
+  PCTUSED 와 PCTFREE
+
+              PCTFREE
+
+                 이미 블록에 쓰여진 ROW의 UPDATE나 INSERT를 위하여 예약되는 공간
+
+                예를 들어
+
+                PCTFREE  20
+
+                과 같이 값을 잡아주면 블록의 공간 중 20%를 이미 블록에 쓰여진 ROW의 UPDATE나 INSERT를 위하여  사용되지 않고 남게 하겠다는 뜻
+
+              PCTUSED
+
+                PCTFREE에서 지정한 영역만큼만 FREE SPACE가 남게 되면                오라클은 더 이상 해당 블록에 새로운 ROW를 삽입하지 않다.
+
+                사용공간이 ROW의 삭제 등으로 인하여 PCTUSED에서                지정한 값 아래로 떨어지게 되면 그때 다시 해당 BLOCK에 새로운 ROW가 삽입될 수 있다.
+
+
+
+
+---
+
+
+###### operator
+
+연산자 
+-
+
+<> , != : 다른지를 묻는다.
+
+NOT : IN, BETWEEN, LIKE,  ANY, ALL, EXISTS 등과 함께 쓰여 연산의 결과를 부정할 때 사용
+
+   WHERE  EMP_ID NOT IN (19970824,19970825)
+
+    :  EMP_ID 컬럼의 값이 19970824,19970825 중 어디에도 해당되지않는 ROW를 검색.
+
+
+LIKE : 값의 일부를 주어주고 검색할 때 사용
+
+
+부서코드가 A로 시작되는 ROW를 검색한다.
+
+```sql
+
+SELECT EMP_ID,EMP_NAME,DEPT_CODE
+FROM TEMP
+WHERE DEPT_CODE LIKE 'A%';
+
+```
+결과)
+EMP_ID    EMP_NAME   DEPT_C
+
+-------------  ------------------  ------------
+
+19970101   김길동        AA0001
+
+19960101   홍길동        AB0001
+
+19970201   박문수        AC0001
+
+
+위에서 부서코드 중에 A가 들어가는 ROW
+'%A%'
+
+위에서 총 6자리 부서코드 중 2번째 자리에 A 가 들어가는 ROW 
+
+'_A____'
+
+< BETWEEN >
+
+상한 값과 하한 값을 주어 자료의 검색을 하고자 할 때 사용
+
+사번이 1997로 시작하는 사원의 사번과 성명을 검색할 때 BETWEEN 연산자를 쓴다면
+
+```sql
+SELECT EMP_ID,EMP_NAME
+FROM TEMP
+WHERE EMP_ID BETWEEN 19970001 AND 19979999;
+```
+
+ BETWEEN 연산자를 이용하여 성명(EMP_NAME)이 ‘ㄱ’ 으로 시작되는           사람의 EMP_ID 와 EMP_NAME 을 조회
+
+```SQL
+
+SELECT EMP_ID , EMP_NAME
+FROM TEMP
+WHERE EMP_NAME BETWEEN '가' AND '나';
+
+```
+
+<IN>
+
+OR 조건으로 연결된 조건을 한번에 기술 해 줄 수있는 기능을 제공
+
+
+```SQL
+SELECT  EMP_ID,EMP_NAME
+
+FROM    TEMP
+
+WHERE   EMP_NAME IN ('홍길동','김길동');
+
+ 
+
+            EMP_ID     EMP_NAME 
+
+           ---------- ----------
+
+            19970101    김길동   
+
+            19960101    홍길동   
+
+```
+
+ 위에서처럼 IN 연산자로 기술된 문장은 OPTIMZER에 의해 실행계획 작성 전에          다음과 같이 변경 된다.
+```SQL
+  SELECT EMP_ID,EMP_NAME
+
+           FROM    TEMP
+
+           WHERE   EMP_NAME = ‘김길동’
+
+           OR       EMP_NAME = ‘홍길동’;
+
+```
+
 
