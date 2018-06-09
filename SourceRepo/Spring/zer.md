@@ -1,17 +1,9 @@
-- [Interceptor]
-  - [인터셉터 설정](#interceptorsetting)
-  - [HandlerMethod](#handlerMethod)
-  - [세션쿠키](#sessioncookie)
-  - [로그인여부](#login)
-  - [기존 URI 세션에 담아두기](#savedest)
-  - [자동로그인](#autologin)
-  - [자동 로그인 여부에 따른 인터셉터의 인증](#autologinauth)
-  - [로그아웃 처리](#logout)
+- [Spring-Mybatis]
+  - [MyBatis 설정](#mybatisSetting)    
 
-- [jUnit 메소드](#junitmethod)
-- [스프링 프로젝트 세팅 Al](#springsettingal)
+
 - [페이징](#paging)
-  - [Limit](#limit)
+  - [Limit](#limit) 
   - [DAO 처리를 도와줄 Criteria , 페이지계산](#criteria)
   - [화면 하단의 페이징 처리](#paging-button)
     - [endPage 구하기](#end-page)
@@ -75,6 +67,16 @@
   - [읽기페이지-첨부파일 가져오기](#readpagefileload)
   - [원본이미지 큰화면 띄우기](#originalimage)
   - [글삭제-업로드파일삭제](#boarduploadfiledelete)
+
+- [Interceptor]
+  - [인터셉터 설정](#interceptorsetting)
+  - [HandlerMethod](#handlerMethod)
+  - [세션쿠키](#sessioncookie)
+  - [로그인여부](#login)
+  - [기존 URI 세션에 담아두기](#savedest)
+  - [자동로그인](#autologin)
+  - [자동 로그인 여부에 따른 인터셉터의 인증](#autologinauth)
+  - [로그아웃 처리](#logout)
 
 
 ---
@@ -4027,3 +4029,44 @@ JSESSIONID는 톰캣에서 발행된 세션쿠기이고, loginCookie는 인터�
         }
         return "user/logout";
     }
+
+
+
+
+---
+
+
+###### mybatisSetting
+
+MyBatis 설정
+-
+
+```xml
+	<!-- https://mvnrepository.com/artifact/org.mybatis/mybatis -->
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis</artifactId>
+			<version>3.4.1</version>
+		</dependency>
+
+	<!-- https://mvnrepository.com/artifact/org.mybatis/mybatis-spring -->
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis-spring</artifactId>
+			<version>1.3.0</version>
+		</dependency>
+
+	<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
+
+```
+

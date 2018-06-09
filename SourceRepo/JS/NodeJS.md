@@ -1,73 +1,123 @@
+<nodejs - 책>
+
+- [내부모듈과 외부모듈](#module)
+- [미들웨어](#middleware)
 
 ---
-- [모듈](#module)
+
 
 ###### module
-모듈
 
+내부모듈과 외부모듈
 -
 
-require();
+cmd 에서 명령어 node 로 실행해서 콘솔등 찍어볼수 있는것을 'REPL(read eval print loop)'이라 함
 
-모듈을 리턴하는 함수이다.
+기능 확장시 '모듈'이라는 개념사용
+
+기본 내장모듈= '내부 모듈'
+
+[](https://nodejs.org/api)
+
+os 모듈 사용
+
+```js
+//모듈 가져오기
+var os = require('os');
+
+console.log(os.hostname());
+console.log(os.type());
+console.log(os.platform());
+console.log(os.arch());
+console.log(os.release());
+console.log(os.uptime());
+console.log(os.loadavg());
+console.log(os.totalmem());
+console.log(os.freemem());
+console.log(os.cpus());
+console.log(os.getNetworkInterfaces());
+
 
 ```
-module.js(test)
 
-var o = require('os');
-console.log(o.platform());
-
->node modue.js
-
-결과: win32
-```
-
-npm = node package manager
-
-[](https://www.npmjs.com)
-
-** uglify-js 설치 *
+외부모듈을 위한 npm
+[](https://npmjs.org/)
 
 ```
-npm install uglify-js -g
-
-// -g는 옵션인데 글로벌(전역)적으로  실행 ,쓰겟다는것(독립)
-빼면 현재의 디렉토리해당 프로젝트의 부품으로 사용하겟다는뜻..(뭔소린지..)
-
+> npm install 모듈명
 ```
 
-사용
-```
-uglifyjs pretty.js
+request 모듈은 특정 웹페이지를 긁을떄 사용.
 
-uglifyjs pretty.js -m //지역변수까지 변경
-
-uglifyjs pretty.js -o uglified.js -m//지역변수까지 변경+ 해당이름으로(uglified.js) 저장
-
-```
-부트스트랩의 min.js 처럼 공백,지역변수등을 한줄로 최적화하여 용량이나 성능 등의 향상 시킨다.
-
-
-
-다른사람이 만든 패키지를 가져오기 위해
-npm init 해줘야한다.
-
-(패지키 디렉터리를 지정)
-
--> 내 디렉터리에 package.json이 생김
-
-underscore 설치
-```
-> npm install underscore
-
-```
-설치후 로그에 extraneous 라는 단어가 초록색글씨로 나타나는데, 온전하지 않다는 뜻이다.
-```
-> npm install underscore --save
+```js
+> npm install request
 ```
 
-save를 넣어주면 package.json에 dependenies 의존성 부분이 명시적으로 추가된다.
+```
+//JavaScript.js
 
-이렇게 설정이되면 자신의 개인 프로젝트에 언제든지 package.json만 있으면 언제든지 포함시킬수 있다는것.. 기본적으로 --save 적도록 한다.
+// 모듈 추출
+var request = require('request');
 
-underscore는 기본적인 js의 빈약한 배열기능을 채워주는 기능이 있다.
+//웹페이지 긁기
+request('http://www.google.com', function(error,response,body){
+    console.log(body);
+});
+```
+
+```
+//cmd
+
+node JavaScript.js
+```
+
+
+
+
+---
+
+
+###### middleware
+
+미들웨어
+-
+
+
+app.use() 메서드에 입력하는 콜백 함수는 request 이벤트 리스너이고 다음과 같은 형태로 서버에 접속하면 자동으로 실행됨
+
+```
+var express = require('express');
+
+var app = express();
+
+app.use(function(request,response,next){
+    request.test='request.test';
+    response.test='response.test';
+    next();
+});
+
+app.use(function(request,response,next){
+    response.send('<h1>'+request.test+'::'+response.test+'</h1>');
+});
+
+app.listen(52273, function(){
+    console.log('Server Run at http://127.0.0.1:52273');
+})
+```
+
+이떄 매개변수 next는 다음 콜백함수를 의미한다.
+
+사용자의 요청을 처리하면서 지나가는 app.use() 메서드의 콜백 함수를 미들웨어 라고 부른다.
+
+미들웨어는 위에서 아래로 실행된다.
+
+logger,body parser,cookie parser,session,static,router등 이미 개발된 미들웨어가 있고 활용할수있다.
+
+```
+var app = express();
+app.use(express.logger());
+app.use(express.bodyParser());
+app.use(express.cookieParser());
+app.use(express.session());
+app.use(express.static('public'));
+```

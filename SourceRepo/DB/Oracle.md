@@ -55,6 +55,9 @@
   - [접속문제](#connectissue)
   - [오라클 설치에러](#oracleinstallerror)
   - [복수테이블-같은이름칼럼조회](#columnduplicate)
+  - [Group by expression](#groupbyexpression)
+
+
 ---
 
 ### RowNum
@@ -1548,3 +1551,32 @@ purge recyclebin;
 
 * 휴지통에 있는 테이블 복원
 FLASHBACK TABLE 테이블명 TO BEFORE DROP
+
+
+
+---
+
+
+###### groupbyexpression
+
+Group by expression
+-
+
+ORA-00979: not a GROUP BY expression
+00979. 00000 -  "not a GROUP BY expression"
+
+```
+SELECT LEV , MAX(EMP_ID), EMP_NAME
+FROM TEMP
+GROUP BY LEV
+HAVING MAX(EMP_ID) LIKE '1997%';
+```
+
+위에서 SELECT절의 EMP_NAME 때문에 나는 에러인데
+
+연산하는 집합 MAX(EMP_ID)외의 칼럼은
+
+group by 컬럼으로 표시되어야 한다.
+
+또, HAVING절에서도 MAX(EMP_ID)가 EMP_ID 로 표기할경우도 같은 에러 발생
+
