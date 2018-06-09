@@ -34,12 +34,28 @@
   -[단일행함수 - 날짜처리함수]
   - [날짜와 숫자의 계산](#calnum)
   - [SYSDATE(알아두기)](#sysdate)  
-
+  - [DATE 형에 시간 더하고 빼기](#adddatetype)
+  - [ADD_MONTHS  - 월 단위의 가감연산](#addmonths)
+  - [MONTHS_BETWEEN - 두 일자사이의 간격이 몇개월인지](#monthbetween)
+  - [LAST_DAY - 포함된 월의 마지막일 반환](#lastday)
+  
+  - [데이터형 변환함수](#datatranfunction)
+        - [TO_CHAR - 날짜,숫자 => 문자](#tochar)
+        - [TO_NUMBER - 문자열을 숫자로 변환](#tonumber)
+        - [TO_DATE - 문자를 DATE형으로](#todate)
+ 
+  - [그룹함수](#groupfunction)
+        - [COUNT - 로우 수 반환](#count)
+        - [MIN과 MAX](#minmax)
+        - [SUM 과 AVG](#sumavg)
+        
   -[알아두기]
   - [DUAL TABLE 이란(알아두기)](#dualTable)
   - [CREATE TABLE AS SELECT ... (알아두기)](#createas)
   - [COMMIT 과 ROLLBACK(알아두기)](#commitRollback)
 
+  - [그룹함수 사용시 장점(알아두기)](#groupfunctionadv)
+  - [평균에서의 NULL(알아두기)](#nullinavg)     
 ---
 
 
@@ -1257,7 +1273,6 @@ SYSDATE를 사용하면 현재일자를 초 단위까지 알아낼 수있다.
 
 
 ---
-- [DATE 형에 시간 더하고 빼기](#adddatetype)
 
 ###### adddatetype
 
@@ -1287,7 +1302,6 @@ WHERE EMP_NAME = '홍길동';
 
 
 ---
-- [ADD_MONTHS  - 월 단위의 가감연산](#addmonths)
 
 ###### addmonths
 
@@ -1306,7 +1320,6 @@ WHERE EMP_NAME = '홍길동';
 
 
 ---
-- [MONTHS_BETWEEN - 두 일자사이의 간격이 몇개월인지](#monthbetween)
 
 ###### monthbetween
 
@@ -1323,7 +1336,6 @@ WHERE EMP_NAME = '홍길동';
 
 
 ---
-- [LAST_DAY - 포함된 월의 마지막일 반환](#lastday)
 
 ###### lastday
 
@@ -1342,7 +1354,6 @@ FROM TEMP;
 ...
 
 ---
-- [데이터형 변환함수](#datatranfunction)
 
 ###### datatranfunction
 
@@ -1357,7 +1368,6 @@ FROM TEMP;
 
 
 ---
-- [TO_CHAR - 날짜,숫자 => 문자](#tochar)
 
 ###### tochar
 
@@ -1414,7 +1424,6 @@ FROM DUAL;
 
 
 ---
-- [TO_NUMBER - 문자열을 숫자로 변환](#tonumber)
 
 ###### tonumber
 
@@ -1433,7 +1442,6 @@ FROM DUAL;
 
 
 ---
-- [TO_DATE - 문자를 DATE형으로](#todate)
 
 ###### todate
 
@@ -1473,7 +1481,6 @@ FROM DUAL;
 
 
 ---
-- [그룹함수](#groupfunction)
 
 ###### groupfunction
 
@@ -1501,7 +1508,6 @@ COUNT,MAX,MIN은 컬럼 형에 관계없이 사용,
 
 
 ---
-- [COUNT - 로우 수 반환](#count)
 
 ###### count
 
@@ -1579,7 +1585,6 @@ FROM TEMP;
 
 
 ---
-- [그룹함수 사용시 장점(알아두기)](#groupfunctionadv)
 
 ###### groupfunctionadv
 
@@ -1596,7 +1601,6 @@ EXCEPTION 처리하고 계속 진행 시키고자 한다면 다시 PL/SQL 블록
 일부러 GROUP 함수를 사용하는 경우가 발생한다.
 
 ---
-- [MIN과 MAX](#minmax)
 
 ###### minmax
 
@@ -1642,7 +1646,6 @@ GROUP BY LEV;
 
 
 ---
-- [SUM 과 AVG](#sumavg)
 
 ###### sumavg
 
@@ -1666,7 +1669,7 @@ GROUP BY LEV;
 
 
 ---
-- [평균에서의 NULL(알아두기)](#nullinavg)
+
 
 ###### nullinavg
 
