@@ -1,6 +1,7 @@
 - [@GetMapping, @PostMapping](#getmappingpostmapping)
 - [날짜(Date타입)변환처리](#datetimeformat)
 - [정규표현식](#regularexpression)
+- [mybatis-캐시 비사용](#8061162)
 
 - [에러](#error)
     - [415에러-format not supported](#formatnotsupported)
@@ -98,7 +99,30 @@ error message :  HTTP Status 415 - request entity is in a format not supported
 
 사용하는 기호를 Meta문자 라고한다.
 
+[정규표현식정리](http://www.nextree.co.kr/p4327/)
 
 [정규표현식-예](https://blog.outsider.ne.kr/360)
+
 [정규표현식](http://ktko.tistory.com/74)
+
 [휴대폰번호 유효성검사 - 정규식체크](http://blog.tjsrms.me/jquery-%ED%95%B8%EB%93%9C%ED%8F%B0-%EB%B2%88%ED%98%B8-%EC%B2%B4%ED%81%AC%ED%95%98%EA%B8%B0/)
+
+
+
+---
+
+
+###### 8061162
+
+mybatis-캐시 비사용
+-
+
+```xml
+//mybatis-config.xml
+
+<configuration>
+	<settings>
+		<setting name="cacheEnabled" value="false" />
+	</settings>
+</configuration>
+```

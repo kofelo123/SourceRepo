@@ -20,7 +20,7 @@
 - [톰캣 8 설치](#tomcat8install)
 - [Mysql 설치](#mysqlinstall)
 - [패키지 파일 삭제](#packagedelete)
-
+- [mv - 파일이동,파일이름 변경](#mv)
 
 - [에러]
   - [write error in swap file](#error1)
@@ -956,3 +956,44 @@ fooZZZ
 ZZZfoo
 ZZZfooZZZ
 이런 문자열 속의 foo 는 바꾸지 않습니다.
+
+
+
+---
+
+
+###### mv
+
+mv - 파일이동,파일이름 변경
+-
+
+파일을 이동하는 명령어로 mv 옵션은 cp 명령어와 비슷하다.
+
+다른 점이 있다면 cp는 파일을 복사하는 것이고 mv는 파일 이동인데 이동 시 원본 파일이 삭제되는 점이다.
+
+그래서 보통 파일이름을 변경할 때도 mv 명령어를 쓴다.
+
+mv [옵션] [원본] [이동경로]
+
+ex)
+```
+mkdir docket-getting-started
+mv docket-getting-started docker-getting-started
+```
+옵션
+
+-b: 이동 경로에 같은 이름의 파일이나 디렉터리가 존재하면 기존 파일을 백업한 뒤에 이동한다.
+
+-f: 이동 경로에 같은 이름의 파일이나 디렉터리가 존재하면 덮어쓸 때 묻지 않고 바로 덮어쓴다.
+
+-i: 이동 경로에 같은 이름의 파일이나 디렉터리가 존재하면 덮어쓸 때 물어본다.
+
+-v: 이동 상태를 표시한다.
+
+hi.txt 파일을 이동시키는데 hello.txt로 파일이름까지 바꿔보자.
+
+[corej@localhost ~]$ mv hi.txt ./mydir1/hello.txt
+
+
+
+

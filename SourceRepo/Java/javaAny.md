@@ -30,6 +30,7 @@
 - [List(ArrayList,LinkedList,Stack,Queue)](#list)
 - [javadoc](#javadoc)
 - [주석처리에 대한것](#comment)
+- [문자열 포함여부 -(contains,indexOf, maches)](#80612103)
 
 - [error]
   -[이클립스 import 안될때](#notworkingimport)
@@ -778,3 +779,51 @@ error massage:  unmappable character for encoding MS949
  * **************************************************************/
 ```
 ---
+
+
+
+---
+
+
+###### 80612103
+
+문자열 포함여부 -(contains,indexOf, maches)
+-
+
+contains : 문자열에 검색하고자 하는 문자가 있는지 확인 (포함:true , 미포함: false)
+
+indexOf : 문자열에서 검색하는 문자의 위치를 반환 (포함: 문자 위치, 미포함: -1)
+
+matches :정규식을 이용하여 문자열을 검색한다. 
+특정 문자열을 검색할때 사용하기 보다는 한글, 숫자 등과 같이 해당 형태의 텍스트가 존재하는지 확인할때 사용하면 좋다
+(포함: true, 미포함:false)
+
+```java
+  // contains를 이용한 방법(true, false 반환)
+        if(txt1.contains("나다"))
+            System.out.println("문자열 있음!");
+        else
+            System.out.println("문자열 없음!");
+         
+         
+        // indexOf를 이용한 방법
+        if(txt2.indexOf("테스트") > -1)
+            System.out.println("문자열 있음!");
+        else
+            System.out.println("문자열 없음!");
+         
+         
+        // matches를 이용한 방법
+        if(txt2.matches(".*테스트.*"))
+            System.out.println("문자열 있음!");
+        else
+            System.out.println("문자열 없음!");
+         
+         
+        // matches를 이용하여 정규 표현식으로 문자열에 숫자가 있는지 확인
+        if(txt3.matches(".*[0-9].*"))
+            System.out.println("숫자 있음!");
+        else
+            System.out.println("숫자 없음!");
+
+```

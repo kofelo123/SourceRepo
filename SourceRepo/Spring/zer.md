@@ -1,7 +1,5 @@
 - [Spring-Mybatis]
-  - [MyBatis 설정](#mybatisSetting)    
-
-
+  - [Spring Setting](#springSetting)
 - [페이징](#paging)
   - [Limit](#limit) 
   - [DAO 처리를 도와줄 Criteria , 페이지계산](#criteria)
@@ -4036,12 +4034,14 @@ JSESSIONID는 톰캣에서 발행된 세션쿠기이고, loginCookie는 인터�
 ---
 
 
-###### mybatisSetting
+###### springSetting
 
-MyBatis 설정
+<MyBatis 설정>
 -
 
 ```xml
+//pom.xml
+
 	<!-- https://mvnrepository.com/artifact/org.mybatis/mybatis -->
 		<dependency>
 			<groupId>org.mybatis</groupId>
@@ -4069,4 +4069,128 @@ MyBatis 설정
 		</dependency>
 
 ```
+<dataSource,Mybatis>
+```xml
+//root-context.xml
 
+
+<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+			<property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"></property>
+			<property name="url" value="${Local.Url}"></property>
+			<property name="username" value="${Local.UserName}"></property>
+			<property name="password" value="${Local.Password}"></property>
+		</bean>
+
+
+<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:/mybatis-config.xml"></property>
+		<property name="mapperLocations" value="classpath:mappers/**/*Mapper.xml"></property>
+	</bean>
+
+<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate"
+		destroy-method="clearCache">
+		<constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory"></constructor-arg>
+	</bean>	
+```
+
+```xml
+//log4j.xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration PUBLIC "-//APACHE//DTD LOG4J 1.2//EN" "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+	<!-- Appenders -->
+	<appender name="console" class="org.apache.log4j.ConsoleAppender">
+		<param name="Target" value="System.out" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%-5p: %c - %m%n" />
+		</layout>
+	</appender>
+
+	<!-- Application Loggers -->
+	<logger name="com.thearc.controller">
+		<level value="info" />
+	</logger>
+
+	<!-- 3rdparty Loggers -->
+	<logger name="org.springframework.core">
+		<level value="info" />
+	</logger>
+
+	<logger name="org.springframework.beans">
+		<level value="info" />
+	</logger>
+
+	<logger name="org.springframework.context">
+		<level value="info" />
+	</logger>
+
+	<logger name="org.springframework.web">
+		<level value="info" />
+	</logger>
+
+	<!-- Root Logger -->
+	<root>
+		<priority value="info" />
+		<appender-ref ref="console" />
+	</root>
+
+</log4j:configuration>
+
+
+```
+```xml
+//log4jdbc.log4j2.properties
+log4jdbc.spylogdelegator.name=net.sf.log4jdbc.log.slf4j.Slf4jSpyLogDelegator
+```
+
+```xml
+//logback.xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+    <!-- log4jdbc-log4j2 -->
+	<logger name="jdbc.sqlonly"        level="INFO"/>
+    <logger name="jdbc.sqltiming"      level="INFO"/>
+    <logger name="jdbc.audit"          level="WARN"/>
+    <logger name="jdbc.resultset"      level="ERROR"/>
+    <logger name="jdbc.resultsettable" level="ERROR"/>
+    <logger name="jdbc.connection"     level="INFO"/>
+</configuration>
+
+
+```
+
+```xml
+//mybatis-config.xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+  <typeAliases>
+    <package name="com.thearc.domain"/>    
+  </typeAliases>
+
+
+</configuration>
+
+
+```
+
+<JSON처리 관련>
+
+```xml
+//pom.xml
+<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.5.4</version>
+		</dependency>
+```
