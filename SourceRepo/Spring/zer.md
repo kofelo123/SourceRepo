@@ -3989,7 +3989,7 @@ JSESSIONID는 톰캣에서 발행된 세션쿠기이고, loginCookie는 인터�
         return true;
     }
 
-```java
+```
 
 
 
@@ -4067,6 +4067,22 @@ JSESSIONID는 톰캣에서 발행된 세션쿠기이고, loginCookie는 인터�
 			<artifactId>spring-test</artifactId>
 			<version>${org.springframework-version}</version>
 		</dependency>
+  
+  //json처리
+  <dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.5.4</version>
+		</dependency>
+
+    //log 관련
+    <dependency>
+			<groupId>org.bgee.log4jdbc-log4j2</groupId>
+			<artifactId>log4jdbc-log4j2-jdbc4</artifactId>
+			<version>1.16</version>
+		</dependency>
+		
+```
 
 ```
 <dataSource,Mybatis>
@@ -4184,13 +4200,3 @@ log4jdbc.spylogdelegator.name=net.sf.log4jdbc.log.slf4j.Slf4jSpyLogDelegator
 
 ```
 
-<JSON처리 관련>
-
-```xml
-//pom.xml
-<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>2.5.4</version>
-		</dependency>
-```
