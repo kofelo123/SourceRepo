@@ -11,7 +11,8 @@
 - [깃허브 기본](#gitbasic)
 - [merge - 변경 이력 병합](#8061805)
 - [브랜치](#8061861)
-
+  - [브랜치 전환](#branchtrans)
+  - [브랜치 통합](#branchintintegrated)
 
 - [에러](#error)
   - [add - 줄바꿈관련에러](#adderror)
@@ -417,6 +418,12 @@ log를 사용할때 graph를 지저하면 선으로 된 그림 형태로 이력 
 
  ![](https://drive.google.com/uc?export=view&id=1OFj2nJnDHKSfQkVDOyI6c9K2Hi4tGAap)
 
+---
+
+###### branchtrans
+
+브랜치 전환
+-
 
 <브랜치 전환>
 
@@ -456,6 +463,13 @@ stash = 파일의 변경 내용을 일시적으로 기록해두는 영역
 
  ![](https://drive.google.com/uc?export=view&id=1B4AXPEfc-j51MF3fTBsrMm0t6w8Mjm95)
 
+---
+
+
+###### branchintintegrated
+
+브랜치 통합
+-
 
 <브랜치 통합>
 
