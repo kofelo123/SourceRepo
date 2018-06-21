@@ -31,6 +31,7 @@
 - [javadoc](#javadoc)
 - [주석처리에 대한것](#comment)
 - [문자열 포함여부 -(contains,indexOf, maches)](#80612103)
+- [프로젝트변경(java->maven)](#8062190)
 
 - [error]
   -[이클립스 import 안될때](#notworkingimport)
@@ -827,3 +828,17 @@ matches :정규식을 이용하여 문자열을 검색한다.
             System.out.println("숫자 없음!");
 
 ```
+
+
+---
+
+
+###### 8062190
+
+프로젝트변경(java->maven)
+-
+
+java project를 생성후 maven project 등으로 변환가능하다.
+
+프로젝트 우클릭 -> configure -> Convert to Maven Project
+

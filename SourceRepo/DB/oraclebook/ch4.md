@@ -33,9 +33,9 @@ SELECT ROWNUM,EMP_ID,EMP_NAME
 FROM TEMP
 WHERE EMP_ID > 0
 AND LEV='수습';
-```
+
 ====
-```
+
 1	20000101	이태백
 2	20000102	김설악
 3	20000203	최오대
@@ -53,14 +53,14 @@ FROM TEMP
 WHERE EMP_ID>0
 AND LEV='수습'
 AND ROWNUM <5;
-```
+
 ====
 
 1	20000101	이태백
 2	20000102	김설악
 3	20000119	장금강
 4	20000203	최오대
-
+```
 
 ROWNUM 관련 조건에 =, > , >= 로 주어지면, 원하는 결과가 나오지 않는다.
 
@@ -74,13 +74,13 @@ WHERE EMP_ID > 0
 AND LEV='수습'
 AND ROWNUM<5
 ORDER BY EMP_NAME;
-```
+
 ====
 2	20000102	김설악
 4	20000334	박지리
 1	20000101	이태백
 3	20000203	최오대
-
+```
 이와같이 조건절 만족시킨 행들에 ROWNUM이 붙고 난후에 ORDER BY가 이루어짐.
 
 
@@ -91,7 +91,7 @@ ROWNUM, 부여된번호, EMP_ID, EMP_NAME 을 보여주면 된다.
 SELECT ROWNUM,CEIL(ROWNUM/3),EMP_ID,EMP_NAME
 FROM TEMP
 WHERE EMP_ID>0;
-```
+
 
 ===
 
@@ -106,7 +106,7 @@ WHERE EMP_ID>0;
 9	3	19970112	연흥부
 ...
 
-
+```
 
 
 ---
@@ -191,7 +191,7 @@ Q 주당 강의 시간과 학점이 같으면 '일반' 을 돌려 받으려한�
 ```SQL
 SELECT LEC_ID, DECODE(LEC_TIME,LEC_POINT,'일반')
 FROM LECTURE;
-```
+
 ===
 
 L0001	일반
@@ -199,6 +199,7 @@ L0002
 L0003	
 L0004	일반
 L0005	
+```
 
 Q 주당강의시간과 학점이 같은 강의의 숫자를 알고 싶다.           
 ```SQL
@@ -214,12 +215,13 @@ COUNT와  DECODE 두개의 함수가 함께 사용. 이런경우는 실제시스
 SELECT COUNT(*)
 FROM LECTURE
 WHERE LEC_TIME = LEC_POINT;
-```
+
 
 
 ===
 
 2
+```
 
 Q 주당 강의 시간과 학점이 같으면 '일반'을 리턴받은후 정렬
 
@@ -260,7 +262,7 @@ Q 강의 시간과 학점이 다르면 NULL 이 리턴되는 대신 '특별'
 ```SQL
 SELECT LEC_ID, DECODE(LEC_TIME,LEC_POINT,'일반','특별')
 FROM LECTURE;
-```
+
 
 ===
 
@@ -270,6 +272,7 @@ L0003	특별
 L0004	일반
 L0005	특별
 
+```
 
 ---
 
@@ -302,30 +305,34 @@ Q  요일마다 LOGIN 암호를 자동으로 바꿔주는 프로그램을 만든
 ```SQL
 SELECT TO_CHAR(SYSDATE,'DD')
 FROM DUAL;
-```
+
 ===
 
 19
+```
 
 요일 읽어오기
 
 ```SQL
 SELECT TO_CHAR(SYSDATE,'DAY')
 FROM DUAL;
-```
+
 ===
 
+
 화요일
+```
 
 위의 두문장 조합
 
 ```SQL
 SELECT TO_CHAR(SYSDATE,'DD')|| TO_CHAR(SYSDATE,'DAY')
 FROM DUAL;
-```
+
 ===
 
 19화요일
+```
 
 ~>
 
@@ -339,12 +346,12 @@ SELECT TO_CHAR(SYSDATE,'DD') ||
                                      '토요일','51',
                                      '일요일','61') SEC_KEY
 FROM DUAL;
-``` 
+
 ===
 
 1911
 
-
+``` 
 
 ---
 
@@ -380,7 +387,7 @@ SELECT LEC_ID,LEC_TIME,LEC_POINT,
                                        1,'실험과목',
                                        -1,'기타과목')AS TY
 FROM LECTURE;
-```
+
 ===
 
 L0001	3	3	일반과목
@@ -389,6 +396,7 @@ L0003	2	3	기타과목
 L0004	2	2	일반과목
 L0005	3	1	실험과목
 
+```
 
 Q 강의시간과 학점이 같거나 강의시간이 학점보다 작으면 '일반과목'을 돌려 받고 강의시간이 학점보다 큰 경우만 '실험과목' 이라고 돌려 받고 싶다면 어떻게 처리할 수 있을까요?.     
             SIGN을 이용하는 경우는 다음과 같다.
@@ -397,7 +405,7 @@ Q 강의시간과 학점이 같거나 강의시간이 학점보다 작으면 '�
 SELECT LEC_ID,LEC_TIME,LEC_POINT,
        DECODE(SIGN(LEC_TIME-LEC_POINT),1,'실험과목','일반과목') TY
 FROM LECTURE;
-```
+
 
 ===
 
@@ -406,6 +414,7 @@ L0002	3	2	실험과목
 L0003	2	3	일반과목
 L0004	2	2	일반과목
 L0005	3	1	실험과목
+```
 
 
 Q LEAST를 이용하는 경우
@@ -414,7 +423,7 @@ Q LEAST를 이용하는 경우
 SELECT LEC_ID,LEC_TIME,LEC_POINT,
        DECODE(LEAST(LEC_TIME,LEC_POINT),LEC_TIME,'일반과목','실험과목') AS TY
 FROM LECTURE;
-```
+
 
 강의시간 - 학점 비교한 최소값이 강의시간과 같으면 '일반과목' 아니면 '실험과목' 반환(둘중 최소값이라고 해석하는게 자연스러울듯)
 => 강의 시간이 학점보다 작거나 같으면 '일반과목' 아니면 '실험과목'
@@ -426,6 +435,7 @@ L0002	3	2	실험과목
 L0003	2	3	일반과목
 L0004	2	2	일반과목
 L0005	3	1	실험과목
+```
 
 GREATEST도 LEAST와 유사하게 사용, 단순하고 편하게 사용할 수 있으면 SIGN이 낫다
 
@@ -504,7 +514,7 @@ Q  LECTURE 테이블의 자료 중 LEC_TIME과 LEC_POINT가 같다라는 조건�
 SELECT LEC_ID,LEC_TIME,LEC_POINT ,
        DECODE(LEC_TIME,LEC_POINT,DECODE(LEC_TIME,3,'중요과목'))
 FROM LECTURE;
-```
+
 
 ===
 
@@ -513,7 +523,7 @@ L0002	3	2
 L0003	2	3	
 L0004	2	2	
 L0005	3	1	
-
+```
 
 
 ---
@@ -550,7 +560,7 @@ SELECT CEIL(ROWNUM/3) C0,DECODE(MOD(ROWNUM,3),1,EMP_ID,NULL) C2, --(굳이 NULL�
                       DECODE(MOD(ROWNUM,3),0,EMP_NAME,NULL) C7
 FROM TEMP
 WHERE EMP_ID>0;
-```
+
 
 ===
 
@@ -575,12 +585,13 @@ WHERE EMP_ID>0;
 7	20000119	장금강				
 7			20000210	나한라		
 
+```
 
-Q TEMP의 자료를 이용하여 한 행에 사번,성명을 3명씩 보여주는  SQL 작성
+Q TEMP의 자료를 이용하여 한 행에 사번,성명을 3명씩 보여주는  SQL 작성 (어렵다)
 
 ```SQL
 SELECT CEIL(ROWNUM/3) C0,
-       MAX(DECODE(MOD(ROWNUM,3),1,EMP_ID,NULL)) C1,
+       MAX(DECODE(MOD(ROWNUM,3),1,EMP_ID,NULL)) C1, -- 나머지가 1인 녀석만 뽑히도록 max한것으로보인다
        MAX(DECODE(MOD(ROWNUM,3),1,EMP_NAME,NULL)) C2,
        MAX(DECODE(MOD(ROWNUM,3),2,EMP_ID,NULL)) C3,
        MAX(DECODE(MOD(ROWNUM,3),2,EMP_NAME,NULL)) C4,
@@ -588,8 +599,8 @@ SELECT CEIL(ROWNUM/3) C0,
        MAX(DECODE(MOD(ROWNUM,3),0,EMP_NAME,NULL)) C6
 FROM TEMP
 WHERE EMP_ID>0
-GROUP BY CEIL(ROWNUM/3);
-```
+GROUP BY CEIL(ROWNUM/3); --c0가 1,2,3,4,5 중복없이 나오게끔한다.(집합)
+
 
 ===
 
@@ -601,4 +612,5 @@ GROUP BY CEIL(ROWNUM/3);
 3	19930402	강감찬	19960303	설까치	19970112	연흥부
 7	20000119	장금강	20000210	나한라		
  
+```
 

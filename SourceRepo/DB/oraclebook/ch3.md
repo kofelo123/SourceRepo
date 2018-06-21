@@ -62,10 +62,11 @@ UNION과 UNIONALL
 SELECT EMP_ID FROM TEMP
 UNION
 SELECT EMP_ID FROM TCOM;
-```
+
 
 ===
 (중복X, 정렬O(INDEX,와 ORDER BY없이 정렬됨)
+```
 
 >UNION 을 이용해서 TEMP 와 TCOM의 자료 중 EMP_ID, SALARY, COMM 을 보여주는 SQL 을 만들어 보자. 이때 SALARY 와 COMM 이 모두 존재하는 사번은 두 줄로 나와야 한다.
 
@@ -75,7 +76,7 @@ SELECT EMP_ID FROM TCOM;
 SELECT EMP_ID,SALARY,0 COMM FROM TEMP
 UNION 
 SELECT EMP_ID,0 SALARY,COMM FROM TCOM;
-```
+
 
 ====
 19930331	70000000	0
@@ -91,6 +92,7 @@ SELECT EMP_ID,0 SALARY,COMM FROM TCOM;
 19970101	100000000	0
 19970112	0	450000
 ...
+```
 
 <UNION ALL>
 
@@ -98,10 +100,11 @@ SELECT EMP_ID,0 SALARY,COMM FROM TCOM;
 SELECT EMP_ID FROM TEMP
 UNION ALL
 SELECT EMP_ID FROM TCOM;
-```
+
 
 ===
 1. 중복허용 O 2. SORT X
+```
 
 정렬 하고자 하면 ORDER BY 사용, 대게 컬럼명이 다르므로 칼럼명보다 순서지정이좋다.
 
@@ -223,7 +226,7 @@ EQUI JOIN
 SELECT A.EMP_ID,A.EMP_NAME,A.DEPT_CODE,B.DEPT_NAME
 FROM TEMP A ,TDEPT B
 WHERE A.DEPT_CODE=B.DEPT_CODE;
-```
+
 ===
 
 EMP_ID     EMP_NAME   DEPT_C DEPT_NAME           
@@ -238,6 +241,7 @@ EMP_ID     EMP_NAME   DEPT_C DEPT_NAME
 
   19930331 정도령     BA0001 기술지원     
 ...
+```
 
 PK가 두개이상으로 구성된 복합키를 가진 테이블간의 조인은 실수로 그 중 하나를 조인조건에서 뺼경우
 의도하지 않은 엉뚱한 결과가 나올수 있다고 한다.
@@ -473,13 +477,14 @@ WHERE (DEPT_CODE,EMP_ID) IN
                         (SELECT DEPT_CODE,BOSS_ID
                          FROM TDEPT);
 
-```
+
 ====
 
 19960101	홍길동
 19970201	박문수
 19950303	이순신
 19966102	지문덕
+```
 
 
 질문 : TEMP에서 부서별 최고 연봉금액을 읽어서,해당 부서와 최고 연봉금액이 동시에 일치하는 사원의 사번, 성명, 연봉을 읽어 보라.
@@ -490,7 +495,7 @@ FROM TEMP
 WHERE (DEPT_CODE,SALARY) IN (SELECT DEPT_CODE,MAX(SALARY)
                         FROM TEMP                        
                         GROUP BY DEPT_CODE);
-```
+
 
 ===
 
@@ -499,7 +504,7 @@ WHERE (DEPT_CODE,SALARY) IN (SELECT DEPT_CODE,MAX(SALARY)
 19970101	김길동	100000000
 19966102	지문덕	45000000
 ...
-
+```
 
 ---
 
@@ -614,7 +619,7 @@ FROM TEMP
 WHERE SALARY > ANY(SELECT SALARY
                    FROM TEMP
                    WHERE LEV ='과장');
-```
+
 ====
 
 19970101	김길동	100000000
@@ -622,6 +627,7 @@ WHERE SALARY > ANY(SELECT SALARY
 19930331	정도령	70000000
 19930402	강감찬	64000000
 ...
+```
 
 Q 어떤 과장 보다도 연봉이 많은 직원을 읽어 보자.
 
@@ -632,12 +638,12 @@ WHERE SALARY > ALL(SELECT SALARY
                    FROM TEMP
                    WHERE LEV = '과장');
 
-```
+
 
 ====
 
 19970101	김길동	100000000
-
+```
 
 
 
@@ -670,7 +676,7 @@ WHERE EXISTS (SELECT B.SALARY
               WHERE B.LEV = '과장'
               AND A.SALARY > B.SALARY
               );`
-```
+
 
 ======
 
@@ -680,5 +686,5 @@ WHERE EXISTS (SELECT B.SALARY
 19930402	강감찬	64000000
 19950303	이순신	56000000
 ...
-
+```
 

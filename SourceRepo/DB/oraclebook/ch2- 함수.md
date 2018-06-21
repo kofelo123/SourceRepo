@@ -24,14 +24,14 @@
   - [LAST_DAY - 포함된 월의 마지막일 반환](#lastday)
   
   - [데이터형 변환함수](#datatranfunction)
-        - [TO_CHAR - 날짜,숫자 => 문자](#tochar)
-        - [TO_NUMBER - 문자열을 숫자로 변환](#tonumber)
-        - [TO_DATE - 문자를 DATE형으로](#todate)
+    - [TO_CHAR - 날짜,숫자 => 문자](#tochar)
+    - [TO_NUMBER - 문자열을 숫자로 변환](#tonumber)
+    - [TO_DATE - 문자를 DATE형으로](#todate)
  
   - [그룹함수](#groupfunction)
-        - [COUNT - 로우 수 반환](#count)
-        - [MIN과 MAX](#minmax)
-        - [SUM 과 AVG](#sumavg)
+    - [COUNT - 로우 수 반환](#count)
+    - [MIN과 MAX](#minmax)
+    - [SUM 과 AVG](#sumavg)
         
  
   -[알아두기]
@@ -365,11 +365,11 @@ SELECT TRUNC('1234.567',1),
         TRUNC('1234.567',-1),
         TRUNC('1234.567')
 FROM DUAL;
-```
+
 ==============================
 
            1234.5       1230       1234
-
+```
 
 ---
 
@@ -384,13 +384,13 @@ SIGN - 음수,정수,0 여부 반환
 ```SQL
 SELECT SIGN(-10),SIGN(0),SIGN(10),SIGN(NULL)
 FROM DUAL;
-```
+
 
 ======
 
 -1    0   1   (NULL)
 
-
+```
 
 
 ---
@@ -406,12 +406,13 @@ CEIL - 크거나 같은 정수값 중 최소값
 ```SQL
 SELECT CEIL(2),CEIL(2.1)
 FROM DUAL;
-```
+
 
 ======
 
 2   3
 
+```
 
 ---
 
@@ -426,12 +427,12 @@ FLOOR - 작거나 같은 정수 중 최대값
 ```SQL
 SELECT FLOOR(2),FLOOR(2.1)
 FROM DUAL;
-```
+
 
 ======
 
 2 2
-
+```
 
 
 ---
@@ -445,13 +446,13 @@ MOD - 나눈 나머지
 ```SQL
 SELECT MOD(1,3), MOD (2,3), MOD(3,3), MOD(4,3)
 FROM DUAL;
-```
+
 
 ========================
 
 1	2	0	1
 
-
+```
 
 
 ---
@@ -509,7 +510,7 @@ Q:2의 10제곱까지의 값을 MOD_TEST 테이블로 출력
 ```SQL
 SELECT POWER(2,NO)
 FROM MOD_TEST;
-```
+
 ===
 
        2
@@ -520,6 +521,7 @@ FROM MOD_TEST;
 
      16
 ...
+```
 
 NO는 칼럼이고 1,2,3,4,5... 로 되어있다.
 2를 기준으로 1제곱2제곱3제곱.. 한것.
@@ -547,11 +549,11 @@ NO는 칼럼이고 1,2,3,4,5... 로 되어있다.
 SELECT SYSDATE-BIRTH_DATE
 FROM TEMP
 WHERE EMP_NAME='홍길동';
-```
+
 ======
 
  10262.4922
-
+```
 
 3,4)날짜에 숫자를 더하거나 빼면 날짜가 나온다.(날짜+숫자=일자 더하기)
 
@@ -559,12 +561,12 @@ WHERE EMP_NAME='홍길동';
 SELECT BIRTH_DATE,BIRTH_DATE+1,BIRTH_DATE-1
 FROM TEMP
 WHERE EMP_NAME = '홍길동';
-```
+
 ====
 
 73/03/22	73/03/23	73/03/21
 
-
+```
 
 ---
 
@@ -601,13 +603,13 @@ SELECT TO_CHAR(BIRTH_DATE,'HH24:MI:SS') BIRTH_TIME,
         TO_CHAR(BIRTH_DATE+50/(24*60*60),'HH24:MI:SS') AS SEC
 FROM TEMP
 WHERE EMP_NAME = '홍길동';
-```
+
 
 ===========
 
 00:00:00	14:00:00	00:30:00	00:00:50
 
-
+```
 
 ---
 
@@ -622,11 +624,12 @@ SELECT BIRTH_DATE,
        ADD_MONTHS(BIRTH_DATE,-13) -- 13개월 빼기
 FROM TEMP
 WHERE EMP_NAME = '홍길동';
-```
+
 ====
 
 73/03/22	73/04/22	72/02/22
 
+```
 
 ---
 
@@ -639,10 +642,10 @@ MONTHS_BETWEEN - 두 일자사이의 간격이 몇개월인지
 SELECT MONTHS_BETWEEN(SYSDATE,BIRTH_DATE) MON_TERM
 FROM TEMP
 WHERE EMP_NAME = '홍길동';
-```
+
 542.558094384707287933094384707287933094
 
-
+```
 
 ---
 
@@ -654,7 +657,7 @@ LAST_DAY - 포함된 월의 마지막일 반환
 ```SQL
 SELECT BIRTH_DATE,LAST_DAY(BIRTH_DATE)
 FROM TEMP;
-```
+
 
 ===
 
@@ -662,6 +665,7 @@ FROM TEMP;
 73/03/22	73/03/31
 75/04/15	75/04/30
 ...
+```
 
 ---
 
@@ -698,19 +702,21 @@ SELECT TO_CHAR(SYSDATE,'YY/MM/DD') DATE1,
         TO_CHAR(SYSDATE,'DY DD MON YY')DATE4,
         TO_CHAR(SYSDATE,'Day Mon DD') DATE5
 FROM DUAL;
-```
+
 
 ====
 
 18/06/08	2018.06.08	6월  08.2018	금 08 6월  18	금요일 6월  08
 
 
+```
+
 > TEMP 의 BIRTH_DATE를 이용해서 사번 별로 생일과 요일을 보여주는 문장을 만들어 보자.
 
 ```SQL
 SELECT EMP_ID,TO_CHAR(BIRTH_DATE,'YYYY"년" MM"월" DD"일" DAY')
 FROM TEMP;
-```
+
 ===
 
 19970101	1974년 01월 25일 금요일
@@ -718,7 +724,7 @@ FROM TEMP;
 19970201	1975년 04월 15일 화요일
 ...
 
-
+```
 <숫자를 문자로>
 
  ![](https://drive.google.com/uc?export=view&id=1qXRlP0q21J1GwIOXO_qZK5FqcCM3MI_i)
@@ -730,13 +736,14 @@ SELECT TO_CHAR(1234,'09,999') NUMBER1,
       TO_CHAR(1234,'L99,999') NUMBER4,
       TO_CHAR(-1234,'L99,999MI') NUMBER5
 FROM DUAL;
-```
+
 =====
 
  01,234	  1,234.56	  $1,234	         ￦1,234	        ￦1,234-
 
 
 ---
+```
 
 ###### tonumber
 
@@ -748,12 +755,13 @@ TO_NUMBER - 문자열을 숫자로 변환
 SELECT TO_NUMBER('123456') TONUM1,
         TO_NUMBER('123,456','999,999') TONUM2
 FROM DUAL;
-```
+
 
 ======
 
 123456	123456
 
+```
 
 ---
 
@@ -766,21 +774,25 @@ TO_DATE - 문자를 DATE형으로
 ```SQL
 SELECT TO_DATE('1997-12-31 13:33:44','YYYY-MM-DD HH24:MI:SS')
 FROM DUAL;
-```
+
 ====
 
 97/12/31
-
+```
 
 > 1970년 01월01일부터 현재일자까지 며칠인지 계산
 
 ```SQL
 SELECT SYSDATE - TO_DATE('19700101','YYYYMMDD')
 FROM DUAL;
-```
+
 ===
 
 17690.4016666666666666666666666666666667
+
+```
+
+
 -> DATE와 문자열간에는 바로 연산할수 없어서, TO_DATE 함수로 변환후 연산
 
 > 1970년 01월01일 00시00분00초에서부터 946075441 초가 지난 날짜를 DATE 형으로 바꿔 보자.   
@@ -788,14 +800,14 @@ FROM DUAL;
 
 SELECT TO_DATE('19700101000000','YYYYMMDDHH24MISS')+ 946075441 / (24*60*60)
 FROM DUAL;
-```
+
 
 
 ====
 
 99/12/24
 
-
+```
 
 ---
 
@@ -839,11 +851,11 @@ NULL이 없는 컬럼을 넣어주는것도 같은 결과
 ```SQL
 SELECT COUNT(*), COUNT(8)
 FROM TEMP;
-```
+
 ===
 
 10 10
-
+```
 
 COUNT안에 컬럼 명을 넣으면
 NULL이 들어간 값은 카운트 하지않는다.
@@ -852,26 +864,26 @@ NULL이 들어간 값은 카운트 하지않는다.
 ```SQL
 SELECT COUNT(EMP_ID) CNT1, COUNT(HOBBY) CNT2
 FROM TEMP;
-```
+
 
 ====
 
 10	4
-
+```
 >(응용) GROUP BY 를 포함시켜 직급별로 인원수를 세어본다.
 
 ```SQL
 SELECT LEV, COUNT(*), COUNT(HOBBY)
 FROM TEMP
 GROUP BY LEV;
-```
+
 ======
 
 과장	4	2
 대리	2	0
 부장	1	1
 
-
+```
 > 그룹함수가 가지는 한가지 특징 - COUNT없을시 반환X
 
 그룹함수가 아닐떄 -> COUNT 칼럼이 없을떄 없다는 0을 반환하며 1 row selected가 되지만
@@ -886,24 +898,24 @@ SELECT COUNT(*)
 FROM TEMP
 WHERE LEV='과장'
 AND SALARY >= 40000000;
-```
+
 
 ===
 3
-
+```
 > TEMP에서 LEV 의 종류를 세어보자.
 
 ```SQL
 SELECT COUNT(DISTINCT LEV)
 FROM TEMP;
-```
+
 ( DINTINCT 안하면 중복때문에 10 출력)
 ====
 
 5
 
 
-
+```
 
 ---
 
@@ -935,19 +947,19 @@ MIN과 MAX
 ```SQL
 SELECT MIN(EMP_ID)
 FROM TEMP;
-```                                                     
+                                                  
 
 =====
 
 19930331
-
+```   
 > 직급별 가장 빠른 사번
 
 ```SQL
 SELECT LEV,MIN(EMP_ID)
 FROM TEMP
 GROUP BY LEV;
-```
+
 
 ====
 
@@ -956,6 +968,7 @@ GROUP BY LEV;
 부장	19970101
 ...
 
+```
 
 > TEMP에서 직급별로 최소연봉을 가진 직원의 사번과 연봉을 읽어 오자. (단,SUBSQUERY를 사용하면 안 된다.
 
@@ -982,7 +995,7 @@ DATA 집합의 주어진 컬럼의 합계/평균 반환
 SELECT LEV, SUM(SALARY) SUM_SAL, AVG(SALARY) AVG1, SUM(SALARY)/COUNT(*) AVG2
 FROM TEMP
 GROUP BY LEV;
-```
+
 ===
 
 과장	206000000	51500000	51500000
@@ -991,6 +1004,7 @@ GROUP BY LEV;
 차장	134000000	67000000	67000000
 사원	35000000	35000000	35000000
 
+```
 
 ---
 
