@@ -119,7 +119,7 @@
 			<version>2.5</version>
 			<scope>provided</scope>
 		</dependency>
-    
+
     <!-- Test -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -248,6 +248,27 @@ log4jdbc.spylogdelegator.name=net.sf.log4jdbc.log.slf4j.Slf4jSpyLogDelegator
 
 ```
 
+```xml
+//web.xml
+
+	<filter>
+	  <filter-name>encoding</filter-name>
+	  <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+	  <init-param>
+	   <param-name>encoding</param-name>
+	   <param-value>UTF-8</param-value>
+	  </init-param>
+	</filter>
+
+  	<filter-mapping>
+	  <filter-name>encoding</filter-name>
+	  <url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+  
+
+
+```
 
 
 ---

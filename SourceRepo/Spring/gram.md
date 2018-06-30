@@ -556,3 +556,32 @@ DB 정규화와 트랜잭션은 관련이 있는 경우가많다.
 ```
 
 로그를 보면 하나의 커넥션이 열리고 두개의 메소드가 실행된다
+
+
+---
+- [SuppressWarnings ](#suppressWarnings )
+
+###### suppressWarnings 
+
+
+-
+@SuppressWarnings ("옵션") 
+
+
+:컴파일러가 일반적으로 경고하는 내용 중 이건 하지말라고 제외시킬때 사용.  어떤 경고를 제외시킬지 여러 옵션이 있다.
+
+몇가지 정리하면 
+
+1. all : 모든 경고를 억제
+2. cast : 캐스트 연산자 관련 경고 억제
+3. dep-ann : 사용하지 말아야 할 주석 관련 경고 억제
+4. deprecation : 사용하지 말아야 할 메소드 관련 경고 억제
+5. fallthrough : switch문에서의 break 누락 관련 경고 억제
+6. finally : 반환하지 않는 finally 블럭 관련 경고 억제
+7. null : null 분석 관련 경고 억제
+8. rawtypes : 제네릭을 사용하는 클래스 매개 변수가 불특정일 때의 경고 억제
+9. unchecked : 검증되지 않은 연산자 관련 경고 억제
+10. unused : 사용하지 않는 코드 관련 경고 억제
+
+이외에도 몇가지더 있다.
+

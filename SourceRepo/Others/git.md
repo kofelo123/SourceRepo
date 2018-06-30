@@ -545,3 +545,877 @@ rebase : 이력은 단순, !> 원래 커밋이 변경됨
 
 토픽 브랜치에 통합 브랜치의 최신 코드를 적용할때 rebase를 사용,
 통합 브랜치에 토픽 브랜치를 불러올 경우에는 우선 rebase를 한 후 merge
+
+
+
+---
+- [토픽 브랜치와 통합 브랜치에서의 작업흐름](#8062254)
+
+###### 8062254
+
+토픽 브랜치와 통합 브랜치에서의 작업흐름
+-
+
+상황 : 토픽 브랜치 2개 - 새로운 기능 추가작업, 버그수정작업
+
+완료후 통합브랜치와 버그수정용 토픽 브랜츠를 병합하여 수정된 버전을 만들어낼 수있다.
+
+ ![](https://drive.google.com/uc?export=view&id=1ALHWKHQGOKloi6K0njkmGrmcJF0xsO9W)
+
+원래의 브랜치로 돌아와 새로운 기능추가 작업을 계속 진행하려할때,
+
+커밋 X의 버그가 수정된 코드가 지금의 커밋 O에 적용해야 할떄
+
+1.직접 merge 2. 커밋 X를 적용한 통합 브랜치에 rebase 
+
+2번 방법을 이용해본다.
+
+rebase를 이용하여 커밋 X의 내용을 적용한 상태로 새로운 기능을 추가하기 위해 O' 버전으로 만들어내는 방법을 이용하면된다.
+
+ ![](https://drive.google.com/uc?export=view&id=1vdgItf5zVdamAADtOghZoVWGVOBVS4ML)
+
+
+---
+- [성공적인 git 브랜칭 모델](#8062260)
+
+###### 8062260
+
+성공적인 git 브랜칭 모델
+-
+
+4개의 종류의 브랜치를 이용해서 개발한다.
+
+- 메인 브랜치(Main branch)
+
+- 피처 브랜치(Feature branch)또는 토픽 브랜치(Topic branch)
+
+- 릴리스 브랜치(Release branch)
+
+- 핫픽스 브랜치(Hotfix branch)
+
+ ![](https://drive.google.com/uc?export=view&id=1QyAiLJmonJ4iuWOAgQ2CeuVJqLQvlVWT)
+
+<메인 브랜치(Main branch)>
+
+'master' , 'develop' 브랜치, 이 두종류를 보통 메인 브랜치로 사용한다.
+
+- master : 배포 가능한 상태만 관리, 커밋할때는 태그를 사용하여 배포 번호를 기록
+
+- develop : 통합 브랜치의 역할, 평소에는 이 브랜치를 기반으로 개발 진행
+
+<피처 브랜치(Feature branch)>
+
+토픽 브랜치 역할을 담당
+
+새로운 기능 개발 빛 버그수정 필요시 'develop' 브랜치로 부터 분기한다.
+
+기본적으로 공유할 필요가없기 때문에, 원격 관리 x, 개발 완료시 'develop'브랜치로 병합하여 다른 사람들과 공유
+
+<릴리즈 브랜치(Release branch)>
+
+버그를 수정하거나 새로운기능을 포함한 상태로 모든 기능이 정상적으로 동작하는지 확인.
+
+관례적으로 이름앞에 'release-'를 붙임.
+다음 번 릴리즈를 위한 개발작업은 'develop' 브랜치에서 계속 진행
+
+릴리즈를 위한 최종적인 버그 수정등의 개발을 수행한다. 준비마치고 배포 가능상태가 되면, 'master'브랜치로 병합, 병합한 커밋에 릴리즈 번호 태그를 추가
+
+릴리즈 브랜치에서 발견한 버그 수정사항은 'develop'브랜치에도 적용해줘야함. ~> 그러므로 배포 완료후 'develop' 브랜치에 대해서도 병합작업을 수행
+
+<핫 픽스 브랜치>
+
+배포한 버전에서 긴급 수정 필요성 -> 'master'에서 분기되는 브랜치. 관레적으로 이름앞에 'hotfiix-' 를 붙임.
+
+'develop' 브랜치개발중 이전 배포 소스코드에 아주 큰 버그 발생시
+
+문제 부분을 빠르게 수정후 배포 필요
+-> 'develop' 브랜치에서는 시간 소요, 안정성 보장x  ~>(그러므로) 배포가 가능한 'master'브랜치에서 직접 브랜치를 만들어 필요한 부분만 수정한 후 'master'브랜치에 병합하여 이를 배포
+
+이때 만든 핫픽스 브랜치 변경사항은 'develop' 브랜치에도 병합하여 문제가 되는 부분을 처리해준다.
+
+
+---
+- [브랜치 병합 및 삭제](#8627_101)
+
+###### 8627_101
+
+브랜치 병합 및 삭제
+-
+
+ ![](https://drive.google.com/uc?export=view&id=1luxAFOjirb1PksURff1kvSYzvQAs2AXT)
+
+
+브랜치병합 - merge 명령어로 실행, 병합할 커밋 이름을 넣어 실행하면 지정한 커밋내용이 'HEAD'가 가리키고 있는 브랜치에 넣어진다.
+
+'HEAD'는 현재 사용중이 브랜치에 위치하게 된다.
+
+```
+git merge <commit>
+```
+
+master 브랜치에 issue1을 넣기위해 우선
+'master'브랜치에 'HEAD'가 위치하게 한다(checkout)
+
+```
+git checkout master
+```
+
+(issue1 브랜치에서 파일편집했기때문에 아직 master 브랜치에서는 파일내용이 변경되지 않아야한다.)
+
+이후 병합을 한다.
+```
+git merge issue1
+
+===
+Updating 1257027..b2b23c4
+Fast-forward
+ myfile.txt |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+```
+이런 방식의 병합을 'fast-forward(빨리감기)병합'이라 한다.
+
+
+
+<브랜치 삭제>
+
+issue1 브랜치 내용이 모두 master에 통합되어 더이상 필요가 없다.
+
+삭제하려면 -d 옵션을 지정하여 실행
+
+```
+git branch -d <브랜치명>
+```
+
+
+---
+- [동시에 여러 작업하기](#8627_103)
+
+###### 8627_103
+
+동시에 여러 작업하기
+-
+
+두 개의 브랜치 생성 - 동시 여러 작업 처리 상황만든다.
+
+```
+git branch issue2
+git branch issue3
+
+git checkout issue2
+```
+
+ ![](https://drive.google.com/uc?export=view&id=16hRMnAr0MSPPTLxh1irDyg4uxq--tfoJ)
+
+myfile.txt.에 수정한다.
+
+```
+add: 변경 사항을 만들어서 인덱스에 등록해보기
+commit: 인덱스 상태를 기록하기 
+```
+
+```
+git add myfile.txt
+git commit -m "commit의 설명 추가"
+```
+
+ ![](https://drive.google.com/uc?export=view&id=1G-h8Ly7VmxOlS_F9daugCGP3UzYkITbW)
+
+```
+git checkout issue3
+```
+issue3에는 commit에 대한 수정설명이 적용되지 않은상태( issue2에서 commit했기떄문에)
+
+issue3에는 pull 명령어에대한 설명으로 채운후 변경사항 커밋한다.
+
+```
+add: 변경 사항을 만들어서 인덱스에 등록해보기
+pull: 원격 저장소의 내용을 가져오기 
+```
+
+```
+git add myfile.txt
+git commit -m "pull 설명추가"
+```
+
+ ![](https://drive.google.com/uc?export=view&id=1ifnIIzCGhREMS2Udwwl3QbxQzQsxE9Q7)
+
+
+---
+- [병합할 때 발생하는 충돌 해결](#8628_102)
+
+###### 8628_102
+
+병합할 때 발생하는 충돌 해결
+-
+
+```
+git checkout master
+
+git merge issue2
+```
+fast-forward(빨리감기)병합 됨.
+
+ ![](https://drive.google.com/uc?export=view&id=1e_4bo-FV4jR2VR7gxVCx-ubrOi9nE0Hp)
+
+여기서 브랜치 issue3 병합시도
+
+```
+git merge issue3
+
+===
+
+CONFLICT (content): Merge conflict in myfile.txt
+Automatic merge failed; fix conflicts and then commit the result.
+
+
+```
+
+충돌남, 같은 행에 다른 내용이 있어서
+
+해당파일에 자동으로 기록되어있음.
+```
+
+add: 변경 사항을 만들어서 인덱스에 등록해보기
+<<<<<<< HEAD
+commit: 인덱스의 상태를 기록하기
+=======
+pull: 원격 저장소의 내용을 가져오기
+>>>>>>> issue3
+```
+
+충돌이 난부분은 일일이 파일에서 수정해줘야한다.
+
+수정후 다시 커밋한다
+
+```
+git add myfile.txt
+git commit -m "issue3 브랜치 병합"
+```
+충돌부분 수정했으므로 그 변화를 기록하는 병합 커밋이 새로 생성되었다.
+그리고 'master'브랜치의 시작('HEAD')이 그 위치로 이동해있게 된다. 이를'non fast-forward 병합'이라 한다.
+
+ ![](https://drive.google.com/uc?export=view&id=1xGaurTRPley55UNiyxcEuzopHbHaXQkv)
+
+
+
+============================================
+ ![](https://drive.google.com/uc?export=view&id=)
+
+
+
+---
+- [rebase로 병합하기](#8628_115)
+
+###### 8628_115
+
+rebase로 병합하기
+-
+
+이전의 방법(merge)은 master 브랜치로 모두 병합하여
+두개의 줄기로 브랜치 분기되었다가 하나로 합쳐진다.
+
+issue3브랜치 병합시 rebase를 먼저실행후 병합을 시도한다면 그 이력을 하나의 줄기로 만들 수 있다.
+
+
+이전의 마지막으로 진행했던 병합 명령 취소하기
+```
+git reset --hard HEAD~
+```
+
+ ![](https://drive.google.com/uc?export=view&id=1kRmKxFdN4YpBzjhigbptuHIscEjHqKeL)
+
+
+이제 issue3 브랜치 전환 -> master 브랜치에 rebase 실행
+
+```
+git checkout issue3
+
+git rebase master
+
+.. conflict in myfile.txt(충돌 메시지)
+
+```
+이전의 merge 때와 마찬가지로 충돌난 파일내용을 수정해준다.
+
+rebase의 경우 충돌부분 수정후 commit이 아니라 rebase 명령에 --continue옵션을 지정하여 실행해야.
+
+```
+git add myfile.txt
+git rebase --continue
+```
+
+만약 rebase 자체를 취소하려면 --obort 옵션을 지정하면 된다.
+
+ ![](https://drive.google.com/uc?export=view&id=1Xa0ydhF0WtmHWfM5ztq7CBZq5QSH_hvp)
+
+rebase만 실행한 경우 위 그림처럼 issue3 브랜치가 두 브랜치의 앞쪽으로 위치가 옮겨졌을뿐 master 브랜치는 아직 issue3의 변경사항이 적용되지 못한상태로 뒤에 남겨져 있으므로, 
+master 브랜치로 전환하여 issue3 브랜치의 변경사항을 모두 병합해야한다.
+
+``` 
+git checkout master
+
+git merge issue3
+
+====
+
+Updating 8f7aa27..96a0ff0
+Fast-forward
+ myfile.txt |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+```
+
+myfile.txt의 최종 내용은 merge했을 경우와 동일하지만 그 이력은 아래처럼 달라진다.
+
+ ![](https://drive.google.com/uc?export=view&id=1mlzH-3XDg7gbQumKMWQDZ25KULhRHZcY)
+
+
+
+---
+
+- [pull, 원격 저장소 데이터를 로컬 저장소에 가져와 병합하기](#8628_160)
+
+###### 8628_160
+
+pull, 원격 저장소 데이터를 로컬 저장소에 가져와 병합하기
+-
+
+로컬 저장소의 모든 변경 사항이 반영되어 있는 상태 -> 새 변경 사항이 있는 원격 저장소의 커밋 Y 를 로컬로 가져오는 경우
+
+ ![](https://drive.google.com/uc?export=view&id=1CC9mdgzf_B_OA1Z4lm9q--l1n0zncj8N)
+
+이런 경우, 단순히 'fast-forward 병합'이 됨. 그림 속의 'master'는 로컬 저장소의 'master' 브랜치, 'origin/master'는 원격 저장소 'origin'의 'master' 브랜치를 나타냄.
+
+ ![](https://drive.google.com/uc?export=view&id=1aFHkleJTTxBeYdUAKNyGu0Z6fyzKgSbU)
+
+
+그러나 로컬 저장소의 'master' 브랜치에서도 변경 사항이 생긴 경우, 양 쪽의 변경을 통합할 필요
+
+ ![](https://drive.google.com/uc?export=view&id=1f2efXEION4n0kBZTKfE3l5wdrEqTA3zD)
+
+이 때 pull 을 실행하여 소스를 병합할 수 있다. 충돌하는 변경이 없을 경우 자동적으로 병합 커밋이 만들어 지지만, 충돌이 있을 경우에는 충돌난 부분을 수동으로 해결한 다음 직접 commit 을 해 주어야 함.
+
+ ![](https://drive.google.com/uc?export=view&id=1TA902hDzy3PCBgtip5wPggs2iGKrdjlj)
+
+
+---
+- [fetch - 원격 저장소의 데이터를 로컬에 가져오기만 하기](#8628_628)
+
+###### 8628_628
+
+fetch - 원격 저장소의 데이터를 로컬에 가져오기만 하기
+-
+
+pull - 원격저장소 내용 가져옴 -> 자동병합
+
+fetch - 원격저장소 내용을 확인만 하고 병합x
+
+fetch실행시 원격저장소 최신이력 확인가능.
+가져온 최신 커밋이력은 이름없는 브랜치로 로컬에 가져오게 된다.
+
+이 브랜치는'FETCH_HEAD'의 이름으로 체크아웃 가능.
+
+(예를들어, 로컬저장서와 원격 저장소에서 B에서 진행된 커밋이 있는 상태에서 fetch를 수행하면 아래와 같이 이력이 남아짐)
+
+ ![](https://drive.google.com/uc?export=view&id=1-cueyyYcAYHXRj5W6IuVakesjN__bJqB)
+
+이 상태에서 원격 저장소의 내용을 로컬 저장소의 'master'에 통합하고 싶은 경우는, 'FETCH_HEAD'브랜치를 merge 하거나 다시 pull을 실행하면 된다.
+
+
+이렇게 fetch 후 merge 를 수행하면, pull 명령을 실행했을 때와 같은 이력이 만들어 진다. 사실 pull 이라는 것은 내부적으로 보면 fetch + merge 이기 때문
+
+
+
+
+---
+- [push - 로컬 저장소 데이터를 원격 저장소로 밀어넣기](#8628_214)
+
+###### 8628_214
+
+push - 로컬 저장소 데이터를 원격 저장소로 밀어넣기
+-
+
+
+push할떄에 push한 브랜치가 'fast-forward 병합' 방식으로 처리되도록 지정해 둘 필요가 있다.
+
+push하지 않는 한 원격저장소에 영향을 주지않고, 자신만의 브랜치에서 자유롭게 작업 할 수있다.
+
+x> 로컬저장소에서 작성한 브랜치를 공유하려면 명시적으로 원격 저장소로 push 해야한다.
+
+주의) 원격 저장소에서 모두가 공유하고 있는 커밋은 기본적으로 덮어쓰거나 임의로 변경해서는 안된다. 그 경우, 원격 저장소와 동기화 되어 있는 다른 저장소들의 이력에 모두 영향을 준다.
+
+
+
+---
+- [태그](#8628_233)
+
+###### 8628_233
+
+태그
+-
+
+커밋을 참조하기 쉽도록 알기 쉬운 이름을 붙인것
+
+한 번 붙인 태그는 브랜치처럼 위치가 이동하지 않고 고정된다.
+
+일반적으로 이름 정보만 갖는 태그(Lightweight tag)와 상세한 정보를 포함하는 주석태그(Annotated tag) 두 가지 태그를 사용가능.
+
+- 일반 태그
+: 이름만 붙일 수 있음
+
+- 주석태그  
+:1.이름을 붙일수있음  
+2.태그에 대한 설명도 포함가능  
+3.서명 넣을 수 있음  
+4.이 태그를 만든 사람의 이름, 이메일과 태그를 만든 날짜 정보 포함 가능
+
+
+보통 '릴리즈 브랜치' 에서는 주석 태그로 설명이나 서명을 넣은 보다 상세한 정보를 포함하는 태그사용.
+
+로컬에서 사용하는 '토픽 브랜치'에서는 이름만 만들어 붙이는 태그 사용.
+
+ ![](https://drive.google.com/uc?export=view&id=1eGEs_CrGjR_34OXkjKHHvPNYk7LaofY4)
+
+
+태그 이름을 지정 -> checkout or reset 함으로써 간단하게 과거의 특정 상태로 되돌릴 수 있다.
+  
+
+
+
+---
+- [태그 추가](#8629_62)
+
+###### 8629_62
+
+태그 추가
+-
+
+apple이라는 태그 달기
+```
+git tag apple
+```
+
+파라미터 없이 tag 명령어 -> 태그목록 조회
+
+```
+git tag
+```
+
+log 명령어에 --decorate 옵션 -> 태그 정보를 포함한 이력 확인가능
+
+```
+git log --decorate
+
+===
+commit 702afcfc8551257526cc34409412bfd589e8bbe1 (HEAD -> master, tag: apple, issue3)
+Author: kofelo123 <hlw123@naver.com>
+Date:   Wed Jun 27 10:57:27 2018 +0900
+
+    pull 설명 추가
+
+```
+
+ ![](https://drive.google.com/uc?export=view&id=1NmWsfS6VYAjK5rMDQSUgJDueA9dZ85ev)
+
+
+
+
+---
+- [주석 달린 태그 추가](#8629_64)
+
+###### 8629_64
+
+주석 달린 태그 추가
+-
+
+주석 달린 태그 => tag 명령어에 -a 옵션 지정
+엔터키를 눌러 실행한  후 태그에 대한 주석 내용을 바로 입력. -m 옵션을 지정하여 명령어를 실행 할 때 바로 내용을 입력 할 수 도 있다.
+
+
+```
+git tag -a <tagname>
+
+```
+현재 'HEAD'가 가리키고 있는 커밋에 'banana'라는 주석이 달린 태그를 달려면 아래와같이
+```
+git tag -am "누구나 쉽게 이해할 수 있는 Git 입문" banana
+```
+
+-n 옵션 지정 -> tag 명령이 실행시 태그목록과 주석 내용 조회
+
+```
+git tag -n
+
+===
+apple           pull 설명 추가
+banana          누구나 쉽게 이해할 수 있는 Git 입문
+
+```
+
+ ![](https://drive.google.com/uc?export=view&id=1F9viVgKW0LwqsXmUbiwpwerzlWdewM1w)
+
+
+---
+- [태그 삭제](#8629_65)
+
+###### 8629_65
+
+태그 삭제
+-
+
+tag 명령어에 -d 옵션  -> 태그삭제
+
+```
+git tag -d <tagname>
+```
+ ![](https://drive.google.com/uc?export=view&id=1SZmk5DshP7GipDPH7mWr9ngwqjvWoQkv)
+
+
+
+---
+- [ --amend - 이전에 작성한 커밋 수정하기](#8629_710)
+
+###### 8629_710
+
+이전에 작성한 커밋 수정하기
+-
+
+(누락된 파일 새로 추가, 기존의 파일을 업데이트, 이전의 커밋 설명을 변경하고 싶을떄..)
+
+--amend 옵션을 지정 - 커밋을 수행하면, 같은 브랜치 상에서 이저에 커밋했던 내용에 새로운 내용을 추가하거나 설명을 수정가능.
+
+
+(실습)
+
+```
+git log
+
+git add sample.txt
+git commit --amend
+```
+열려진 편집기에서 최근 커밋한 내용이 포함되어있다. 내용을 원하는 내용으로 수정후 저장하고 빠져나온다.
+
+ ![](https://drive.google.com/uc?export=view&id=1KEpMJ5P38a4hDb4Y-EwjJuNclyydv-C_)
+
+
+---
+- [revert - 이전에 작성한 커밋 지우기](#8629_72)
+
+###### 8629_72
+
+이전에 작성한 커밋 지우기
+-
+
+(이전에 작성한 커밋을 안전하게 지우고 싶을때)
+
+revert 명령어로 특정 커밋의 내용을 삭제 할 수있다.
+
+rebase -i 명령어나 reset 명령어를 통해 커밋을 삭제 할 수도 있지만, 해당 커밋이 이미 공개된 상태일 경우 삭제작업을 함부러 하기가 어렵다.
+
+이런 경우 revert 명령어를 통해 특정 커밋의 내용을 지우는 새로운 커밋(B')을 만들어 안전하게 처리가능.
+
+revert 명령어를 사용 - 커밋 B의 내용을 뒤집어 원래의 커밋 A의 상태로 돌아갈 수있는 새로운 커밋 B'를 만들 수 있음을 알 수있다.
+
+ ![](https://drive.google.com/uc?export=view&id=1yYtj9DtsEkujjHVjkYq-HzH4-OtTcwwM)
+
+
+(실습)  
+
+revert를 이용하여 "pull의 설명을 추가"(commit내용) 를 지워본다.
+
+현재의 이력
+
+ ![](https://drive.google.com/uc?export=view&id=1KCdU_lApT2APCqVIlSrPmZe5cDppJfKw)
+
+```
+git log
+```
+
+```
+git revert HEAD
+```
+
+sample.txt 를 열어  지워졌는지 확인
+
+ ![](https://drive.google.com/uc?export=view&id=177xAtxDqA84YUTBQ7NrV35G3aWIyHqhO)
+
+```
+git log
+```
+
+---
+- [reset - 커밋을 버리고 특정 버전으로 다시 되돌아가기](#8629_73)
+
+###### 8629_73
+
+커밋을 버리고 특정 버전으로 다시 되돌아가기
+-
+
+reset 명령어를 이용해 더 이상 필요없어진 커밋을 버릴 수 있다. 
+명령어 실행 시 어떤 모드로 실행할 지 지정하여 'HEAD' 위치와 인덱스, 작업트리 내용을 함께 되돌릴지 여부를 선택
+
+
+ ![](https://drive.google.com/uc?export=view&id=1CLKo5F1vvRXR1Yg-oYXevRSkNsODqra8)
+
+
+모드는 기본적으로 'mixed'가 지정되며, 아래의 표와 같이 'soft'와 'hard' 중에서 선택 가능
+
+
+ ![](https://drive.google.com/uc?export=view&id=1Wqp30wJ5zI5DBh_SNz7cEHCgV8HSu1Yg)
+
+( 커밋을 되돌리고 싶을떄(soft)
+ 변경한 인덱스의 상태를 원래대로 돌리고 싶을떄(mixed)
+최근의 커밋을 완전히 버리고 이전의 상태로 되돌리고 싶을떄(hard) )
+
+(실습)  
+
+
+reset을 사용하여 'master' 브랜치 앞의 두 개의 커밋을 삭제
+
+현재의 이력
+
+ ![](https://drive.google.com/uc?export=view&id=1vmb7QrrufaD0nQArMdloETXsxOr_isOv)
+
+reset 을 사용하여 커밋 삭제
+
+ ![](https://drive.google.com/uc?export=view&id=1na4XUat2Bf67vRRiF30Rd14xntzlNitw)
+
+
+```
+git reset --hard HEAD~~
+HEAD is now at 326fc9f add의 설명을 추가
+```
+
+sample.txt에 내용이 삭제된지 확인
+
+참고) reset 전의 커밋은 'ORIG_HEAD'라는 이름으로 참조가능.
+실수로 reset을 한 경우는 'ORIG_HEAD'로 reset하여 reset실행 전의 상태로 되돌릴 수 있다.
+
+```
+git reset --hard ORIG_HEAD
+```
+
+---
+- [chheery-pick - 다른 브랜치로부터 특정 커밋을 가져와서 내 브랜치에 넣기](#8629_750)
+
+###### 8629_750
+
+다른 브랜치로부터 특정 커밋을 가져와서 내 브랜치에 넣기
+-
+
+( 특정 브랜치에 잘못 추가된 커밋을 올바른 브랜치로 옮기려고 할때
+다른 브랜치의 커밋을 현재의 브랜치에도 추가하고 싶을 때)
+
+cherry-pick을 이용하면 다른 브랜치에서 지정한 커밋을 복사하여 현재 브런치로 가져올 수 있다.
+
+ ![](https://drive.google.com/uc?export=view&id=1yY4rEoKg803ZMlKRpvjThIwrHZjITo8_)
+
+(실습)
+
+
+현재의 이력
+
+ ![](https://drive.google.com/uc?export=view&id=1GT4up8JhqQMdKIdT60Z8okrbfgb3ZkgE)
+
+다른 브랜치에서 수행한 "commit의 설명추가" 커밋 내용을 'master' 브랜치로 가져오는것을 시도해본다.
+
+cherry-pick사용, 
+```
+git checkout master
+
+//아래 99daed2는 git log를 했을떄 나오는 commit 코드같은건데 매우긴 풀네임을 써도되고 아래처럼 잘라서 해도 되는것같다. 
+
+git cherry-pick 99daed2
+```
+
+충돌 발생 -> sample.txt. 열고 충돌 수정후 커밋
+
+```
+git add sample.txt
+git commit
+```
+
+
+
+---
+- [rebase -i  - 커밋 이력 편집하기](#8629_82)
+
+###### 8629_82
+
+커밋 이력 편집하기
+-
+
+( push 하기 전에 이전의 커밋 내용을 정리하고자 할때
+그룹으로 묶을 수 있는 커밋들을 알기 쉽게 하나로 통합하려고 할때
+이전 커밋에 누락된 파일들을 나중에 추가하고자 할 때)
+
+
+
+rebase 명령어에 'i' 옵션을 지정 -> 커밋을 다시 쓰거나 다른커밋과 바꿔 넣을 수 있고, 특정 위치의 커밋을 삭제하거나 여러 커밋을 하나로 통합하는 작업을 할 수 있다.
+
+ ![](https://drive.google.com/uc?export=view&id=1W2jxV5f0MM_3QpcXNj8YlxiuuG8Q3gTo)
+
+ ![](https://drive.google.com/uc?export=view&id=136UJawvjxi8OK2KivIQ50H7BbV57y2BR)
+
+
+(실습)
+
+
+rebase -i 로 커밋 모두 통합하기
+-
+
+이력은 다음과 같다.
+
+ ![](https://drive.google.com/uc?export=view&id=1QjMUXYaQfs-2uv2P1WpnLpP4WQ1NJatb)
+
+"commit의 설명을 추가" , "pull의 설명을 추가" 이 두커밋을 하나의 커밋으로 통합한다.
+
+```
+git rebase -i HEAD~~
+```
+
+텍스트 에디터가 열리고 'HEAD'에서 'HEAD~~' 까지의 커밋이 다음과 같이 표시된다.
+
+```
+
+pick 9a54fd4 commit의 설명 추가
+pick 0d4a808 pull의 설명을 추가
+
+# Rebase 326fc9f..0d4a808 onto d286baa
+#
+# Commands:
+#  p, pick = use commit
+#  r, reword = use commit, but edit the commit message
+#  e, edit = use commit, but stop for amending
+#  s, squash = use commit, but meld into previous commit
+#  f, fixup = like "squash", but discard this commit's log message
+#  x, exec = run command (the rest of the line) using shell
+#
+# If you remove a line here THAT COMMIT WILL BE LOST.
+# However, if you remove everything, the rebase will be aborted.
+#
+```
+
+두번째 줄의 pick 문자를 squash로 변경하고 저장 종료.
+
+이로써 두개의 커밋이 하나의 커밋으로 통합.
+
+ ![](https://drive.google.com/uc?export=view&id=13Fr-WYtWIRw2oybCD9e8jxZpqDsn7mW7)
+
+
+(실습2)
+
+
+ ![](https://drive.google.com/uc?export=view&id=1713WcBHerGgkNHoKkeyg5v36ojKly4DP)
+
+현재이력, "commit의 설명을 추가"한 커밋을 수정해본다.
+
+```
+git rebase -i HEAD~~
+```
+-> 텍스트 에디터가 열리고 'HEAD'에서 'HEAD~~'까지의 커밋이 다음과 같이 표시된다.
+```
+pick 9a54fd4 commit의 설명 추가
+pick 0d4a808 pull 설명을 추가
+
+# Rebase 326fc9f..0d4a808 onto d286baa
+#
+# Commands:
+#  p, pick = use commit
+#  r, reword = use commit, but edit the commit message
+#  e, edit = use commit, but stop for amending
+#  s, squash = use commit, but meld into previous commit
+#  f, fixup = like "squash", but discard this commit's log message
+#  x, exec = run command (the rest of the line) using shell
+#
+# If you remove a line here THAT COMMIT WILL BE LOST.
+# However, if you remove everything, the rebase will be aborted.
+#
+```
+
+첫번쨰 줄의 pick 을 edit로 변경하고 저장 종료한다.
+ 그러면 다음과 같은 문장이 출력되고 수정할 커밋이 체크아웃 상태가 된다.
+
+```
+Stopped at d286baa... commit의 설명 추가
+You can amend the commit now, with
+
+        git commit --amend
+
+Once you are satisfied with your changes, run
+
+        git rebase --continue
+```
+
+sample.txt 를 열어, commit 의 설명 부분을 적당히 변경
+
+commit --amend를 실행-> 번경된 내용저장
+
+```
+git add sample.txt
+git commit --amend
+```
+
+commit != rebase작업의 끝 => 이 커밋 작업이 종료했다는걸 알리려면, --continue 옵션 지정
+
+```
+git rebase --continue
+```
+
+이떄 다른 커밋에서 충돌이 발생할 수 있다. 그럴 때에는 충돌 부분을 수정한 후 add 와 rebase --continue를 실행하면 됨
+이 때, 커밋은 필요 없으므로 실행하지 않는다.
+만약 도중에 rebase 작업을 중지하고자 하는 경우에는 rebase에 --abort 옵션을 지정하여 실행
+
+=> 커밋 수정 완료
+
+rebase 전의 커밋은 'ORIG_HEAD'라는 이름으로 남아져 있다. 만약 rebase 한 후 원래대로 되돌리고자 하는 경우에는 'git reset --hard ORIG_HEAD'을 실행하여 rebase 전의 상태로 되돌릴 수 있다.
+
+
+---
+- [브랜치상의 커밋을 하나로 모아 병합](#8629_91)
+
+###### 8629_91
+
+브랜치상의 커밋을 하나로 모아 병합
+-
+
+(토픽 브랜치 안의 커밋을 한꺼번에 모아서 통합 브랜치에 병합하고자 할떄)
+
+병합(merge)시 사용할 수있는 --squash 기능이 있다.
+
+이로 브랜치를 병합하면 해당 브랜치의 커밋 전체를 통합한 커밋이 추가된다.
+
+ ![](https://drive.google.com/uc?export=view&id=1chB2sg_5PHVSnyt5AU2bqdYMlxOgzxxa)
+
+
+(실습)
+
+이력은 
+
+ ![](https://drive.google.com/uc?export=view&id=1XTK_gceax1s87ILxL0sW5GW7AT0xNTKF)
+
+'issue1'브랜치의 모든 커밋을 하나의 커밋으로 병합하여 'master'브랜치로 가져와봄
+
+master 브랜치로 이동후 --squash옵션을 지정하여 merge를 실행
+```
+ git checkout master
+ git merge --squash issue1
+
+===
+
+Auto-merging sample.txt
+CONFLICT (content): Merge conflict in sample.txt
+Squash commit -- not updating HEAD
+Automatic merge failed; fix conflicts and then commit the result
+
+```
+
+충돌 발생 -> samtple.txt 열어 충돌부분 수정후 커밋
+
+```
+git add sample.txt
+git commit
+```
+
+이로써 issue1 브랜치 상의 모든 커밋을 하나로 병합한 내용이 'master'브랜치에 추가되었다.
+

@@ -130,3 +130,71 @@ public class MainApp {
 }
 ```
 
+```
+
+
+public class test {
+	
+	private static final String LOGIN_URL = 
+			"http://jeongwon.me/thearc/user/loginPost";
+	
+	private static final String BOARD_URL = 
+			"http://jeongwon.me/thearc/sboard/list/free";
+	
+	private static final String LIST_URL = "http://jeongwon.me/thearc/sboard/location"; 
+	
+	private static String ID = "admin";
+	private static String PW = "admin";
+	private static Map<String, String> cookies;
+	
+			
+			
+	public static void main(String[] args) throws IOException {
+		//1.login
+		Response loginResponse = (Response) Jsoup.connect(LOGIN_URL)
+				.data("uid", ID)
+				.data("upw", PW)
+				.method(Method.POST)
+				.execute();
+		
+		System.out.println(" - PAGE STATUS CODE : " + loginResponse.statusCode());
+		Document doc = loginResponse.parse();
+//		System.out.println("" + doc.toString());		
+		
+		//2. session 정보 담기.
+		cookies = loginResponse.cookies();
+		System.out.println(cookies);
+		
+		//3. 게시판 접근
+		doc = Jsoup.connect(BOARD_URL)
+				.cookies(cookies)
+				.get();
+//		System.out.println("" + doc.toString());
+
+		
+		//4. AJAX - JSON 조회
+		doc = Jsoup.connect(LIST_URL)
+				.cookies(cookies)
+				.ignoreContentType(true) //html이 아니라서 document로 넘어오는게 아니라서 
+				.get();
+//		System.out.println("" + doc.toString());		
+
+		
+		
+		//5. 최신 제목 출력 (등 추출할떄).
+		System.out.println("" + doc.toString());
+		String docu = doc.toString();
+		//디아크 라는 제목앞 태그
+		System.out.println("시작점 : " + docu.indexOf("firstHeading\">"));
+		System.out.println("종료점 : " + docu.indexOf("크</h2>"));
+		int startIdx = docu.indexOf("firstHeading\">");
+		int endIdx = docu.indexOf("크</h2>");
+		//출력 디아크
+		System.out.println("" + docu.substring(startIdx +14 , endIdx +1));
+
+	}
+}
+
+
+```
+
