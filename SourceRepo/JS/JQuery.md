@@ -7,6 +7,7 @@
 - [Ajax](#ajax)
 	- [success()](#success)
 	- [getJSON()](#getjson)
+	
 - [.show , .hide()](#showhide)
 - [$().html(.append()와 차이점](#htmlappend)
 - [.find()](#find)
@@ -24,7 +25,12 @@
 - [is()참,거짓여부](#is)
 - [html,text,val,attr차이](#htmltextvalattr)
 - [부모요소 선택 방법 parent(),parents(),closest()](#parentparentsclosest)
-
+- [isEmptyObject - 객체의 empty여부](#8703_75)
+- [jquery next() ,prev() - 다음,이전요소 반환](#8705_203)
+- [one() - 1회성 이벤트처리](#8705_205)
+- [after() - 요소 뒤에 새로운 요소추가](#8705_120)
+- [js의 this 와 jquery의 $(this) 차이](#8705_122)
+- [jQuery.isEmptyObject() - 객체가 empty 인지 체크](#8705_130)
 ---
 
 ### Form control
@@ -694,7 +700,9 @@ if($("#checkboxuse").is(":checked")){
 html,text,val,attr차이
 -
 
-★ val() : Form Element 의 값을 받아오는데 쓰인다. (주로 input 이나 textarea 정도?)
+★ val()
+-
+ : Form Element 의 값을 받아오는데 쓰인다. (주로 input 이나 textarea 정도?)
 
 - 주의해야할 점은 Form Element 이외의 값은 받아오질 못한다는 점.
 
@@ -702,11 +710,14 @@ html,text,val,attr차이
 
 또는 함수(function(index, value) 이런 형태)로 넣을 수 있다.
 
-이 함수 역시 Form Element의 Value 값을 Set할 때 주로 쓰인다.
+이 함수 역시 Form Element의 Value 값을 Set할 때 주로 쓰인다.  
 
 
 
-● text() : XML과 HTML 문서에서 둘다 사용될 수 있다. input elements 의 value를 받아오지 못한다(이 경우 val을 사용)
+
+● text()
+-
+ : XML과 HTML 문서에서 둘다 사용될 수 있다. input elements 의 value를 받아오지 못한다(이 경우 val을 사용)
 
 아주 쉬운 예로 <button>1</button> <button>2</button> <button>3</button> : button 대신 li 라던가.
 
@@ -718,11 +729,14 @@ tag attribute의 value가 아니라(대표적으로 form 요소들) <tag>_____</
 
 라고 적혀있다. ( form inputs 의 경우 val()를 말하는 거고 scripts 의 경우 html()을 가르킨다. )
 
-● text(value) : textString 또는 함수(function(index, text) 이런 형태)로 넣을 수 있다. 이 역시 Set 하기위해 쓰인다.
+● text(value) : textString 또는 함수(function(index, text) 이런 형태)로 넣을 수 있다. 이 역시 Set 하기위해 쓰인다.  
 
 
 
-◆ html() : XML 문서는 사용 불가, HTML만 가능. value가 아니라 html code(contents)자체를 get한다.
+
+◆ html()
+-
+ : XML 문서는 사용 불가, HTML만 가능. value가 아니라 html code(contents)자체를 get한다.
 
 class 네임이 여러 개 매칭되는 경우 제일 처음 매칭되는 class 안에 속하는 html code만 가져온다.
 
@@ -732,10 +746,14 @@ api 설명에 의하면 IE의 경우 알파벳 문자를 포함하고 있는 속
 
 class 네임이 여러 개 매칭되는 경우 매칭되는 모든 class 내부에 html code를 삽입.
 
-만약 class 내부에 이미 어떤 code가 삽입되있는 경우, Set 할 html code로 완전히 Replace 해버린다.
+만약 class 내부에 이미 어떤 code가 삽입되있는 경우, Set 할 html code로 완전히 Replace 해버린다.  
 
 
-attr() - 속성에 값을 부여하거나(없는속성도 부여가능) 가져온다.
+
+attr() 
+-
+
+- 속성에 값을 부여하거나(없는속성도 부여가능) 가져온다.
 
 여러개의 속성을 한번에 세팅하기 : Setting several attributes at once
 
@@ -762,5 +780,162 @@ parent : 바로 위 부모요소
 
 parents : 모든부모요소( 바로위 뿐만아니라 그 상위까지 모두 포함)
 
-closest : 모든 부모 요소 대상으로 원하는 요소만 선택자로 가져올 수 있음.
+closest : 모든 부모 요소 대상으로 원하는 요소만 선택자로 가져올 수 있음. (단일결과리턴)
 
+
+
+---
+
+###### 8705_203
+
+jquery next() ,prev()
+-
+
+jquery next() ,prev()
+
+prev() - 이전 요소를 선택하도록 반환
+
+next() - 다음 요소를 선택하도록 반환
+
+
+```js
+// 다음 요소에 대한 색상 변경
+$('.button1').click(function() {
+   $(this).next().css('color', 'red');
+});
+
+// 이전 요소에 대한 색상 변경
+$('.button2').click(function() {
+   $(this).prev().css('color', 'red');
+});
+```
+
+
+
+---
+
+###### 8705_205
+
+one() - 1회성 이벤트처리
+-
+
+```js
+$("#foo").one("click", function() {
+    alert("This will be displayed only once.");
+});
+```
+이코드 실행시 foo의 요소를 클릭하면 알림창이 나타나는데, 그 이후로는 클릭에도 아무일도 일어나지 않는다.
+
+아래의 코드와 동일하다.
+```js
+$("#foo").bind("click", function( event ) { 
+	alert("This will be displayed only once."); 
+	$(this).unbind( event );
+ });
+
+```
+즉, 바인딩 했다가 정확하게 .unbind() 함수를 실행시키는 것과 동일한 효과
+
+
+
+
+---
+
+###### 8705_120
+
+after() - 요소 뒤에 새로운 요소추가
+-
+
+아래와 같은  html 코드에
+```html
+<div class="container"> 
+	<h2>Greetings</h2> 
+	<div class="inner">Hello</div> 
+	<div class="inner">Goodbye</div>
+</div>
+
+```
+아래와 같이 after을 적용하면
+```js
+$('.inner').after('<p>Test</p>');
+
+
+```
+다음처럼 된다.
+```html
+<div class="container"> <h2>Greetings</h2> 
+	<div class="inner">Hello</div> <p>Test</p> 
+	<div class="inner">Goodbye</div> <p>Test</p> 
+</div>
+
+```
+
+
+DOM에 있는 특정요소를 선택해서 다른 요소 뒤쪽에 위치 시킬수도 있다.
+
+```js
+$('.container').after($('h2'));
+
+```
+
+위는 복사되는것이 아니라 이동처리가 된다.
+
+```html
+<div class="container"> 
+	<div class="inner">Hello</div>
+ 	<div class="inner">Goodbye</div> 
+</div> <h2>Greetings</h2>
+
+```
+
+연결이 끊긴 DOM 노드 작업을 할 수 있다.
+
+```js
+$('<div/>').after('<p></p>').addClass('foo')
+.filter('p').attr('id', 'bar').html('hello')
+.end()
+.appendTo('body');
+```
+
+
+또한 함수에도 적용가능
+
+```js
+$('p').after(function() { return '<div>' + this.className + '</div>'; });
+
+
+```
+
+
+---
+
+###### 8705_122
+
+js의 this 와 jquery의 $(this) 차이
+-
+
+console.log(this)  
+console.log($(this));
+
+js의 this의 경우 이벤트 발생 태그요소가 표시된다.
+
+jquery의 발생 요소의 정보들이 Object로 표시된다.
+
+간혹 js의 this를 참조해야할때 jQuery로는 다음과 같이 표현가능 
+
+(JS의) this == (jQuery의) $(this)[0]
+
+
+---
+
+
+###### 8705_130
+
+jQuery.isEmptyObject() - 객체가 empty 인지 체크
+-
+
+```js
+jQuery.isEmptyObject({}) // true 
+jQuery.isEmptyObject({ foo: "bar" }) // false
+
+```

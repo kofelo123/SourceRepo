@@ -42,7 +42,7 @@ USER SETTINGS WORKSPACE SETTINGS , FOLDERSETTING
 
 좌측창에 변경하려는 종류를 선택한후
 
-바로수정안된다(Cannot edit in read-only editor) 
+바로수정안된다(Cannot edit in read-only editor)  ->(추상 -> override해서 하위에서 구현하는것가 비슷한느낌이다.)
 -> 설정값 좌측에 연필 아이콘이 있느걸 누러서 우측창에서 수정가능.
 
 

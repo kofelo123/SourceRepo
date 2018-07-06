@@ -82,12 +82,18 @@ node JavaScript.js
 미들웨어
 -
 
+웹서버 만들때 express라는 외부 모듈 사용.
+```
+> npm install express@4.14
+```
 
 app.use() 메서드에 입력하는 콜백 함수는 request 이벤트 리스너이고 다음과 같은 형태로 서버에 접속하면 자동으로 실행됨
 
 ```
+// 모듈을 추가
 var express = require('express');
 
+// 웹 서버 생성
 var app = express();
 
 app.use(function(request,response,next){
@@ -100,6 +106,7 @@ app.use(function(request,response,next){
     response.send('<h1>'+request.test+'::'+response.test+'</h1>');
 });
 
+// 웹 서버를 실행
 app.listen(52273, function(){
     console.log('Server Run at http://127.0.0.1:52273');
 })
@@ -121,3 +128,4 @@ app.use(express.cookieParser());
 app.use(express.session());
 app.use(express.static('public'));
 ```
+                                            
