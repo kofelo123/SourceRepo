@@ -31,6 +31,10 @@
 - [after() - 요소 뒤에 새로운 요소추가](#8705_120)
 - [js의 this 와 jquery의 $(this) 차이](#8705_122)
 - [jQuery.isEmptyObject() - 객체가 empty 인지 체크](#8705_130)
+- [~(틸드) - 다음요소에 오는것 찾기](#8705_125)
+- [remove() - 요소제거](#8705_123)
+- [:contains(text)' - 특정단어 포함 요소 선택](#8705_124)
+- [prev + next   -  다음 요소 선택하기](#8706_164)
 ---
 
 ### Form control
@@ -938,4 +942,122 @@ jQuery.isEmptyObject() - 객체가 empty 인지 체크
 jQuery.isEmptyObject({}) // true 
 jQuery.isEmptyObject({ foo: "bar" }) // false
 
+```
+
+
+---
+
+###### 8705_125
+
+next ~ siblings(틸드사용)  -  다음 형제 요소 찾기
+ 
+-
+
+$("#upw ~ #successFail:first").text();
+
+upw의 다음 요소중 첫번째오는 #successFail을 찾아서 text()를 뽑아오는 것.
+
+~ 은 같은 부모를 둔 형제관계여야 한다.
+
+```js
+console.log(jQuery.isEmptyObject($("#upw ~ #successFail:first").text()));
+
+else if($("#upw ~ #successFail:first").text()=="비밀번호를 입력해주세요"){  
+        	 	$("#upw ~ #successFail:first").text("");  
+			}  
+``
+
+
+
+---
+
+###### 8705_123
+
+remove() - 요소제거
+-
+
+empty()와 remove()함수는 DOM에서 요소를 걷어내는 점에서 비슷하다.
+
+remove()를 사용하면 요소 자체 뿐만 아니라 그 안에 있는 모든 요소들이 제거된다. 추가적으로 요소들과 관련된 모든 이벤트와 jQuery 데이터들도 모두 제거된다.
+
+데이터와 이벤트는 제거하지 않으러면 detach()를 사용해야한다.
+
+```html
+<div class="container"> 
+	<div class="hello">Hello</div> 
+	<div class="goodbye">Goodbye</div> 
+</div>
+
+```
+
+```js
+$('.hello').remove();
+```
+
+아래처럼 된다.
+
+```html
+<div class="container"> 
+	<div class="goodbye">Goodbye</div>
+</div>
+```
+
+
+<div class="hello"> 안에 다른 요소들이 있다면 그것들도 제거된다.
+
+
+---
+
+
+###### 8705_124
+
+:contains(text) - 특정단어 포함 요소 선택
+-
+
+
+'text'에 해당하는 단어가 포함된 컨텐츠를 가진 요소를 찾는 선택자. (대소문자 구분함)
+
+아래 div 영역의 내용 중에 'john' 이라는 글자가 있으면 그 영역의 텍스트에 밑줄을 친다.
+
+```html
+<!DOCTYPE html> 
+<html> 
+<head> 
+<script src="http://code.jquery.com/jquery-1.4.4.js"></script> 
+</head> 
+<body> 
+	<div>John Resig</div> 
+	<div>George Martin</div> 
+	<div>Malcom John Sinclair</div> 
+	<div>J. Ohn</div> 
+<script> 
+$("div:contains('John')").css("text-decoration", "underline");
+</script> 
+</body> 
+</html>
+
+
+```
+
+
+
+
+---
+
+
+###### 8706_164
+
+prev + next   -  다음 요소 선택하기
+-
+
+현재 선택된 요소를 기준으로 그 다음 선택자와 일치하는 첫번째 요소를 찾아준다.
+
+(prev + next) 와 (prev ~ sibilings) 인데요. 약간의 차이점이 있다.
+
+prev + next 는 prev에 해당하는 선택자 기준으로 next에 해당하는 요소를 깊이에 상관없이 선택한다.
+
+반면 prev ~ sibilings는 같은 깊이의 요소를 선택한다(형제)
+
+```js
+<script>$("label + input").css("color", "blue").val("Labeled!")</script>
 ```

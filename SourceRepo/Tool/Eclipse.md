@@ -1,6 +1,7 @@
 
 - [Tern Eclipse IDE - 자동완성 플러그인](#8704_125)
 - [깃허브 프로젝트 import](#8705_121)
+- [Archive for required library - maven에러](#8706_100)
 
 ---
 
@@ -51,3 +52,16 @@ Error connecting project TheArc, no Git repositories found
 그냥 Import as general project 로 받은후 properties -> configure -> convert to maven project했다.
 
 
+
+---
+
+
+###### 8706_100
+
+Archive for required library - maven에러
+-
+
+Archive for required library (경로)
+in project (프로젝트명) cannot be read or is not a valid ZIP file
+
+해당 경로로 가서 폴더 삭제후(이클립스 종료해야 삭제됨) -> project clean -> maven update project
