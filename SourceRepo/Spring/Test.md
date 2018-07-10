@@ -4,6 +4,8 @@
 - [JUnit 기본](#8706_171)
 - [스프링 테스트의 MockMvc 사용](#8706_172)
 
+- [@Ignore](#8709_214)
+
 -[error]
 - [test 세팅 에러 - sessionCookieConfig](#8705_140)
 
@@ -209,3 +211,17 @@ mockMvc.perform(get("/hello").param("name","bkchoi"))
 ```
 
 (이외에도 헤더검증, 쿠키검증 , JSON응답검증,XML,요청/응답 내용출력 등 있다(생략))
+
+---
+
+
+###### 8709_215
+
+@Ignore - 
+-
+
+테스트클래스나 테스트의 특정 메소드를 
+
+무시하고 싶을때 @Ignore를 붙여준다.
+
+

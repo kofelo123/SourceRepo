@@ -8,6 +8,9 @@
 - [전체사용자조회,현재사용자](#selectuser)
 - [DB조회,사용](#showdatabase)
 - [특정사용자권한보기](#showgrant)
+- [IF - 조건에 따른 값 변화](#8709_100)
+- [COALESCE , IFNULL - null을 특정값으로](#8709_2200)
+
 
 - [Error]
   - [버퍼풀 메모리 관련 오류](#bufferpoolmemoryisuue)
@@ -204,4 +207,65 @@ user DBName;
 
 ```
 SHOW GRANTS FOR 'root'@'localhost';
+```
+
+
+
+
+---
+
+###### 8709_100
+
+IF - 조건에 따른 값 변화
+-
+
+
+
+IF(조건, 참값, 거짓값)
+
+test테이블 number컬럼의 값이 1일 경우 A가 select되고...
+그 외에는 본래의 값이 select되도록 하려면...
+```sql
+select IF(number=1, 'A', number) from test
+```
+응용>>
+타입(type)이 'A'인 것의 개수를 구할때...
+```sql
+select SUM( IF( type='A', 1, 0)) AS cnt from test
+```
+
+
+
+
+---
+
+
+###### 8709_2200
+
+COALESCE , IFNULL - null을 특정값으로
+-
+
+oracle - nvl = mysql -COALESCE
+
+oracle nvl2 = mysql - ifnull
+
+
+지정한 값이 NULL 이면 다른값으로 변환
+```sql
+SELECT COALESCE (변수명,  1)  FROM 테이블명;
+```
+
+```sql
+SELECT IFNULL(필드명, "대체할 값") FROM 테이블명; 
+```
+
+차이점:
+```sql
+ifnull(val, '')
+
+ : 항목은 두 개 뿐으로, 하나가 null이면 다른 값을 출력한다. 순서는 상관없다.
+
+coalesce(val1, val2, val3, val4...)
+
+ : 항목은 여러 개 가능하고, 처음으로 만나는 null이 아닌 값을 출력한다.
 ```
