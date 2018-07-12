@@ -1,4 +1,8 @@
 - [5장 분석용함수](#8629_155)
+- [RANKING](#8629_160)
+- [CASE - 조건에 따른 처리](#8710_083)
+- [통계함수, 회귀 분석용 함수](#8710_084)
+
 
 ---
 
@@ -13,7 +17,7 @@
 
 
 ---
-- [RANKING](#8629_160)
+
 
 ###### 8629_160
 
@@ -203,7 +207,7 @@ SALE_DATE  SALE_SITE  SALE_ITEM  SALE_AMT    C1
 
 
 ---
-- [CASE - 조건에 따른 처리](#8710_083)
+
 
 ###### 8710_083
 
@@ -333,7 +337,6 @@ SALE_DATE  SALE_ITEM    S01        S02
 
 
 ---
-- [통계함수, 회귀 분석용 함수(#8710_084)
 
 ###### 8710_084
 
@@ -380,14 +383,3 @@ SALE_DATE  SALE_ITEM    S01        S02
   REGR_SXY : 회귀분석용 함수.
 
 
-(test)
-
-    SELECT SALE_DATE,SALE_ITEM,
-
-        SUM(CASE WHEN SALE_SITE BETWEEN  '01' AND '02' THEN   SALE_AMT  END) AS S01,
-
-        SUM(CASE WHEN SALE_SITE BETWEEN  '02' AND '03' THEN   SALE_AMT  END) AS S02
-
-    FROM   SALE_HIST
-
-    GROUP BY SALE_DATE,SALE_ITEM;         

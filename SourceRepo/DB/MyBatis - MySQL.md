@@ -1,11 +1,9 @@
 ## My-Batis MySql
 
 - [Like 연산자](#like-연산자)
-
 - [다중파라미터 Map에 담아서보내기](#map)
-
 - [쿼리문안에 include넣기(+동적SQL)](#include-refid)
-
+- [mybatis ""처리](#8710_999)
 
 ### Like 연산자
 
@@ -77,3 +75,15 @@ map에 객체(VO)가 들어있을경우 #{객체.변수명} 이렇게 적어줘�
 			</if>
 		</sql>
 ```
+
+
+---
+
+
+###### 8710_999
+
+mybatis ""처리
+-
+
+<!-- (기본적으로 mybatis의 #{}은 ' ' 처리가된다. 그래서 더큰 범위가 있을때는 ""해야한다.  -->
+		<!-- select * from address where dong like "%"#{dong}"%" -->
