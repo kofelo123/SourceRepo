@@ -3,6 +3,12 @@
 - [정규표현식](#regularexpression)
 - [mybatis-캐시 비사용](#8061162)
 
+- [유효성검사](#validation)
+- [Validator](#8622_111)
+- [JSR 303 Validation](#8622_102)
+- [validError](#validError)
+- [Valid - 메시지 처리](#8716_3)
+
 - [에러](#error)
     - [415에러-format not supported](#formatnotsupported)
 
@@ -130,7 +136,6 @@ mybatis-캐시 비사용
 
 
 ---
-- [유효성검사](#validation)
 
 ###### validation
 
@@ -154,7 +159,6 @@ validation
 
 
 ---
-- [Validator](#8622_111)
 
 ###### 8622_111
 
@@ -211,7 +215,6 @@ JSR 303 애노테이션과 스프링 벨리데이터를 함께 사용할 경우 
 
 
 ---
-- [JSR 303 Validation](#8622_102)
 
 ###### 8622_102
 
@@ -302,7 +305,6 @@ org.hibernate.validator.constraints.NotEmpty;
 
 
 ---
-- [validError](#validError)
 
 ###### validError
 
@@ -326,3 +328,64 @@ error message: An Errors/BindingResult argument is expected to be declared immed
  public String joinPost(BindingResult result,@ModelAttribute("uvo") @Valid UserVO user, RedirectAttributes rttr) throws Exception{
 		위와 같이 Binding Result를 ModelAttribute 앞에다가 쓰면 안된다.
 순서를 바꾸면 된다. 
+
+
+
+-----------------------------------------
+
+###### 8716_3
+
+Valid - 메시지 처리
+-
+
+입력값 검증후 에러메시지를 폼 객체 안에 넣으면, 수정할때 컴파일을 해야하며, 국제화 처리도 불가능 -> JSR 303 폼 유효성 검증 후 에러를
+메시지처리 해야한다.
+
+
+```xml
+//servlet-context.xml
+	
+	<beans:bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<beans:property name="defaultEncoding" value="UTF-8"></beans:property>
+		<beans:property name="basenames">
+		<beans:list>
+			<beans:value>classpath:i18n/hr</beans:value>
+		</beans:list>
+		</beans:property>
+	</beans:bean>
+
+```
+이와 같이 위치를 지정해주면 아래 properties들을 인식한다.
+ ![](https://drive.google.com/uc?export=view&id=16p4zweCVRGzpSwZNvI08eV-ae9p14WF6)
+
+{constraint-name}.{command-object-name}.{attribute-name}=에러메시지
+
+{command-object-name}에 해당하는 아래의 uvo는 Controller의 joinPost(@ModelAttribute("uvo") @Valid UservVO user ) 에서의 uvo다.
+ 
+//hr_ko.properties
+```xml
+NotBlank.uvo.uid=아이디를 입력해야 합니다.
+NotBlank.uvo.upw=비밀번호를 입력해야합니다.
+NotBlank.uvo.uname=이름을 입력해야합니다.
+Size.uvo.uid=5~20 글자로 입력
+Size.uvo.upw=5~50 글자로 입력
+Size.uvo.uname=5~20 글자로 입력
+
+```
+//hr_en.properties
+```xml
+NotBlank.uvo.uid= ID shouldn't be Blank 
+NotBlank.uvo.upw= PW shouldn't be Blank
+NotBlank.uvo.uname= User Name shouldn't be Blank
+Size.uvo.uid= ID should be at least 5 and less than 20
+Size.uvo.upw= PW should be at least 5 and less than 50
+Size.uvo.uname= User Name should be at least 5 and less than 20
+```
+영어의 경우 브라우저에서 언어를 영어로 설정한후 확인해볼 수 있다. 
+
+위와 같이 설정해준후 UserVO에
+@NotBlank(message="") 이런식으로 있던 메시지의 @NotBlank 이런식으로 message 부분을 지워주면된다.
+
+
+
+
