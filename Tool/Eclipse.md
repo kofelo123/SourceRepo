@@ -1,6 +1,7 @@
 
 - [Tern Eclipse IDE - 자동완성 플러그인](#8704_125)
 - [깃허브 프로젝트 import](#8705_121)
+- [로컬에 있는 프로젝트 import 안될때(project파일 없을시)](#notworkingimport)
 - [Archive for required library - maven에러](#8706_100)
 
 ---
@@ -58,8 +59,29 @@ Error connecting project TheArc, no Git repositories found
 그냥 Import as general project 로 받은후 properties -> configure -> convert to maven project했다.
 (3번방법이 가장 문제없이 잘 되었다.)
 
+(깃에서 가져올떄 Import as general project -> .project파일생성됨 / convert to maven project -> classpath파일 생성됨)
+
+
 
 ---
+
+---
+
+## notworkingimport
+
+errormesage: No projects are found to import
+
+이클립스를 import할떄 안될때는
+
+.project, .classpath 없이 소스있는 경우인데
+
+워크스페이스 아닌곳에 프로젝트를 둔후
+
+new - spring regacy project해서
+
+프로젝트 불러오기 지정해서 생성시켜서
+
+.project 만들면된다.
 
 
 ###### 8706_100

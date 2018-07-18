@@ -34,7 +34,7 @@
 - [프로젝트변경(java->maven)](#8062190)
 
 - [error]
-  -[이클립스 import 안될때](#notworkingimport)
+  
 
 ### replaceAll
 > //모든 \n을 <b.r/>으로 변경한다.(textarea에서 개행시 \n으로 되는것을 변환하는 코드에서)  
@@ -647,24 +647,6 @@ enum:열거형
 
 1.Tread클래스 상속
 2.Runnable 인터페이스 구현
-
----
-
-## notworkingimport
-
-errormesage: No projects are found to import
-
-이클립스를 import할떄 안될때는
-
-.project, .classpath 없이 소스있는 경우인데
-
-워크스페이스 아닌곳에 프로젝트를 둔후
-
-new - spring regacy project해서
-
-프로젝트 불러오기 지정해서 생성시켜서
-
-.project 만들면된다.
 
 
 ---

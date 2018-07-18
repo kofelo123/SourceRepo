@@ -9,6 +9,9 @@
 - [validError](#validError)
 - [Valid - 메시지 처리](#8716_3)
 
+
+- [자바단에서 js - alert 사용하기](#8718_2)
+
 - [에러](#error)
     - [415에러-format not supported](#formatnotsupported)
 
@@ -302,7 +305,7 @@ org.hibernate.validator.constraints.NotEmpty;
 [api-validator-constraints annotation](https://docs.jboss.org/hibernate/validator/4.1/reference/en-US/html/validator-usingvalidator.html#validator-defineconstraints-builtin)
 
 
-
+(참고 -토비의스프링):  @NotNull 로는 빈 문자열이 검증되지 않는데 이때 @Size(min=1)을 사용해야한다.
 
 ---
 
@@ -385,6 +388,24 @@ Size.uvo.uname= User Name should be at least 5 and less than 20
 
 위와 같이 설정해준후 UserVO에
 @NotBlank(message="") 이런식으로 있던 메시지의 @NotBlank 이런식으로 message 부분을 지워주면된다.
+
+
+
+
+
+-----------------------------------------
+
+###### 8718_2
+
+자바단에서 js - alert 사용하기
+-
+
+```java
+response.setContentType("text/html; charset=UTF-8");
+PrintWriter out = response.getWriter();
+out.println("<script>alert('로그인 정보를 확인해주세요.'); history.go(-1);</script>");
+out.flush();
+```
 
 
 
