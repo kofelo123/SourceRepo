@@ -11,9 +11,17 @@
 - [EADDRINUSE 에러 - 서버중복실행](#8715_2)
 - [Content-Type 헤더값에 들어갈 MIME Type](#8715_3)
 - [express 사용](#8715_4)
-
+- [미들웨어와 라우터](#8722_1)
+- [미들웨어 사용](#8722_2)
+- [라우터 미들웨어 사용](#8722_3)
+- [세션과 쿠키](#8722_4)
+- [파일 업로드](#8722_5)
+- [mysql사용](#8722_6)
                                             
 ---
+
+기본환경 
+이클립스 - marketplace - enide 플러그인 설치
 
 ###### 8714_1
 
@@ -570,3 +578,616 @@ set() 메소드로 설정한 속성의 이름이 미리 정해진 이름이라�
 - env : 서버 모드를 설정
 - views : 뷰들이 들어 있는 폴더 또는 폴더 배열을 설정
 - view engine : 디폴트로 사용할 뷰엔진 설정
+
+
+-----------------------------------------
+
+###### 8722_1
+
+미들웨어와 라우터
+-
+
+app.use()를 사용하면 미들웨어를 설정할수있다.
+
+노드에서는 미들웨어를 사용하여 필요한 기능을 순차적으로 실행할 수 있다.
+
+ ![](https://drive.google.com/uc?export=view&id=124rzbvbruC2j-iGHi15uXfXD_lYUVWTF)
+
+미들웨어나 라우터는 하나의 독립된 기능을 가진 함수이다.
+
+익스프레스에서 웹 요청과 응답에 관한 정보를 사용해 필요한 처리를 진행할 수 있도록 독립된 함수로 분리한다. 
+
+이 분리한 각각이 미들웨어라고 부른다.
+
+로그를 남기는 기능을 함수로 만든후 use() 메소드로 미들웨어로 등록해두면, 모든 클라이언트 요청이 이 미들웨어를 거치면서 로그를 남긴다.
+
+각 미들웨어는 next() 메소드를 호출하여 다음 미들웨어가 처리될 수있도록 순서를 넘긴다.
+
+
+라우터는 클라이언트의 요청 패스를 보고 요청 정보를 처리할 수 있는 곳으로 기능을 전달해주는 역할을 한다.
+
+이러한 기능을 '라우팅'이라고 부른다.
+
+클라이언트가 /users 패스로 요청하면 이에 대한 응답 처리를 하는 함수를 별도로 분리해서 만든 후 get() 메소드를 호출하여 라우터로 등록할수 있다.
+
+그러면 등록해 둔 라우터 정보로 찾은 함수가 호출되며, 이 함수 안에서 클라이언트로 응답을 보낼 수 있다.
+
+
+
+-----------------------------------------
+
+###### 8722_2
+
+미들웨어 사용
+-
+
+모든 기능을 직접 미들웨어로 만들기는 힘들기 때문에 미리 만둘어둔 미들웨어가 제공된다.
+
+미들웨어의 종류에 여러가지가 있다.
+
+<static 미들웨어>
+
+특정 폴더의 파일들을 특정 패스로 접근할 수있도록 만들어준다.
+
+ex) public 폴더에 있는 모든 파일을 웹 서버의 루트 패스로 접근 할 수있도록 만들고 싶다면
+
+```
+app.use(express.static(path.join(__dirname,'public')));
+```
+
+public 하위 의 파일들은 클라이언트에서 바로 접근할 수있게된다.
+
+ex)
+ExpressExample/public/index.html
+ExpressExample/public/images/house.png
+
+위와 같은 구조의 파일이 있다면
+
+http://localhost:3000/index.html
+http://localhost:3000/images/house.png
+이렇게 접근 가능 하다는것
+
+이를 웹브라우저에서 보려면 app.js파일에서 다음과 같이 응답을 보내면 된다.
+
+```js
+res.end("<img src='/images/house.png' width='50%'");
+```
+
+만약 public 폴더를 /public 패스로 접근하도록 하려면
+
+```
+app.use(express.static(path.join(__dirname,'public')));
+```
+
+이와 같이 하면된다.
+
+
+<body-parser 미들웨어>
+
+POST 요청시 요청 파라미터를 확인 할수 있게해줌.
+
+외장 모듈이라 설치해야됨
+
+```
+npm install body-parser --save
+```
+
+req.param('id');
+req.param('password');
+
+이런식으로 사용한다.
+
+
+
+-----------------------------------------
+
+###### 8722_3
+
+라우터 미들웨어 사용
+-
+
+url을 일일이 확인 해야하는 문제 해결을위함.
+
+라우터도 미들웨어 중 하나지만 app 객체의 속성으로 제공되며 요청기능이 무엇인지 패스기준으로 구별해주기 떄문에 중요한 역할담당
+
+get(path,callback) :get 방식으로 특정 패스요청 발생시 사용할 콜백함수 지정
+
+post(path,callback)
+
+put(path,callback)
+
+delete(path,callback)
+
+all(path,callback)
+
+
+
+
+-----------------------------------------
+
+###### 8722_4
+
+세션과 쿠키
+-
+
+
+
+```
+npm install cookie-parser --save
+```
+
+```js
+
+var cookieParser = require('cookie-parser');
+
+app.use(express.cookieParser());
+
+//쿠키 정보를 확인함
+app.get('/process/showCookie', function(req,res){
+		console.log('/process/showCookie 호출됨.');
+		
+		res.send(req.cookies);
+});
+
+//쿠키에 이름 정보를 설정함
+app.get('/process/setUserCookie', function(req,res){
+	console.log('/process/setUserCookie 호출됨.');
+	
+	//쿠키 설정
+	res.cookie('user', {
+		id: 'mike',
+		name: '소녀시대',
+		authorized: true
+	});
+	
+	res.redirect('/process/showCookie');
+});
+
+```
+
+<세션>
+
+```
+npm install express-session --save
+```
+
+
+세션을 사용할때는 쿠키도 같이 사용하므로 cookie-parser 모듈도 함꼐 불러들인다.
+```js
+
+var cookieParser = require('cookie-parser');
+var expressSession = require('express-session');
+
+app.use(cookieParser());
+app.use(expressSession({
+	secret:'my key',
+	resave:true,
+	saveUninitialized:true
+}));
+
+
+
+app.get('/process/product', function(req,res){
+	console.log('/process/product 호출됨.');
+	
+	if(req.session.user){
+		res.redirect('/public/product.html');
+	}else{
+		res.redirect('/public/login2.html');
+	}
+});
+```
+
+
+```
+if(req.session.user){
+	//로그인 된 상태
+	console.log('로그아웃 합니다.');
+	
+	req.session.destroy(function(err){
+		if(err){throw err;}
+		console.log('세션 삭제및 로그아웃.');
+		res.redirect('/public/login2.html');
+	});
+}else{
+//로그인 안 된 상태
+console.log('아직 로그인되어 있지 않습니다.');
+
+res.redirect('/public/login2.html');
+}
+});
+```
+
+-----------------------------------------
+
+###### 8722_5
+
+파일 업로드
+-
+
+외장 모듈을 사용하여 익스프레스에서 multipart 포맷으로 파일 업로드 할 수 있다.
+
+```
+npm install multer --save
+```
+
+파일 업로드 기능 구현시, body-parser, multer, router 등으 미들웨어 사용. 이렇게 여러개의 미들웨어를 사용할때 사용 순서가 바뀌면 동작하지 않을 수 있다. 순서에 주의
+
+```
+var bodyParser = require('body-parser')
+var cookieParser = require('cookie-parser')
+var  expressSession = require('express-session');
+
+var multer = require('multer');
+var fs = require('fs');
+
+
+
+
+app.use(bodyParser.urlencoded({extended: true}));
+
+app.use(cookieParser());
+app.use(expressSession({
+	secret:'my key',
+	resave:true,
+	saveUninitialized:true
+}));
+
+//multer
+app.use(multer({
+	dest: 'uploads',
+	putSingleFilesInArray: true,
+	limits: {
+		files: 10,
+		fileSize: 1024 * 1024
+	},
+	rename: function(fieldname, filename){
+		return filename+Date.now();
+	},
+	onFileUploadStart: function (file){
+		console.log('파일 업로드 시작 : ' + file.originalname);
+	},
+	onFileUploadComplete: function(file,req, res){
+		console.log('파일  업로드 완료 : ' + file.filename + ' -> ' + file.path);
+	},
+	onFileSizeLimit : function (file){
+		console.log('파일 크기 제한 초과 : %s', file.originalname);
+	}
+}));
+
+
+```
+
+
+-----------------------------------------
+
+###### 8722_6
+
+mysql사용
+-
+
+환경:heidisql
+
+```
+npm install mysql --save
+```
+(전체코드)
+```js
+
+/**
+ * MySQL 데이터베이스 사용하기
+ *
+ * 웹브라우저에서 아래 주소의 페이지를 열고 웹페이지에서 요청
+ * (먼저 사용자 추가 후 로그인해야 함)
+ *    http://localhost:3000/public/login2.html
+ *    http://localhost:3000/public/adduser2.html
+ *
+ * @date 2016-11-10
+ * @author Mike
+ */
+
+// Express 기본 모듈 불러오기
+var express = require('express')
+  , http = require('http')
+  , path = require('path');
+
+// Express의 미들웨어 불러오기
+var bodyParser = require('body-parser')
+  , cookieParser = require('cookie-parser')
+  , static = require('serve-static')
+  , errorHandler = require('errorhandler');
+
+// 에러 핸들러 모듈 사용
+var expressErrorHandler = require('express-error-handler');
+
+// Session 미들웨어 불러오기
+var expressSession = require('express-session');
+ 
+
+//===== MySQL 데이터베이스를 사용할 수 있도록 하는 mysql 모듈 불러오기 =====//
+var mysql = require('mysql');
+
+//===== MySQL 데이터베이스 연결 설정 =====//
+var pool      =    mysql.createPool({
+    connectionLimit : 10, 
+    host     : 'localhost',
+    user     : 'root',
+    password : 'admin',
+    database : 'test',
+    debug    :  false
+});
+
+
+
+// 익스프레스 객체 생성
+var app = express();
+
+// 설정 파일에 들어있는 port 정보 사용하여 포트 설정
+app.set('port', process.env.PORT || 3000);
+
+// body-parser를 이용해 application/x-www-form-urlencoded 파싱
+app.use(bodyParser.urlencoded({ extended: false }))
+
+// body-parser를 이용해 application/json 파싱
+app.use(bodyParser.json())
+
+// public 폴더를 static으로 오픈
+app.use('/public', static(path.join(__dirname, 'public')));
+ 
+// cookie-parser 설정
+app.use(cookieParser());
+
+// 세션 설정
+app.use(expressSession({
+	secret:'my key',
+	resave:true,
+	saveUninitialized:true
+}));
+ 
+
+
+
+//===== 라우팅 함수 등록 =====//
+
+// 라우터 객체 참조
+var router = express.Router();
+
+
+// 로그인 처리 함수
+router.route('/process/login').post(function(req, res) {
+	console.log('/process/login 호출됨.');
+
+	// 요청 파라미터 확인
+    var paramId = req.body.id || req.query.id;
+    var paramPassword = req.body.password || req.query.password;
+	
+    console.log('요청 파라미터 : ' + paramId + ', ' + paramPassword);
+	
+    // pool 객체가 초기화된 경우, authUser 함수 호출하여 사용자 인증
+	if (pool) {
+		authUser(paramId, paramPassword, function(err, rows) {
+			// 에러 발생 시, 클라이언트로 에러 전송
+			if (err) {
+                console.error('사용자 로그인 중 에러 발생 : ' + err.stack);
+                
+                res.writeHead('200', {'Content-Type':'text/html;charset=utf8'});
+				res.write('<h2>사용자 로그인 중 에러 발생</h2>');
+                res.write('<p>' + err.stack + '</p>');
+				res.end();
+                
+                return;
+            }
+			
+            // 조회된 레코드가 있으면 성공 응답 전송
+			if (rows) {
+				console.dir(rows);
+
+                // 조회 결과에서 사용자 이름 확인
+				var username = rows[0].name;
+				
+				res.writeHead('200', {'Content-Type':'text/html;charset=utf8'});
+				res.write('<h1>로그인 성공</h1>');
+				res.write('<div><p>사용자 아이디 : ' + paramId + '</p></div>');
+				res.write('<div><p>사용자 이름 : ' + username + '</p></div>');
+				res.write("<br><br><a href='/public/login2.html'>다시 로그인하기</a>");
+				res.end();
+			
+			} else {  // 조회된 레코드가 없는 경우 실패 응답 전송
+				res.writeHead('200', {'Content-Type':'text/html;charset=utf8'});
+				res.write('<h1>로그인  실패</h1>');
+				res.write('<div><p>아이디와 패스워드를 다시 확인하십시오.</p></div>');
+				res.write("<br><br><a href='/public/login2.html'>다시 로그인하기</a>");
+				res.end();
+			}
+		});
+	} else {  // 데이터베이스 객체가 초기화되지 않은 경우 실패 응답 전송
+		res.writeHead('200', {'Content-Type':'text/html;charset=utf8'});
+		res.write('<h2>데이터베이스 연결 실패</h2>');
+		res.write('<div><p>데이터베이스에 연결하지 못했습니다.</p></div>');
+		res.end();
+	}
+	
+});
+
+
+// 사용자 추가 라우팅 함수
+router.route('/process/adduser').post(function(req, res) {
+	console.log('/process/adduser 호출됨.');
+
+    var paramId = req.body.id || req.query.id;
+    var paramPassword = req.body.password || req.query.password;
+    var paramName = req.body.name || req.query.name;
+    var paramAge = req.body.age || req.query.age;
+	
+    console.log('요청 파라미터 : ' + paramId + ', ' + paramPassword + ', ' + paramName + ', ' + paramAge);
+    
+    // pool 객체가 초기화된 경우, addUser 함수 호출하여 사용자 추가
+	if (pool) {
+		addUser(paramId, paramName, paramAge, paramPassword, function(err, addedUser) {
+			// 동일한 id로 추가하려는 경우 에러 발생 - 클라이언트로 에러 전송
+			if (err) {
+                console.error('사용자 추가 중 에러 발생 : ' + err.stack);
+                
+                res.writeHead('200', {'Content-Type':'text/html;charset=utf8'});
+				res.write('<h2>사용자 추가 중 에러 발생</h2>');
+                res.write('<p>' + err.stack + '</p>');
+				res.end();
+                
+                return;
+            }
+			
+            // 결과 객체 있으면 성공 응답 전송
+			if (addedUser) {
+				console.dir(addedUser);
+
+				console.log('inserted ' + result.affectedRows + ' rows');
+	        	
+	        	var insertId = result.insertId;
+	        	console.log('추가한 레코드의 아이디 : ' + insertId);
+	        	
+				res.writeHead('200', {'Content-Type':'text/html;charset=utf8'});
+				res.write('<h2>사용자 추가 성공</h2>');
+				res.end();
+			} else {
+				res.writeHead('200', {'Content-Type':'text/html;charset=utf8'});
+				res.write('<h2>사용자 추가  실패</h2>');
+				res.end();
+			}
+		});
+	} else {  // 데이터베이스 객체가 초기화되지 않은 경우 실패 응답 전송
+		res.writeHead('200', {'Content-Type':'text/html;charset=utf8'});
+		res.write('<h2>데이터베이스 연결 실패</h2>');
+		res.end();
+	}
+	
+});
+
+
+
+// 라우터 객체 등록
+app.use('/', router);
+
+
+// 사용자를 인증하는 함수
+var authUser = function(id, password, callback) {
+	console.log('authUser 호출됨 : ' + id + ', ' + password);
+	
+	// 커넥션 풀에서 연결 객체를 가져옴
+	pool.getConnection(function(err, conn) {
+        if (err) {
+        	if (conn) {
+                conn.release();  // 반드시 해제해야 함
+            }
+            callback(err, null);
+            return;
+        }   
+        console.log('데이터베이스 연결 스레드 아이디 : ' + conn.threadId);
+          
+        var columns = ['id', 'name', 'age'];
+        var tablename = 'users';
+ 
+        // SQL 문을 실행합니다.
+        var exec = conn.query("select ?? from ?? where id = ? and password = ?", [columns, tablename, id, password], function(err, rows) {
+            conn.release();  // 반드시 해제해야 함
+            console.log('실행 대상 SQL : ' + exec.sql);
+            
+            if (rows.length > 0) {
+    	    	console.log('아이디 [%s], 패스워드 [%s] 가 일치하는 사용자 찾음.', id, password);
+    	    	callback(null, rows);
+            } else {
+            	console.log("일치하는 사용자를 찾지 못함.");
+    	    	callback(null, null);
+            }
+        });
+
+        conn.on('error', function(err) {      
+            console.log('데이터베이스 연결 시 에러 발생함.');
+            console.dir(err);
+            
+            callback(err, null);
+      });
+    });
+	
+}
+
+//사용자를 등록하는 함수
+var addUser = function(id, name, age, password, callback) {
+	console.log('addUser 호출됨 : ' + id + ', ' + password + ', ' + name + ', ' + age);
+	
+	// 커넥션 풀에서 연결 객체를 가져옴
+	pool.getConnection(function(err, conn) {
+        if (err) {
+        	if (conn) {
+                conn.release();  // 반드시 해제해야 함
+            }
+            
+            callback(err, null);
+            return;
+        }   
+        console.log('데이터베이스 연결 스레드 아이디 : ' + conn.threadId);
+
+    	// 데이터를 객체로 만듦
+    	var data = {id:id, name:name, age:age, password:password};
+    	
+        // SQL 문을 실행함
+        var exec = conn.query('insert into users set ?', data, function(err, result) {
+        	conn.release();  // 반드시 해제해야 함
+        	console.log('실행 대상 SQL : ' + exec.sql);
+        	
+        	if (err) {
+        		console.log('SQL 실행 시 에러 발생함.');
+        		console.dir(err);
+        		
+        		callback(err, null);
+        		
+        		return;
+        	}
+        	
+        	callback(null, result);
+        	
+        });
+        
+        conn.on('error', function(err) {      
+              console.log('데이터베이스 연결 시 에러 발생함.');
+              console.dir(err);
+              
+              callback(err, null);
+        });
+    });
+	
+}
+
+
+
+
+// 404 에러 페이지 처리
+var errorHandler = expressErrorHandler({
+ static: {
+   '404': './public/404.html'
+ }
+});
+
+app.use( expressErrorHandler.httpError(404) );
+app.use( errorHandler );
+
+
+//===== 서버 시작 =====//
+
+// 프로세스 종료 시에 데이터베이스 연결 해제
+process.on('SIGTERM', function () {
+    console.log("프로세스가 종료됩니다.");
+});
+
+app.on('close', function () {
+	console.log("Express 서버 객체가 종료됩니다.");
+});
+
+// Express 서버 시작
+http.createServer(app).listen(app.get('port'), function(){
+  console.log('서버가 시작되었습니다. 포트 : ' + app.get('port'));
+});
+ 
+```
+
+
+

@@ -15,6 +15,8 @@
 	
 - [Transaction](#Transaction)
 
+- [String - not equals 할떄](#8719_3)
+
 - [error]
 	- [@RequestParam이 Null일떄](#requestparam)
 	- [NoClassDefFoundError](#noclassdeffounderror)
@@ -584,4 +586,17 @@ DB 정규화와 트랜잭션은 관련이 있는 경우가많다.
 10. unused : 사용하지 않는 코드 관련 경고 억제
 
 이외에도 몇가지더 있다.
+
+-----------------------------------------
+
+###### 8719_3
+
+String - not equals 할떄
+-
+
+equals를 not equals 와 같이 쓰고싶을떄 아래와 같이 사용
+```java
+if (!"success".equals(statusCheck))
+```
+
 

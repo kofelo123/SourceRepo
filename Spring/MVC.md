@@ -11,6 +11,9 @@
 
 
 - [자바단에서 js - alert 사용하기](#8718_2)
+- [spring stopwatch](#8719_1)
+
+- [getRequestURI(), getContextPath() - url에서 path값 가져오기](#8719_4)
 
 - [에러](#error)
     - [415에러-format not supported](#formatnotsupported)
@@ -406,6 +409,138 @@ PrintWriter out = response.getWriter();
 out.println("<script>alert('로그인 정보를 확인해주세요.'); history.go(-1);</script>");
 out.flush();
 ```
+
+(참고) 
+java.lang.IllegalStateException: Cannot call sendRedirect() after the response has been committed
+
+단말에 response 를 한 후 다시 sendRedirect 를 했을때..
+http 프로토콜은 request 1 번에 response 1번으로 통신이 이루어지고 connection 을 끊어버리는 stateless 프로토콜이다.
+
+스프링 인터셉터에서 response.sendRedirect를 지워주고 js로 페이지 이동을 했다.
+
+```java
+//로그인 실패시
+    }else if(userVO == null){
+    	System.out.println("login fail - user is not exist");
+    	response.setContentType("text/html; charset=UTF-8");
+    	PrintWriter out = response.getWriter();
+    	out.print("<script>alert('해당 아이디의 비밀번호가 일치하지 않습니다.');location.href='/thearc/user/login';</script>");
+    	out.flush();
+//    	response.sendRedirect("/thearc/user/login");
+    }
+```
+
+ - Controller에서 사용시 반드시 view를 Stirng으로 return 반환해야 하는것 떄문에 reponse에러를 피할수 없었다.
+  (return 에 꼭 redirect 아니라 String view를 반환해도 마찬가지로 에러)
+ -> return null; 해주면 해결가능.
+ 
+ ```java
+
+...	{ ...
+	response.setContentType("text/html; charset=UTF-8");
+		PrintWriter out = response.getWriter();
+		out.print("<script>alert('관리자 아이디혹은 비밀번호가 일치하지 않습니다.');location.href='/thearc/user/login';</script>");
+		out.flush();
+		}
+		return null;
+
+ ```
+
+-----------------------------------------
+
+###### 8719_1
+
+spring stopwatch
+-
+
+속도 측정에는 system.currenttimemillis() 를 사용하는 방법도 있지만,
+
+스프링에서 제공하는 stopwatch가 있다.
+
+다음은 예
+
+```java
+StopWatch stopWatch = new StopWatch("측정 이름"); // 측정 이름은 보통 클래스 정도(옵션)
+  
+stopWatch.start("job 이름"); // stopWatch를 측정할 job 이름을 지정 ,메소드라던가... 측정하고 싶은 이름으로...  (옵션)
+  
+// 요기부터 로직...  
+  
+stopWatch.stop();  
+  
+logger.debug(stopWatch.toString()); // 결과를 출력합니다.  
+```
+
+예2
+```java
+
+@Around("@annotation(LogExecutionTime)")
+public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
+	StopWatch stopWatch = new StopWatch();
+	stopWatch.start();
+	Object proceed = joinPoint.proceed();
+	stopWatch.stop();
+	logger.info(stopWatch.prettyPrint());
+return proceed;
+}
+
+```
+
+
+-----------------------------------------
+###### 8719_4
+
+getRequestURI(), getContextPath() - url에서 path값 가져오기
+-
+
+
+request.getContextPath() 함수 = 프로젝트 Path만 가져온다.
+
+예)  http://localhost:8080/project/list.jsp
+
+[return]        /project 를 가져온다.
+
+
+request.getRequestURI() 함수 = 프로젝트 + 파일경로까지 가져온다
+
+예)  http://localhost:8080/project/list.jsp
+
+[return]        /project/list.jsp  를 가져온다
+
+
+
+String url = request.getRequestURI.split("/");
+
+String Name = url[url.length -1];       // list.jsp
+
+
+
+request.getRequestURL() 함수 = 전체 경로를 가져옵니다.     (L만 바뀜)
+
+예) http://localhost:8080/project/list.jsp
+
+[return]   http://localhost:8080/project/list.jsp
+
+request.ServletPath() 함수 = 파일명만 가져옵니다.
+
+예) http://localhost:8080/project/list.jsp
+
+
+
+[return] /list.jsp
+
+
+
+request.getRealPath("") 함수 =
+
+서버 or 로컬 웹 애플리케이션 절대결로 가져옵니다.
+
+
+예) http://localhost:8080/projectname/list.jsp
+
+
+
+[return]         c:\project\webapps\projectname\
 
 
 

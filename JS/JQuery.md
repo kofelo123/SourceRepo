@@ -35,6 +35,9 @@
 - [remove() - 요소제거](#8705_123)
 - [:contains(text)' - 특정단어 포함 요소 선택](#8705_124)
 - [prev + next   -  다음 요소 선택하기](#8706_164)
+- [jquery - css 여러개 적용](#8721_1)
+
+
 ---
 
 ### Form control
@@ -1061,3 +1064,30 @@ prev + next 는 prev에 해당하는 선택자 기준으로 next에 해당하는
 ```js
 <script>$("label + input").css("color", "blue").val("Labeled!")</script>
 ```
+
+
+###### 8721_1
+
+jquery - css 여러개 적용
+-
+
+jQuery.css() 함수에 오브젝트를 전달하면 한번에 여러개의 CSS를 적용할 수 있어요.
+
+$('textarea').css({
+  'width': '600px',
+  'height': '400px',
+  'font-size': '16px'
+});
+class
+또는, CSS의 class를 사용하면 더 효율적이에요.
+/* CSS */
+.something {
+  width: 600px;
+  height: 400px;
+  font-size: 16px;
+}
+/* jQuery */
+$('textarea').addClass('something');
+
+
+
