@@ -1160,6 +1160,7 @@ reset - 커밋을 버리고 특정 버전으로 다시 되돌아가기
 reset 명령어를 이용해 더 이상 필요없어진 커밋을 버릴 수 있다. (커밋뿐만 아니라 스테이징(add)도 취소됨)
 명령어 실행 시 어떤 모드로 실행할 지 지정하여 'HEAD' 위치와 인덱스, 작업트리 내용을 함께 되돌릴지 여부를 선택
 
+(/// git reset -> 커밋 뿐 아니라 , 스테이징도 취소됨.)
 
  ![](https://drive.google.com/uc?export=view&id=1CLKo5F1vvRXR1Yg-oYXevRSkNsODqra8)
 
