@@ -3,6 +3,8 @@
   - [forEach-배열과값비교-status활용/두개의 el 객체간의 비교방법](#foreach)
   - [set사용](#jstlset)
   - [날짜관련-fmt태그](#fmttag)
+  - [<c:url>](#8728_6)
+  
 - [프로젝트의 루트경로 변경시](#rootpathmidofy)
 ### Session scope
 
@@ -156,3 +158,33 @@ Date형 으로 쓰는 타입이다.
 
 
 ```
+
+
+-----------------------------------------
+
+###### 8728_6
+
+<c:url>
+-
+
+jstl - <c:url>
+
+어짜피 JQUERY를 사용하면 사용할 일이많이 있겠나 싶기도 하지만, 일단 메모해둔다.
+
+```
+	<c:forEach var="listview" items="${listview}" varStatus="status">	
+				<c:url var="link" value="board1Read">
+					<c:param name="brdno" value="${listview.brdno}" />
+				</c:url>		
+										  				
+				<tr>
+					<td><c:out value="${listview.brdno}"/></td>
+					<td><a href="${link}"><c:out value="${listview.brdtitle}"/></a></td>
+					<td><c:out value="${listview.brdwriter}"/></td>
+					<td><c:out value="${listview.brddate}"/></td>
+				</tr>
+			</c:forEach>
+```
+
+
+

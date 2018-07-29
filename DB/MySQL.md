@@ -10,7 +10,8 @@
 - [특정사용자권한보기](#showgrant)
 - [IF - 조건에 따른 값 변화](#8709_100)
 - [COALESCE , IFNULL - null을 특정값으로](#8709_2200)
-
+- [DATE_FORMAT - 날짜표기 ](#8728_4)
+- [DATETIME과 TIMESTAMP의 차이](#8728_5)
 
 - [Error]
   - [버퍼풀 메모리 관련 오류](#bufferpoolmemoryisuue)
@@ -269,3 +270,112 @@ coalesce(val1, val2, val3, val4...)
 
  : 항목은 여러 개 가능하고, 처음으로 만나는 null이 아닌 값을 출력한다.
 ```
+
+
+-----------------------------------------
+
+###### 8728_4
+
+DATE_FORMAT - 날짜표기 
+-
+
+```
+ SELECT BRDNO, BRDTITLE, BRDWRITER, DATE_FORMAT(BRDDATE,'%Y-%m-%d') BRDDATE
+          FROM TBL_BOARD
+         ORDER BY BRDNO DESC 
+```
+기존 데이터: 
+
+2018-07-29 13:58:08
+
+select 로 가져온 데이터:
+
+2018-07-29
+
+ ![](https://drive.google.com/uc?export=view&id=1s8KPOfwvIigT0114A3XNA-UY7iapg_VI)
+
+
+-----------------------------------------
+
+###### 8728_5
+
+DATETIME과 TIMESTAMP의 차이
+-
+
+CREATE TABLE TBL_BOARD (
+
+  BRDNO int(11) NOT NULL AUTO_INCREMENT,         -- 글 번호
+
+  BRDTITLE varchar(255),                         -- 제목
+
+  BRDWRITER varchar(20),                         -- 작성자
+
+  BRDMEMO   varchar(4000),                       -- 내용
+
+  BRDDATE     datetime,                          -- 작성일자
+
+  PRIMARY KEY (BRDNO)
+
+) ;
+
+여기서 BRDDATE의 DATETIME 데이터베이스에 저장 INSERT할때 시스템에서 읽어와서 같이 저장하도록 된것.
+
+그렇다면 MYSQL에서 사용되는 DATETIME과 TIMESTAMP의 차이?
+
+두 자료형은 둘다 데이터를 다루는 자료형 이지만, 몇가지 차이점을 가진다.
+ 
+
+1) 지원되는 범위에서 차이를 보인다.
+
+datetime은 1000-01-01 00:00:00 ~ 9999-12-31 23:59:59 까지 가능하다.
+
+timestamp는 1970-01-01 00:00:00  ~ 2037-12-31 23:59:59 까지 가능하다.
+
+
+2) DB에 저장 될 때에
+
+datetime은 문자형으로
+
+timestamp는 숫자형으로 변환되어 저장되고
+
+
+3) 저장되는 공간의 크기도
+
+ 
+
+datetime은 8byte를
+
+timestamp는 4byte를 차지한다.
+
+
+4) 그리고 중요한 차이점이라고 생각되는 것은 자동입력 여부이다.
+
+ 
+
+datetime은 수정할 일이 있으면 그때마다 날짜를 입력해 줘야 하지만
+
+timestamp는 날짜를 따로 입력 안해줘도 자동으로 입력이 가능 (CURRENT_TIMESTAMP 사용시 ) 하다.
+
+ 
+
+ 
+
+두 자료형 모두 위와같이 구분되는 각각의 특징을 지니고 있기 때문에
+
+시간을 다루어야 할 경우에 무조건 어느 것이 좋다고 하나만 고집 할 것이 아니라
+
+각각의 경우에 맞춰 알맞은 자료형을 선택하면 사용하면 좋을 것이다.
+
+ 
+
+가령 예를 들어 하나의 글을 등록 할 시에
+
+등록일에는 datetime을 사용하고
+
+수정일에는 timestamp를 사용한다면
+
+수정시 일일히 수정일에 날짜를 입력하지 않아도 될 것이다.
+
+
+
+

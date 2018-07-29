@@ -25,7 +25,9 @@
 	- [invalid CEN header](#invalidcenheader)
 	- [failOnMissingWebXml](#failOnMissingWebXml)
 	- [log4jdbc-log4j2](#log4jdbclog4j2)
-
+	- [Cannot change version of project facet Dynamic Web Module to 3.0](#8728_1)
+	- [Error configuring application listener](#8728_2)
+	- [떄떄로 올바른 설정이나 객체를 인식못할떄](#8728_3)
 
 ---
 
@@ -633,9 +635,76 @@ if (!"success".equals(statusCheck))
 (pathvariable을 비롯해서 다른 애너테이션(ModelAttribute,RequestParam등)도 공통임("") 처리에 관해서)
 
 참고) + 기본타입(int,String)등일때는 보통 이름이 같으면 생략 가능하지만 타입이 사용자가 만든 객체인경우 ("") 처리를 해줘야 전달이 되는것 같다.
+-> 정정, 객체인경우 객체클래스명 첫글자 소문자로 해서 하는식으로 하면 되는것같다. 이름지정시에 ("") 처리하고.
 
 ```
 @ModelAttribute ("cri") SearchCriteria cri
 ```
 
+-----------------------------------------
+
+###### 8728_1
+
+Cannot change version of project facet Dynamic Web Module to 3.0
+-
+
+에러 메세지:
+Cannot change version of project facet Dynamic Web Module to 3.0. Maven Java EE Configuration Problem
+
+Properties > Project Facts에서 Dynamic Web Module 을 3.0으로 변경시키려 해도 안되었다.
+
+web.xml의 상단 xml설정 부분 수정
+http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0">
+
+
+Navigator에서 프로젝트 /.settings/org.eclipse.wst.common.project.fact.core.xml파일 직접수정
+```
+
+<?xml version="1.0" encoding="UTF-8"?>
+<faceted-project>
+  <fixed facet="wst.jsdt.web"/>
+  <installed facet="java" version="1.7"/>
+  <installed facet="jst.web" version="3.0"/>
+  <installed facet="wst.jsdt.web" version="1.0"/>
+</faceted-project> 
+```
+
+Maven Dependencies를 Deployment에 추가
+프로젝트 Properties > Deployment Assembly 에서 Add 클릭 - Java Build Path Entries 선택 - Maven Dependencies 선택
+
+프로젝트 Clean ,  Maven Update 해줄것
+
+[참고](http://tyboss.tistory.com/entry/Maven)
+
+
+
+
+-----------------------------------------
+
+###### 8728_2
+
+Error configuring application listener
+-
+
+에러메세지:
+Error configuring application listener of class org.springframework.web.context.ContextLoaderListener
+
+ClassNotFoundException: org.springframework.web.context.ContextLoaderListener
+
+* 프로젝트 우클릭 >  properties
+
+* Deployment Assembly > Add 버튼 > Java Build Path Entries > Maven Dependencies 선택 > Apply버튼
+
+아무리 봐도 이게 정확한 단일 해결방법인것 같은데 같은 문제가 반복되서 sts 를 재실행하니 사라졌다.
+
+
+
+-----------------------------------------
+
+###### 8728_3
+
+떄떄로 올바른 설정이나 객체를 인식못할떄
+-
+
+올바른 위치에 있는 VO나 xml 등을 인식못하고 있는 현상이 일어날때 clean project와 update maven을 다시 시도하니 잘 해결되었다.
 
