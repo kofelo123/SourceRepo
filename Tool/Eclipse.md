@@ -3,6 +3,8 @@
 - [깃허브 프로젝트 import](#8705_121)
 - [로컬에 있는 프로젝트 import 안될때(project파일 없을시)](#notworkingimport)
 - [Archive for required library - maven에러](#8706_100)
+- [classpath와 웹루트path](#8726_99)
+- [서버 relaunch 설정수정](#8727_5)
 
 ---
 
@@ -93,3 +95,36 @@ Archive for required library (경로)
 in project (프로젝트명) cannot be read or is not a valid ZIP file
 
 해당 경로로 가서 폴더 삭제후(이클립스 종료해야 삭제됨) -> project clean -> maven update project
+
+
+
+---
+
+
+###### 8726_99
+
+classpath와 웹루트path
+-
+
+기본 루트 href="/resource 이런것들 web관련된것은 webapp이 기본 루트패스
+
+여기에 path 설정이 있으면 /thearc/resource 이런식으로..
+
+그 상위의 자바단은 classpath:로 하는게아닐까..
+
+-----------------------------------------
+
+###### 8727_5
+
+서버 relaunch 설정수정
+-
+
+매번 서버 재로딩을 마우스로 버튼 눌러야 하는 불편함 때문에
+
+이클립스 Preferences - keys 에서 
+
+Relaunch Application에 단축키 바인딩된게 없었는데 
+Ctrl+ Alt+ R 로 지정함(in Windows)
+
+
+

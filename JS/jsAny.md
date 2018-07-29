@@ -2,6 +2,9 @@
 - [라디오로 체크 여부 검사하는 코드](#radio-check)
 - [match함수(+getElementById,innerHTML)](#match)
 - [html()과 append() 차이](#htmlappend)
+- [typeof - 타입확인](#8727_3)
+- [split, substring, substr - 문자열자르기](#8727_4)
+
 - [기타]
   - [onclick submit](#onclick-submit)
 - [replace정규표현식조건](#replaceregex)
@@ -275,3 +278,75 @@ function NumFormat(t) // 원 단위, 찍어주기
 				     else self.name = '';
 					 </script>
 ```
+
+
+-----------------------------------------
+
+###### 8727_3
+
+typeof - 타입확인
+-
+
+typeof는 변수의 데이터 타입을 반환하는 연산자입니다.
+
+```
+typeof ""                  // Returns "string"
+typeof "John"              // Returns "string"
+typeof "John Doe"          // Returns "string"
+
+```
+
+
+
+
+###### 8727_4
+
+split, substring, substr - 문자열자르기
+-
+
+문자열의 일부만 잘라 사용할 경우가 있다.
+
+예제를 보면서 바로 해보자
+
+var string='2013-06-11';
+
+위 문자열을 잘라보겠다.
+
+문자열에 있는 '-'를 기준으로 자를려면 다시 만하면 특정 문자를 기준으로 문자열을 자를려면 split을 사용하면 된다.
+
+var strArray=string.split('-');
+
+이렇게 split함수에 잘라내는데 기준이 될 문자열을 넣으로 문자열을 잘라 배열로 넘겨준다.
+
+console.log(strArray[0]+', '+strArray[1]+', '+strArray[2]); 출력해보면 각 배열에 2013, 06, 11이 담겨진걸 확인 할 수 있다.
+
+다음으로 문자열에서 기준없이 사용하고 싶은 문자열만 골라 가져오고 싶다면
+
+substring함수를 사용하면 된다.
+
+substring함수는 문자열의 길이를 기준으로 자른다고 표현하기보다 일정 문자열을 반환한다.
+
+substring(시작인덱스, 종료인덱스);
+
+var year=string.substring(0,4) //2013
+
+var month=string.substring(5,7) //06
+
+var day=string.substring(8,10) //11
+
+출력해 보면 원하는 값이 잘 출력될 것이다.
+
+위와 비슷하지만 조금 다른 함수 substr이 있다.
+
+substr(시작인덱스, 길이)
+
+var year=string.substr(0,4) //2013
+
+var month=string.substr(5,2) //06
+
+var day=string.substr(8,2) //11
+
+출력해보면 substring과 출력 결과가 같다
+
+
+

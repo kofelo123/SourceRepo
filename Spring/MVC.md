@@ -323,15 +323,22 @@ Neither BindingResult nor plain target object for bean name 'command' available 
 
 입력폼 만들고 path지정하고, 속성값 지정하면 객체와 비교해야 하는데 연결이 안되어서 에러남
 
+```java
 @RequestMapping(value = "/login", method=RequestMethod.GET)
-	public void loginGET(@ModelAttribute("dto") LoginDTO dto, Model model){
+	public void loginGET(Model model){
 		model.addAttribute("dto",new LoginDTO()); //객체 정보를 넘겨줘야한다.
 	}
+```
+(넘기고 view단의 form에서 modelAttribute 처리해줘야한다)
 
+```html
+<form:form action="/thearc/user/loginPost" method="post" modelAttribute="dto">
+```
 
 error message: An Errors/BindingResult argument is expected to be declared immediately after the model attribute, 
-
+```java
  public String joinPost(BindingResult result,@ModelAttribute("uvo") @Valid UserVO user, RedirectAttributes rttr) throws Exception{
+```
 		위와 같이 Binding Result를 ModelAttribute 앞에다가 쓰면 안된다.
 순서를 바꾸면 된다. 
 

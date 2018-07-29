@@ -7,6 +7,7 @@
 - [@autowired와 Resource 어노테이션의 차이](#autowiredresource)
 - [root-context와 servlet-context](#rootcontextservletcontext)
 - [dependency 설정에서 scope 종류와 설명](#dependencyscope)
+- [@PathVariable](#8727_1)
 
 - [AOP기본](#aopbasic)
 	- [aop설정](#aopsetting)
@@ -597,6 +598,44 @@ String - not equals 할떄
 equals를 not equals 와 같이 쓰고싶을떄 아래와 같이 사용
 ```java
 if (!"success".equals(statusCheck))
+```
+
+
+
+###### 8727_1
+
+@PathVariable
+-
+
+@PathVariable - URI 경로에서 원하는 데이터를 추출하는 용도
+
+사용 코드 예 
+```java
+  @GetMapping("/register/{category}")
+	  public String registGET(@PathVariable String category,Model model) throws Exception {
+		 
+	    logger.info("regist get ...........");
+	    
+	    
+	    return "/sboard/register";
+	  }
+```
+
+기본적으로 ModelAttribute처럼 view단으로 알아서 넘긴다.
+
+@PathVariable에서 
+
+@PathVariable String category 의경우 넘어온 category 를 변수이름와 일치시켜서 그대로 받아서 view로 보내는경우고
+
+@PathVariable("category") String category22
+받아서 view에  보내는것은 category지만 변수는 다른이름일떄
+
+(pathvariable을 비롯해서 다른 애너테이션(ModelAttribute,RequestParam등)도 공통임("") 처리에 관해서)
+
+참고) + 기본타입(int,String)등일때는 보통 이름이 같으면 생략 가능하지만 타입이 사용자가 만든 객체인경우 ("") 처리를 해줘야 전달이 되는것 같다.
+
+```
+@ModelAttribute ("cri") SearchCriteria cri
 ```
 
 

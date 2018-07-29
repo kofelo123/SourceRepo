@@ -37,6 +37,7 @@
 - [prev + next   -  다음 요소 선택하기](#8706_164)
 - [jquery - css 여러개 적용](#8721_1)
 - [jQuery ready와 load의 차이](#8726_2)
+- [크롬 개발자도구의 콘솔에서 jQuery사용하기](#8727_2)
 
 
 ---
@@ -1082,7 +1083,7 @@ jquery - css 여러개 적용
 -
 
 jQuery.css() 함수에 오브젝트를 전달하면 한번에 여러개의 CSS를 적용할 수 있어요.
-
+```
 $('textarea').css({
   'width': '600px',
   'height': '400px',
@@ -1099,7 +1100,7 @@ class
 /* jQuery */
 $('textarea').addClass('something');
 
-
+```
 
 -----------------------------------------
 
@@ -1123,4 +1124,22 @@ $(window).load(function(){
 위의 두가지의 차이점. 
 
  ![](https://drive.google.com/uc?export=view&id=1LsE5GgRwGV0V2Lxm6FHOdaYnL56ArXBd)
+
+-----------------------------------------
+
+###### 8727_2
+
+크롬 개발자도구의 콘솔에서 jQuery사용하기
+-
+
+크롬 Developer Tools에서 Console에 아래 내용을 복사해서 넣으면 jQuery의 기능을 사용할 수 있다.
+
+```js
+var jq = document.createElement('script');
+jq.src = "//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js";
+document.getElementsByTagName('head')[0].appendChild(jq);
+// ... give time for script to load, then type.
+jQuery.noConflict();
+```
+
 

@@ -2694,6 +2694,7 @@ REST 방식 처리에 사용하는 애노테이션
 
 @PathVariable - URI 경로에서 원하는 데이터를 추출하는 용도
 
+
 @RequestBody - 전송된 JSON 데이터를 객체로 변환해주는 애노테이션, @ModelAttribute와 유사한 역할을 하지만 JSON에서 사용된다는 점이 차이.
 
 * 등록처리
