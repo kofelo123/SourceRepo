@@ -4,6 +4,7 @@
 - [onclick에 return 함수](#onclickfunction)
 - [span사용](#span)
 - [버튼 submit 되지않게](#buttondefaultsubmit)
+- [부트스트랩의 Tootip 커서대면 뜨는정보](#180808_4)
 
 ---
 
@@ -171,4 +172,25 @@ span(인라인)이 있어야 이미지를 한줄에 끝내고 텍스트를 그 �
 <!-- 클릭시 submit 동작하지 않고 아무 반응 없음 -->
 <button type="button" id="btn_example2">버튼 예제2</button>
  
+
+
+-----------------------------------------
+
+###### 180808_4
+
+부트스트랩의 Tootip - 커서대면 뜨는정보
+-
+
+
+
+
+data-toggle="tooltip" data-placement="left" title="좋아요"
+
+툴팁 플러그인은 사용자가 마우스 포인트를 올렸을때 뜨는 작은 팝업박스이다.
+
+이 플러그인은 부스스트랩의 개별 tootop.js파일이 포함되어 있어야 하거나, boostrap.js 가 있어야한다.
+
+[](https://www.w3schools.com/bootstrap/bootstrap_tooltip.asp)
+
+
 

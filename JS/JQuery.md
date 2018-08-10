@@ -43,6 +43,7 @@
 - [이벤트 위임 - delegate](#180806_28)
 - [jquery에서 폼만들어서 post 전송](#180806_4)
 - [현재 URL, 경로 가져오는 방법](#180806_7)
+- [jQuery의 append(), appendTo() 메서드의 차이](#180808_3)
 
 ---
 
@@ -1259,6 +1260,11 @@ $(document).on('click','h1',function(){});
 
 
 
+(참고 - 두가지 엘리먼트이상을 위임할때 )
+
+$(document).on('click',"#ntoy, #default",function(){ (O)
+
+$(document).on('click',"#ntoy","#default",function(){ (X)
 
 -----------------------------------------
 
@@ -1393,5 +1399,35 @@ $(location).attr('href');        #returns href
 $(location).attr('port');        #returns port
 $(location).attr('protocol');    #returns protocol
 
+
+
+-----------------------------------------
+
+###### 180808_3
+
+jQuery의 append(), appendTo() 메서드의 차이
+-
+
+jQuery의 append(), appendTo() 메서드의 차이(구분)
+두 메서드의 실행 결과는 똑같습니다.
+
+단지 차이라면, 주체가 무엇이냐입니다.
+
+append 는 객체가 주체로, 나(객체)에 무엇(자료)를 append하는 것이고,
+
+appendTo는 자료가 주체로, 나(자료)를 어떤것(객체)에 append하는 겁니다.
+
+아래 비교한 소스를 참조하면 이해가 쉽습니다.
+
+ 
+
+<div class=tObj>
+
+</div>
+
+ 
+
+append() : $('.tObj').append("<p>자료</p>");
+appendTo() : $("<p>자료</p>").appendTo('.tObj');
 
 

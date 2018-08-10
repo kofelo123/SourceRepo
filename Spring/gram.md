@@ -17,6 +17,7 @@
 - [Transaction](#Transaction)
 
 - [String - not equals 할떄](#8719_3)
+- [@RequestParam에 대한 고찰](#180808_5)
 
 - [error]
 	- [@RequestParam이 Null일떄](#requestparam)
@@ -707,4 +708,38 @@ ClassNotFoundException: org.springframework.web.context.ContextLoaderListener
 -
 
 올바른 위치에 있는 VO나 xml 등을 인식못하고 있는 현상이 일어날때 clean project와 update maven을 다시 시도하니 잘 해결되었다.
+
+
+
+-----------------------------------------
+
+###### 180808_5
+
+@RequestParam에 대한 고찰
+-
+
+@RequestParam은 
+서블릿에서의 RequestParameter와 같은 역할을 한다.
+
+그러나 사실 폼에서 전송되거나 하는 값이 매핑될때 
+void method(@RequestParam int bno)
+이런식으로 굳이 안해도
+
+void method(int bno)
+이렇게 이름을 같게만 해주면 스프링이 알아서 매핑처리를 하도록 되어있다.
+
+그렇다면 @RequestParam을 굳이 쓰는 이유는
+다른 이름으로 매핑하기 위해서이다.
+
+
+url?message=메세지내용
+
+이렇게 주고 
+method(String test) 이렇게 처리하면 이름이 동일하지않아 매핑되지 않아서 null이 찍히고
+
+method(@RequestParam("message")String test)
+이렇게 처리하면 이름다른 변수에도 매핑이 되는것이다.
+(이하 다른 파라미터 어노테이션에 들어가는 ("")도 마찬가지)
+
+
 
