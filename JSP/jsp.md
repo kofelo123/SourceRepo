@@ -4,6 +4,7 @@
   - [set사용](#jstlset)
   - [날짜관련-fmt태그](#fmttag)
   - [<c:url>](#8728_6)
+  - [내장객체로 uri얻기](#180806_9)
   
 - [프로젝트의 루트경로 변경시](#rootpathmidofy)
 ### Session scope
@@ -187,4 +188,94 @@ jstl - <c:url>
 ```
 
 
+
+-----------------------------------------
+
+###### 180806_9
+
+내장객체로 uri얻기
+-
+
+내장객체로 uri얻기
+${pageContext.request.requestURI} = localhost:8080/thearc/sboard ~
+
+${pageContext.request.getServerName()}  = localhost
+
+- request 내부 객체의 요청 파라미터 관련 메소드
+
+
+
+ 메소드
+
+설명 
+
+String getParameter(name) 
+
+파라미터 변수 name에 저장된 변수를 얻어내는 메소드로, 이때 변수의 값은 String으로 리턴된다. 
+
+String[] getParameterValues(name) 
+
+파라미터 변수 name에 저장된 모든 변수값을 얻어내는 메소드로, 이때 변수의 값은 String 배열로 리턴된다. checkbox에서 주로 사용된다.
+
+Enumeration getParameterNames() 
+
+요청에 의해 넘어오는 모든 파라미터 변수를 java.util.Enumeration 타입으로 리턴한다. 
+
+
+
+- request 내장 객체의 웹 브라우저, 웹 서버 및 요청 헤더의 정보 관련 메소드
+
+
+
+메소드
+
+설명 
+
+String getProtocol() 
+
+ 웹 서버로 요청 시, 사용 중인 프로토콜을 리턴한다.
+
+String getServerName() 
+
+웹 서버로 요청 시, 서버의 도메인 이름을 리턴한다. 
+
+String getMethod() 
+
+웹 서버로 요청 시, 요청에 사용된 요청 방식(GET, POST, PUT 등)을 리턴한다. 
+
+String getQueryString() 
+
+웹 서버로 요청 시, 요청에 사용된 QueryString을 리턴한다. 
+
+String getRequestURI() 
+
+웹 서버로 요청 시, 요청에 사용된 URL 로부터 URI 값을 리턴한다. 
+
+String getRemoteAddr() 
+
+웹 서버로 정보를 요청한 웹 브라우저의 IP주소를 리턴한다. 
+
+int getServerPort() 
+
+웹 서버로 요청 시, 서버의 Port번호를 리턴한다. 
+
+String getContextPath() 
+
+해당 JSP 페이지가 속한 웹 어플리케이션의 콘텍스트 경로를 리턴한다. 
+
+String getHeader(name) 
+
+웹 서버로 요청 시, HTTP 요청 헤더(header)의 헤더 이름인 name에 해당하는 속성값을 리턴한다. 
+
+Enumeration getHeaderNames() 
+
+웹 서버로 요청 시, HTTP 요청 헤더(header)에 있는 모든 헤더 이름을 리턴한다. 
+
+ ![](https://drive.google.com/uc?export=view&id=1yHexQ7X4PivDVC9VXSbItbQFkmbG1Qzf)
+
+
+적용 코드
+```
+   <c:if test="${empty login && pageContext.request.getServerName() eq 'localhost'}" >
+```
 

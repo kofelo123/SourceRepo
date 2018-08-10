@@ -35,6 +35,9 @@
   - [rebase -i  - 커밋 이력 편집하기](#8629_82)
   - [브랜치상의 커밋을 하나로 모아 병합](#8629_91)  
 
+- [stash](#180806_10)
+
+
 - [에러](#error)
   - [add - 줄바꿈관련에러](#adderror)
   - [두개의 히스토리 가진 프로젝트병합](#refusingtomerge)
@@ -1429,4 +1432,146 @@ git commit
 ```
 
 이로써 issue1 브랜치 상의 모든 커밋을 하나로 병합한 내용이 'master'브랜치에 추가되었다.
+
+
+
+-----------------------------------------
+
+###### 180806_10
+
+stash
+-
+
+안전한곳에 넣어두는것
+
+상황1.
+개발브랜치가 아닌 마스터 브랜치에 개발했을때
+Stash에 담아서 -> 개발 브랜치로 넘긴다.
+
+상황2.
+불완전한 미완성 코드를 커밋하고 싶진 않지만 버릴수 없을때
+
+상황3.
+개발코드에 문제가 생겼으나 코드를 버리긴 아까울때
+
+=>Stash는 워킹 디렉토리에 unstaged 파일들을 백업하고, 워킹 디렉토리를 깨끗한 상태, 즉
+Head의 상태로 만드는 기능이다.
+
+작업내용 담기 (stash)
+```
+빈 파일을 생성합니다.
+touch new_file
+
+상태를 보니 방금 추가한 파일이 보이네요.
+git status
+
+git add를 통해 git에 파일을 등록해 보겠습니다.
+git add new_file
+
+파일을 추가한 후 git status로 상태를 보니 신규 파일이 추가되었다고 나옵니다.
+git status
+
+이제 드디어 git stash를 이용하여 작업한 내용을 갈무리하고,
+마지막 커밋상태(init)로 돌아가 보겠습니다.
+git stash
+
+만약 특정 이름을 부여하고 싶다면, git stash save를 이용합니다.
+git stash save MY_STASH_NAME
+
+이제 디렉토리 상태를 확인해 보겠습니다. Working Directory가 깨끗해졌네요.
+
+제가 원하는 결과대로 돌아왔습니다.
+git status
+
+Stash에 잘 들어갔는지 한번 확인 해 볼까요?
+git stash list
+
+잘 들어간거 같네요.
+이제 원하는 작업을 할 수 있게 되었습니다. (FIN.)
+```
+
+
+하던 일을 다시 불러오기 (Unstash)
+: 2가지 방법이 있다.
+
+`pop 마지막 작업본 가져오기
+```
+stash한 리스트를 출력해 보니, 아까 Stash한 MyStash가 있네요.
+
+git stash list
+그러면 pop을 이용해 stash를 가져와 보겠습니다.
+
+pop을 이용하면, 마지막으로 Stash한 것을 불러올 수 있습니다.
+git stash pop
+
+아까 추가한 그 파일이 다시 돌아왔네요. 반갑네요 ㅋㅋ
+그리고 pop을 수행하면, 그 의미처럼 Stash 리스트에서는 빠지게 됩니다.
+다시 리스트 출력을 해보면? 아까의 Stash가 사라졌습니다.
+git stash list
+
+잘 돌아온거 같네요.
+이제 다시 하던 작업을 할 수 있게 되었습니다.
+```
+
+2.Apply
+특정 작업본 가져오기
+
+```
+Pop을 통해 가져온 작업본을 다시 Stash 해 보겠습니다.
+git stash save “MyStash”
+
+리스트 출력을 해보면? MyStash가 다시 들어왔네요.
+git stash list
+
+특정 Stash를 불러오기 위해선 apply를 이용합니다.
+apply를 이용하면 stash리스트에서 사라지지 않고 불러오기만 수행할 수 있습니다.
+git stash apply stash@{0}
+
+pop과는 다르게 stash 리스트에서 사라지지 않습니다.
+자 이제 하던 작업을 계속 진행하면 되겠네요. (FIN.)
+git stash list
+
+```
+
+이 단순한 Stash / UnStash 만으로, 처음에 소개한 3가지 시나리오를 모두 해결할 수 있었습니다.
+
+복잡한 기능은 아님에도 꽤나 유용하게 사용이 되었네요.
+
+상황 1.
+로컬 마스터에 열심히 개발한 건 stash해서 워킹 디렉토리를 HEAD로 돌리고,
+새로 브랜치를 만들어 그곳에서 Unstash를 하였습니다.
+
+상황 2.
+열심히 프로토타이핑 하던 코드는 Stash하여 잠깐 넣어두고,
+워킹 디렉토리를 HEAD로 돌아가서 문제가 있던 코드 부분을 점검했습니다.
+
+상황 3.
+갑자기 생긴 장애 상황에도 당황하지 않고,
+작업하던 디렉토리를 Stash하여 넣어두고 워킹 디렉토리를 HEAD로 돌려서 버그를 찾아냈습니다.
+
+ 
+
+추가적인 사용 방법들
+git stash save
+현재 작업을 저장해두고 branch를 head로 돌린다.(git reset –hard)
+
+git stash list
+저장되어 있는 stash들 보기
+
+git stash pop
+stash들은 stack에 저장된다. 따라서 가장 최근에 save한 stash가 현재 branch에 적용된다.
+
+git stash apply
+git stash pop 과 비슷한 명령어지만 stash list에서 삭제하지 않는다는 점이 다르다.
+
+git stash drop
+필요 없는 stash를 삭제
+
+git stash clear
+전체 stash list를 삭제
+
+
+[](http://wit.nts-corp.com/2014/03/25/1153)
+
+
 

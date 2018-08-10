@@ -73,3 +73,14 @@ gj~(+pw)!
 # docker
 
 id: hjw~
+
+
+###### intellij
+
+2018-07-31 (74.5+7.45(tax))
+
+hlw123@naver.com
+
+Gj(+pw)i
+
+key pro\memo\intellij.txt 기록

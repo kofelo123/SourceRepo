@@ -38,7 +38,11 @@
 - [jquery - css 여러개 적용](#8721_1)
 - [jQuery ready와 load의 차이](#8726_2)
 - [크롬 개발자도구의 콘솔에서 jQuery사용하기](#8727_2)
-
+- [jQuery session plugin](#180730_1)
+- [el태그 값을 jQuery에서 사용시 ''처리](#180730_2)
+- [이벤트 위임 - delegate](#180806_28)
+- [jquery에서 폼만들어서 post 전송](#180806_4)
+- [현재 URL, 경로 가져오는 방법](#180806_7)
 
 ---
 
@@ -251,6 +255,13 @@ Contents:
 
 ```
 
+attr을 여러개 한번에 처리할떄
+
+```
+attr({method:"GET",action:"/blabla.do"}) 
+```
+
+
 ---
 
 ## getjson
@@ -318,7 +329,8 @@ $( "#clickme" ).click(function() {
 
 ## htmlappend
 ```html
-$('#').html() will completely replace the content inside the tag that the selector corresponds to. $('#').append() will just append to the end of the content inside the tag.
+$('#').html() will completely replace the content inside the tag that the selector corresponds to.
+$('#').append() will just append to the end of the content inside the tag.
 
 ex.
 
@@ -1141,5 +1153,245 @@ document.getElementsByTagName('head')[0].appendChild(jq);
 // ... give time for script to load, then type.
 jQuery.noConflict();
 ```
+
+
+-----------------------------------------
+
+###### 180730_1
+
+jQuery session plugin
+-
+
+jquery session plugin 을 통해 jquery에서 세션을 편하게 사용
+
+[](https://github.com/AlexChittock/JQuery-Session-Plugin)
+
+
+
+-----------------------------------------
+
+###### 180730_2
+
+el태그 값을 jQuery에서 사용시 ''처리
+-
+
+el 태그 값 -> jquery에서 쓸때
+```
+var category = ${boardVO.category}; (X)
+```
+아래와 같은 에러가 난다.
+
+Uncaught ReferenceError: free is not defined
+    at HTMLDivElement.<anonymous>
+```
+var category = '${boardVO.category}';  (O)
+```
+이와 같이 ' ' 따옴표로 감싸서 자바스크립트 문자열로 처리해줘야 한다.
+
+
+-----------------------------------------
+
+###### 180806_1
+
+이벤트 위임 - delegate
+-
+
+on() 메서드는 현재 존재하는 태그에 대해서만 이벤트를 연결한다.
+
+아래와 같은 상황은
+
+```js
+<button id="test">Test</button>
+    $(function(){
+
+        $("#test").click(function(){
+
+            console.log("test");
+            $(this).attr("id","test2");
+
+        });
+
+        $("#test2").click(function(){
+
+            console.log("test2");
+
+        });
+
+    });
+```
+attr을로 id를 test2로 변경해도 다음번의 버튼클릭시 test2이벤트는 발생하지않는다.
+
+따라서 이러한 경우 상위 태그에 이벤트를 연결하고 특정태그를 클릭했을때 를 검출해야한다.
+
+```
+<div id="upcase">
+        <button id="test">Test</button>
+    </div>
+</body>
+
+
+<script>
+
+    $(function(){
+
+        $("#upcase").on("click","#test",function(){
+
+            console.log("test");
+
+            $(this).attr("id","test2");
+
+        });
+
+        $("#upcase").on("click","#test2",function(){
+
+            console.log("test2");
+
+        });
+
+    });
+
+```
+(상위의 div 등이 없거나 애매한경우 document 객체에 이벤트 연결하면된다 )
+
+```
+$(document).on('click','h1',function(){});
+```
+
+
+
+
+-----------------------------------------
+
+###### 180806_4
+
+jquery에서 폼만들어서 post 전송
+-
+
+예제참고
+
+1.간단히 서브밋 이 필요할 때, 폼 하나 만들고 바로 서브밋 날린다.
+```js
+function test(){
+ 	$('<form/>').attr({method:"GET",action:"/blabla.do"}).submit();
+}
+```
+2.
+
+$('#btn_submit').click( function() {
+     var $form = $('<form></form>');
+     $form.attr('action', 'order.asp');
+     $form.attr('method', 'post');
+     $form.attr('target', 'iFrm');
+     $form.appendTo('body');
+     
+     var idx = $('<input type="hidden" value="<%=idx%>" name="idx">');
+     var page = $('<input type="hidden" value="<%=page%>" name="page">');
+     var category = $('<input type="hidden" value="<%=category%>" name="category">');
+     var keyfield = $('<input type="hidden" value="<%=keyfield%>" name="keyfield">');
+     var keyword = $('<input type="hidden" value="<%=keyword%>" name="keyword">');
+ 
+     $form.append(idx).append(page).append(category).append(keyfield).append(keyword);
+     $form.submit();
+});
+
+3.
+동적 폼 엘리먼트 생성 및 ajax 를 이용한 전송
+
+
+
+[동적으로 FORM 생성]
+
+
+
+/* 화면 refresh없이 계속 submit해야하는 경우 form이 중복으로 document에 추가되기 때문에 reset하는 과정이 필요함. */
+
+var $form = $("#myForm");
+ if($form.length < 1) {
+  $form = $("<form/>").attr({id:"myForm", method:'POST'});
+  $(document.body).append($form);
+ }
+ $form.empty();
+
+ 
+
+/* 정보 세팅 */
+
+$("<input></input>").attr({type:"hidden", name:"aaaa", value:$.trim('aaaa')}).appendTo($form);
+
+$("<input></input>").attr({type:"hidden", name:"bbbb", value:$.trim('bbbb')}).appendTo($form);
+
+[Ajax 를 이용한 폼 전송]
+
+
+
+/* ajax로 submit*/
+
+$.ajax({
+
+   url : '/testPjt/myPjt/test.do',
+
+   data : $form.serialize(),
+
+   dataType : 'json',
+
+   success : function(json, textStatus, jqXHR){
+
+     if(!json.result){
+         alert('결과가 없습니다.');
+     }else{
+         alert('결과가 있습니다.');
+     }
+
+   }
+
+});
+ 
+적용 코드
+
+```
+
+                       <%-- 개발시 로그인 편하게 하기위해--%>
+                <c:if test="${empty login && pageContext.request.getServerName() eq 'localhost'}" >
+                <script type="text/javascript" src="/thearc/resources/bootstrap/js/jquery-1.10.2.min.js"></script>
+                 <script></script>
+                <button id="devlogin" style="width:40px;height:30px; margin-top:10px;"></button>
+                    <script>
+                        $(function(){
+                            $("#devlogin").click(function(){
+
+                                var form = $('<form></form>');
+
+                                form.attr({action:"/thearc/user/loginPost" , method:"post"});
+                                form.appendTo('body');
+
+                                $("<input></input>").attr({type:"hidden",name:"uid",value:"kofelo12"}).appendTo(form);
+                                $("<input></input>").attr({type:"hidden",name:"upw",value:"gj0123"}).appendTo(form);
+                                form.submit();
+
+                            });
+                        })
+
+                    </script>
+                </c:if>
+```
+
+
+-----------------------------------------
+
+
+
+###### 180806_7
+
+[jQuery] 현재 URL, 경로 가져오는 방법
+-
+
+jQuery
+$(location).attr('host');        #returns host
+$(location).attr('hostname');    #returns hostname
+$(location).attr('path');        #returns path
+$(location).attr('href');        #returns href
+$(location).attr('port');        #returns port
+$(location).attr('protocol');    #returns protocol
+
 
 

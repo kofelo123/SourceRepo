@@ -4,6 +4,8 @@
 - [html()과 append() 차이](#htmlappend)
 - [typeof - 타입확인](#8727_3)
 - [split, substring, substr - 문자열자르기](#8727_4)
+- [문자열을 숫자형으로](#180730_3)
+- [confirm](#confirm)
 
 - [기타]
   - [onclick submit](#onclick-submit)
@@ -350,3 +352,38 @@ var day=string.substr(8,2) //11
 
 
 
+-----------------------------------------
+
+###### 180730_3
+
+문자열을 숫자형으로
+-
+
+```
+str_value = '123';
+typeof(str_value);
+// 현재의 타입이 string 문자타입임을 확인
+
+int_value = parseInt(str_value);
+// 함수를 사용하여 숫자 자료형으로 변경함
+typeof(int_value);
+// 타입 확인결과 문자에서 숫자 타입으로 변경되었음
+```
+
+
+---------------
+
+###### confirm
+
+confirm 예제
+-
+
+```
+var result = confirm('Are you sure you want to do this?'); 
+
+  if(result) { //yes 
+    location.replace('index.jsp'); 
+  } else { //no 
+}
+
+```

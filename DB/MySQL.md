@@ -6,7 +6,7 @@
 - [백업하기-MysqlDump](#mysqldump)
 - [mysql 원격접속](#mysqlremoteconnect)
 - [전체사용자조회,현재사용자](#selectuser)
-- [DB조회,사용](#showdatabase)
+- [DB조회,사용, 테이블조회](#showdatabase)
 - [특정사용자권한보기](#showgrant)
 - [IF - 조건에 따른 값 변화](#8709_100)
 - [COALESCE , IFNULL - null을 특정값으로](#8709_2200)
@@ -182,9 +182,10 @@ select user();
 
 ###### showdatabase
 
-DB조회
+DB조회,사용, 테이블조회
 -
 
+데이터 베이스 조회
 ```
 show databases;
 ```
@@ -194,6 +195,12 @@ show databases;
 user DBName;
 ```
 
+
+테이블 조회
+
+```
+show tables;
+```
 
 ###### showgrant
 

@@ -332,6 +332,8 @@ Neither BindingResult nor plain target object for bean name 'command' available 
 (넘기고 view단의 form에서 modelAttribute 처리해줘야한다)
 
 ```html
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+
 <form:form action="/thearc/user/loginPost" method="post" modelAttribute="dto">
 ```
 
