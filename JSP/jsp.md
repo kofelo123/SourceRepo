@@ -5,7 +5,10 @@
   - [날짜관련-fmt태그](#fmttag)
   - [<c:url>](#8728_6)
   - [내장객체로 uri얻기](#180806_9)
-  
+  - [jstl - functions(fn) 태그 정리](#180811_5)
+- [escapeXml - html 태그 가 그대로 노출될때](#180811_3)
+
+
 - [프로젝트의 루트경로 변경시](#rootpathmidofy)
 ### Session scope
 
@@ -278,4 +281,183 @@ Enumeration getHeaderNames()
 ```
    <c:if test="${empty login && pageContext.request.getServerName() eq 'localhost'}" >
 ```
+
+
+
+-----------------------------------------
+
+###### 180811_3
+
+escapeXml - html 태그 가 그대로 노출될때
+-
+
+사용자가 글 내용을 입력할 때 텍스트박스(TextArea)로 입력하는 게 아니라 웹 에디터를 이용할 때가 많다.
+
+즉, HTML 태그를 사용자가 입력하는 것이다.
+
+사용자가 입력한 HTML 코드가 실행되지 않는다면 
+
+글쓰기에서 글 내용에 “<B>테스트</B>”라고 입력한 후 저장했을떄
+
+<b>테스트</b> 라고 그대로 글 읽기페이지에서 표기된다.
+
+이렇게 출력되는 것은 Spring에서 HTML 실행을 막아놨기 때문이다.
+
+다음과 같이 출력(out) 테그에 escapeXml="false"를 넣어주면 문제가 해결된다.
+
+```
+<tr>
+    <td>내용</td> 
+    <td><c:out value="${boardInfo.brdmemo}" escapeXml="false"/></td> 
+</tr>
+
+```
+
+하지만 이러면 악의 적 사용자에 의해 잘못된 스크립트가 삽입되어 실행되는 문제가 발생할 수 있다.(alert등 js가 동작)
+
+HTML은 실행하고 자바 스크립트는 실행하지 못하게 해야 한다.
+
+따라서 <script>를 &lt;script>로 바꾸어 사용자가 입력한 프로그램 코드가 실행되지 않게 만들어 주면 된다. 
+
+개발자에 따라 사용자가 입력한 내용을 DB에 저장할 때 처리하기도 하고 보여 줄 때 처리하기도 한다. 
+
+개인적 성향으로 다음과 같이 데이터를 불러와서 보여줄 때 처리하도록 했다.
+
+```java
+public class boardVO {
+    private String brdno, brdtitle, brdwriter, brdmemo, brddate, brdhit, brddeleteflag;
+ ~~ 생략 ~~
+    public void setBrdwriter(String brdwriter) {
+        this.brdwriter = brdwriter;
+    }
+
+    public String getBrdmemo() {
+        return brdmemo.replaceAll("(?i)<script", "&lt;script");
+    }
+```
+
+[참고](http://needjarvis.tistory.com/51)
+
+
+
+
+
+-----------------------------------------
+
+###### 180811_5
+
+jstl - functions(fn) 태그 정리
+-
+
+
+
+최상단에 다음과 같이 jstl functions 를 사용하겠다고 선언해야 함
+
+```
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+cs
+ ```
+
+단독으로 사용할 수 없고 EL 표현식과 함께 사용해야 한다.
+
+ 
+```
+ex.
+
+${fn:contains(str, str)}
+
+${fn:split(str, '|')}
+```
+ 
+
+ 
+
+ 
+
+fn:contains(string, sbustring)
+
+string이 substring을 포함하면 return true 반환
+
+
+fn:containsIgnoreCase(string, sbustring)
+
+대소문자 관계없이 string이 substring을 포함하면 return true 반환
+
+ 
+
+fn:startsWith(string, prefix)
+
+string이 prefix로 시작하면 return True
+
+
+fn:endsWith(string, suffix)
+
+string이 suffix로 끝나면 return True
+
+
+fn:escapeXml(string)
+
+stting에 XML과 HTML에서 < >& ' " 문자들이 있으면, XML엔티티 코드로 바꿔준뒤 문자열 반환
+
+
+fn:indexOf(string, sbustring)
+
+string에서 substring이 처음으로 나타나는 인덱스 반환
+
+ 
+
+fn:split(string, separator)
+
+string내의 문자열 separetor에 따라 나누어서 배열로 구성해서 반환
+
+
+fn:join(array, separator)
+
+array요소들을 separator를 구분자로 하여 연결해서 반환
+
+
+fn:length(item)
+
+item이 배열이나 컬렉션이면 요소의 개수를 문자열이면 문자의 개수를 반환
+
+
+fn:replace(string, before, after)
+
+string내에 있는 before 문자열을 after 문자열로 모두 변경해서 반환
+
+
+fn:substring(string, begin, end)
+
+string에서 begin인덱스에서 시작해서 end인덱스에 끝나는 부분의 문자열 반환
+
+
+fn:substringAfter(string, sbustring)
+
+string에서 substring이 나타나는 이후의 문자열 반환
+
+
+fn:substringBefore(string, sbustring)
+
+string에서 substring이 나타나는 이전의 문자열 반환
+
+
+fn:toLowerCase(string)
+
+string을 모두 소문자로 변경 후 리턴
+
+
+fn:toUpperCase(string)
+
+string을 모두 대문자로 변경 후 리턴
+
+
+fn:trim(string)
+
+string앞뒤의 공백을 모두 제거한 후 반환
+
+
+
+출처: http://cofs.tistory.com/262 [CofS]
+
+
 

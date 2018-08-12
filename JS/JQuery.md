@@ -1282,7 +1282,7 @@ function test(){
 }
 ```
 2.
-
+```
 $('#btn_submit').click( function() {
      var $form = $('<form></form>');
      $form.attr('action', 'order.asp');
@@ -1299,6 +1299,7 @@ $('#btn_submit').click( function() {
      $form.append(idx).append(page).append(category).append(keyfield).append(keyword);
      $form.submit();
 });
+```
 
 3.
 동적 폼 엘리먼트 생성 및 ajax 를 이용한 전송
@@ -1310,28 +1311,28 @@ $('#btn_submit').click( function() {
 
 
 /* 화면 refresh없이 계속 submit해야하는 경우 form이 중복으로 document에 추가되기 때문에 reset하는 과정이 필요함. */
-
+```
 var $form = $("#myForm");
  if($form.length < 1) {
   $form = $("<form/>").attr({id:"myForm", method:'POST'});
   $(document.body).append($form);
  }
  $form.empty();
-
+```
  
 
 /* 정보 세팅 */
-
+```
 $("<input></input>").attr({type:"hidden", name:"aaaa", value:$.trim('aaaa')}).appendTo($form);
 
 $("<input></input>").attr({type:"hidden", name:"bbbb", value:$.trim('bbbb')}).appendTo($form);
-
+```
 [Ajax 를 이용한 폼 전송]
 
 
 
 /* ajax로 submit*/
-
+```
 $.ajax({
 
    url : '/testPjt/myPjt/test.do',
@@ -1351,7 +1352,7 @@ $.ajax({
    }
 
 });
- 
+```
 적용 코드
 
 ```
@@ -1381,7 +1382,16 @@ $.ajax({
                 </c:if>
 ```
 
+(추가)
+태그생성에 대해..
 
+우선 생성하는 방법을 알아보겠습니다. 순수 자바스크립트와 비교하면 정말 간단합니다. $안에 만들고 싶은 태그를 적어넣으면 됩니다.
+```
+var $div = $('<div>Hello</div>');
+var div = document.createElement('div');
+var text = document.createTextNode('Hello');
+div.appendChild(text);
+```
 -----------------------------------------
 
 
@@ -1390,7 +1400,7 @@ $.ajax({
 
 [jQuery] 현재 URL, 경로 가져오는 방법
 -
-
+```
 jQuery
 $(location).attr('host');        #returns host
 $(location).attr('hostname');    #returns hostname
@@ -1398,7 +1408,7 @@ $(location).attr('path');        #returns path
 $(location).attr('href');        #returns href
 $(location).attr('port');        #returns port
 $(location).attr('protocol');    #returns protocol
-
+```
 
 
 -----------------------------------------

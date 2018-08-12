@@ -23,7 +23,7 @@
 
 ###### createuserprivilige
 
-사용자생성및 권한
+사용자,스키마 생성 및 권한
 -
 
 ```sql
@@ -37,6 +37,20 @@ FLUSH PRIVILEGES;
 
 mysql > create user 'userid'@'%' identified by '비밀번호';  // '%' 의 의미는 외부에서의 접근을 허용
 
+
+//스키마 생성
+create database ssuserdb character set = utf8;
+
+
+
+(spring4에게 ssuserdb 데이터베이스(스키마)에 접근할수 있는 권한을 준다 -> spring4접속시 스키마에 ssuerdb만 보임)
+
+grant all privileges on ssuserdb.* to 'spring4'@'localhost';
+
+
+(spring4에게 모든 데이터베이스(스키마)에 접근 할 수 있는 권한을 준다.
+
+grant all privileges on *.* to 'spring4'@'localhost' with grant option;
 
 ---
 
