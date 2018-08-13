@@ -6,10 +6,14 @@
   - [<c:url>](#8728_6)
   - [내장객체로 uri얻기](#180806_9)
   - [jstl - functions(fn) 태그 정리](#180811_5)
-- [escapeXml - html 태그 가 그대로 노출될때](#180811_3)
 
 
 - [프로젝트의 루트경로 변경시](#rootpathmidofy)
+- [escapeXml - html 태그 가 그대로 노출될때](#180811_3)
+- [forEach문 쓰지않고 list 간단히 뽑을떄](#180813_2)
+
+
+
 ### Session scope
 
 ```html
@@ -460,4 +464,25 @@ string앞뒤의 공백을 모두 제거한 후 반환
 출처: http://cofs.tistory.com/262 [CofS]
 
 
+
+-----------------------------------------
+
+###### 180813_2
+
+forEach문 쓰지않고 list 간단히 뽑을떄
+-
+
+view 뿌려진 list 를 jstl에서 받을때
+
+forEach문 쓰지않고 간단하게 뽑아야할떄
+
+```
+${list.board[1].getBno()}(X)
+${list[1].board.getBno()}(X)
+${list[1].bno} (O)
+```
+
+
+
+-----------------------------------------
 
