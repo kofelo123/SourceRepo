@@ -5,7 +5,7 @@
 - [span사용](#span)
 - [버튼 submit 되지않게](#buttondefaultsubmit)
 - [부트스트랩의 Tootip 커서대면 뜨는정보](#180808_4)
-
+- [label 사용](#180814_3)
 ---
 
 ### Http errorcode
@@ -63,7 +63,7 @@ if ($('input[name=sampleCheckbox]').is(":checked")) { //checkbox는 체크여부
 } else {
     $('input[name=sampleHidden]').val('N');
 }
-
+```
 ```html
 //최종으로 바꾼코드
 <input type="hidden" id="uncheckeduse" name="useyn" value="n"> //unchecked일때 사용될값
@@ -150,10 +150,11 @@ onClick에서 이벤트에 return 없을을경우
 ---
 ## span
 
+```
 <span style="float: left;">
              <img src="/momstouch/resources/image/momstouch${subfolder }/${productVO.image}"  />
            </span>         
-
+```
 span(인라인)이 있어야 이미지를 한줄에 끝내고 텍스트를 그 우측에 배치한다.
 
 
@@ -168,7 +169,9 @@ span(인라인)이 있어야 이미지를 한줄에 끝내고 텍스트를 그 �
 
 <!-- 클릭시 form(data_form)의 submit 동작을 하게 됨 -->
 <button id="btn_example1">버튼 예제1</button>
+ (버튼에 타입을 버튼으로 안주면 그 자체로 submit기능을 하는것같다 굳이 type="submit" 아니어도.)
  
+
 <!-- 클릭시 submit 동작하지 않고 아무 반응 없음 -->
 <button type="button" id="btn_example2">버튼 예제2</button>
  
@@ -192,5 +195,28 @@ data-toggle="tooltip" data-placement="left" title="좋아요"
 
 [](https://www.w3schools.com/bootstrap/bootstrap_tooltip.asp)
 
+
+
+
+-----------------------------------------
+
+###### 180814_3
+
+label 사용
+-
+
+<label for="exampleInputEmail1">제목</label> 
+
+여기서 label의 for에 해당하는 부분은
+
+라벨을 눌렀을때 text 클릭 처리될 input의 id가 되어야 한다.
+
+validation의 경우 
+```
+<form:input type="text" path="title" name="title" class="form-control" placeholder="제목을 입력해주세요" />
+<form:errors path="title" class="error" style="color:red;"/>
+```		
+
+이런식으로 있으면 id없어도 그냥 알아서 되긴한다.
 
 

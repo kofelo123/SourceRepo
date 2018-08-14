@@ -101,7 +101,11 @@ c:set 사용
 한서버에 여러 프로젝트를 구동할떄는 루트path를 각기 바꿨을경우
 '/thearc' 이런식으로 path를 줬을때
 
-/thearc/resources 이런식으로 접근해야된다. ((webapp)/thearc/resources)
+/thearc/resources 이런식으로 접근해야된다. 
+
+target -> deploy 배포되는 형태의 경로로 이해해야 하지 않을까..
+
+ ![](https://drive.google.com/uc?export=view&id=1qW9AAHfzl_WAG9GbCVlBKZMJcFw4tNFh)
 
 ---
 
