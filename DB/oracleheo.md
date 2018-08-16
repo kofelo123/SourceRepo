@@ -7,6 +7,13 @@
 - [변환 함수](#180813_5)
 - [Null 치환 함수 NVL, NVL2, COALESCE](#180813_6)
 - [기타 변환 함수](#180813_7)
+- [집합 연산자(UNION,UNIONALL,INTERSECT,MINUS)](#180815_3)
+- [그룹함수](#180815_4)
+- [GROUP BY](#180815_6)
+- [HAVING](#180815_7)
+- [GROUPING SETS](#180815_8)
+
+
 
 ---
 
@@ -598,5 +605,277 @@ SQL> SELECT job_id, salary,
 
 
 	   
+
+
+
+-----------------------------------------
+
+###### 180815_3
+
+집합 연산자(UNION,UNIONALL,INTERSECT,MINUS)
+-
+
+집합연산자:  2개 이상의 SQL문의 결과를 연결시켜주는 연산자, 열의 개수와 각 데이터 타입은 반드시 일치 해야 한다.
+
+<UNION , UNION ALL>
+
+UNION은 합집합같은 의미이다. 중복된 정보는 한번만 출력한다.
+
+주의점은 둘의 개수와 타입이 동일 해야한다.
+
+```SQL
+SQL> SELECT employee_id, first_name
+2 FROM employees
+3 WHERE hire_date LIKE '04%'
+4 UNION
+5 SELECT employee_id, first_name
+6 FROM employees
+7 WHERE department_id=20;
+```
+
+UNION ALL의 경우 중복된 정보도 모두 출력한다.
+
+
+<INTERSECT>
+
+중복된 행만 출력한다 ( 교집합처럼 )
+
+<MINUS>
+
+두번째 쿼리에는 없고 첫번째 쿼리에만 있는 데이터를 보여준다. ( 차집합처럼 )
+
+
+-----------------------------------------
+
+###### 180815_4
+
+그룹함수 
+-
+
+행의 그룹에 대해 평균과 같은 통계를 얻는다.
+
+단일 행 함수와 달리 그룹 당 하나의 결과가 주어도록 행의 집합에 대해 연산한다.
+
+![](https://drive.google.com/uc?export=view&id=15eO8m5T3Hj6oQv6ms2xHtFUJ3jN0DcCe)
+
+<AVG,SUM,MIN,MAX 함수>
+
+```SQL
+SQL> SELECT AVG(salary), MAX(salary), MIN(salary), SUM(salary)
+2 FROM employees
+3 WHERE job_id LIKE 'SA%';
+```
+
+MAX와 MIN함수는 모든 데이터 타입에 대해 쓸수있다(숫자,날짜,문자열 모두가능)
+
+<COUNT 함수>
+
+두가지 형식이 있다.
+
+- COUNT(*) : 중복되는 행과 NULL 포함
+
+- COUNT(expr): NULL이 아닌 행의 수 반환
+
+
+<STDDEV, VARIANCE 함수>
+
+STDDEV 함수는 NULL을 무시한 표준편차를 출력
+
+VIARIANCE 함수는 NULL 값을 무시한 분산을 출력
+
+
+
+참고) COUNT(*)를 제외한모든 그룹함수는 열에 있는 NULL 값을 무시한다.
+
+NVL함수는 그룹함수가 NULL인 값을 포함하는것을 가능하게 한다. 아래는 평균 테이블의 COMMISSION_PCT 열에 저장된 값이 NULL인지여부와 상관없이 모든행을 계산
+
+평균은 모든사원에게 지급되는 보너스를 전체사원의수로 나누어 계산
+
+```SQL
+SQL> SELECT AVG(NVL(salary*commission_pct,0))
+2 FROM employees;
+```
+
+
+-----------------------------------------
+
+###### 180815_6
+
+GROUP BY
+-
+
+테이블의 행을 GROUP BY 절을 사용하여 보다 작은 그룹으로 나눈다.
+
+규칙
+
+- SELECT 절에 그룹 함수를 포함한다면, GROUP BY절에 각각의 열이 명시되지 않으면 각각의 그룹별 결과를 얻을 수 없다.
+
+- WHERE 절을 사용하여 행을 그룹으로 나누기 전에 미리 행을 제외시킬 수 있다.
+
+- GROUP BY 절에 열을 포함해야 한다.
+
+- GROUP BY 절에 열 별칭을 사용할 수 없다.
+
+- 행들은 기본적으로 GROUP BY 목록에 포함된 열의 오름차순 정렬로 저장된다.
+ORDER BY 절을 사용하여 이것을 변경가능.
+
+<GROUP BY 사용>
+
+그룹함수에 포함되지 않는 SELECT절의 모든 열들은 GROUP BY 절에 포함되도록 한다.
+
+```SQL
+SQL> SELECT department_id, AVG(salary)
+2 FROM employees
+3 GROUP BY department_id;
+```
+
+여기서 select 절의 department_id는 반드시 포함할 필요는 없다
+where 절이 없기 떄문에 디폴트로 모든행이 검색된다.
+
+group by 절에서 행은 부서번호에 의해 그룹화 되어있으므로 급여 열에 적용된 avg함수는 각각의 부서에대한 평균 급여를 계산 할것이다.
+
+<하나 이상의 열로 그룹화>
+
+```sql
+SQL> SELECT department_id, job_id, SUM(salary)
+2 FROM employees
+3 GROUP BY department_id, job_id;
+```
+
+![](https://drive.google.com/uc?export=view&id=1pK1QM4mhyJPpaZmOy0uyDonk1nYmGvp3)
+
+1. 부서번호로 행을 그룹화 한다
+2. 부서번호 그룹 내에서 직무로 행을 그룹화 한다.
+
+SUM함수는 각각의 부서그룹내의 모든 직무에 대한 급여 열에 적용된다.
+
+
+<그룹 함수를 잘못 사용한 질의>
+
+주의
+
+1. SELECT 절의 그룹 함수가 아닌 모든 열이나 표현식으로 GROUP BY 절에 있어야 한다.
+
+2. WHERE 절을 사용하여 그룹을 제한할 수 없다. 그룹을 제한하기 위해서 HAVING 절을 사용한다.
+
+1번경우
+
+```SQL
+SQL> SELECT department_id, COUNT(first_name)
+2 FROM employees;
+```
+에러:
+“ORA-00937:not a single-group groupfunction"
+
+아래와 같이 정정
+```SQL
+SQL> SELECT department_id, COUNT(first_name)
+2 FROM employees
+3 GROUP BY department_id;
+```
+
+2번경우
+
+```SQL
+SQL> SELECT department_id, AVG(salary)
+2 FROM employees
+3 WHERE AVG(salary) > 2000
+4 GROUP BY department_id;
+```
+
+에러:
+ORA-00934: group function is not allowed here
+
+
+-----------------------------------------
+
+###### 180815_7
+
+HAVING
+-
+
+HAVING 절을 사용하여 그룹을 제한한다.
+
+WHERE 절에서는 검색하는 행을 제한할수있고 같은 방법으로 HAVING절을 사용하여 그룹을 제한한다.
+
+HAVING 절 사용시 수행되는 단계
+
+1. 행을 그룹화 한다.
+
+2. 그룹 함수를 그룹에 적용한다.
+
+3. HAVING 절에 있는 조건과 일치하는 그룹을 디스플레이 한다.
+
+
+다음은 부서의 급여 평균이 8000을 초과하는 부서의 번호와 급여 평균을 출력
+
+```SQL
+SQL> SELECT department_id, ROUND(AVG(salary), 2)
+2 FROM employees
+3 GROUP BY department_id
+4 HAVING AVG(salary) > 8000;
+```
+
+다음은 급여 평균이 8000을 초과하는 각 직무에 대해 직무와 직무별 급여 평균을 출력.
+Sales 직무를 담당하는 사원은 제외하고 급여 평균으로 결과를 정렬
+
+```SQL
+SQL> SELECT job_id, AVG(salary) PAYROLL
+2 FROM employees
+3 WHERE job_id NOT LIKE 'SA%'
+4 GROUP BY job_id
+5 HAVING AVG(salary) > 8000
+6 ORDER BY AVG(salary);
+```
+
+
+
+
+-----------------------------------------
+
+###### 180815_8
+
+GROUPING SETS
+-
+
+GROUP BY 절과 UNION ALL 연산자의 결합된 형태의 기능
+
+여러개의 SELECT 문이 UNION ALL 집합 연산자에 의해 결합되어 결과가 출력되는 쿼리문을 
+
+GROUPING SETS절에 의해 실행 하기 때문에 
+
+SELECT문이 간결해지고 성능 또한 빨라지는 장점을 가짐
+
+다음은 부서별, 직무별 평균 급여와, 직무별 매니저별 평균 급여를 출력
+
+```SQL
+SQL> SELECT department_id, job_id, manager_id,
+2 ROUND(AVG(salary), 2) AS avg_sal
+3 FROM employees
+4 GROUP BY
+5 GROUPING SETS ((department_id, job_id), (job_id, manager_id))
+6 ORDER BY department_id, job_id, manager_id;
+```
+
+![](https://drive.google.com/uc?export=view&id=1Ms0VOWHcQUb084sBIxTAaqLn4GWd6UfK)
+
+다음은 GROUPING SETS 함수를 이용하여 부서별 통계, 직무별 통계를 출력.
+
+GROUPING함수는 해당 열이 그룹핑에 사용되면 1을 반환, 아니면 0을 반환한다. 
+
+이를 이용하면 어떤 값에 의해 집계 되었는지 알 수있다.
+
+```SQL
+SQL> SELECT
+2 DECODE(GROUPING(department_id), 1, '모든 부서', department_id) AS 부서명,
+3 DECODE(GROUPING(job_id), 1, '모든 직무', job_id) AS 직무명,
+4 COUNT(*) AS 사원수,
+5 SUM(salary) AS 총급여액
+6 FROM employees
+7 GROUP BY
+8 GROUPING SETS (department_id, job_id);
+```
+
+![](https://drive.google.com/uc?export=view&id=1i7nRIlBCepLsUbqEm20sqWLKGnIT_TSU)
 
 

@@ -635,8 +635,8 @@ if (!"success".equals(statusCheck))
 
 (pathvariable을 비롯해서 다른 애너테이션(ModelAttribute,RequestParam등)도 공통임("") 처리에 관해서)
 
-참고) + 기본타입(int,String)등일때는 보통 이름이 같으면 생략 가능하지만 타입이 사용자가 만든 객체인경우 ("") 처리를 해줘야 전달이 되는것 같다.
--> 정정, 객체인경우 객체클래스명 첫글자 소문자로 해서 하는식으로 하면 되는것같다. 이름지정시에 ("") 처리하고.
+
+->  객체인경우 객체클래스명 첫글자 소문자로 해서 하는식으로 하면 되는것같다. 이름지정시에 ("") 처리하고.
 
 ```
 @ModelAttribute ("cri") SearchCriteria cri
