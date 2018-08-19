@@ -18,6 +18,8 @@
 
 - [String - not equals 할떄](#8719_3)
 - [@RequestParam에 대한 고찰](#180808_5)
+- [Spring Controller에서 redirect 와 return 에 대해서..](#180819_1)
+
 
 - [error]
 	- [@RequestParam이 Null일떄](#requestparam)
@@ -740,6 +742,24 @@ method(String test) 이렇게 처리하면 이름이 동일하지않아 매핑�
 method(@RequestParam("message")String test)
 이렇게 처리하면 이름다른 변수에도 매핑이 되는것이다.
 (이하 다른 파라미터 어노테이션에 들어가는 ("")도 마찬가지)
+
+
+
+
+-----------------------------------------
+
+###### 180819_1
+
+Spring Controller에서 redirect 와 return 에 대해서..
+-
+
+return "dfdf"  -> reqeustMapping 을 받아서 처리후에 다른이름의 jsp 파일로 보낼떄
+
+return "redirect:/~"  -> jsp 파일이 아니라 Controller 의 requestMapping 을 직접 호출하는 상황에서
+
+
+(jsp호출과 컨트롤러 호출의 차이)
+
 
 
 

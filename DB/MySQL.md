@@ -13,7 +13,7 @@
 - [DATE_FORMAT - 날짜표기 ](#8728_4)
 - [DATETIME과 TIMESTAMP의 차이](#8728_5)
 - [mysql 대소문자구별](#180808_7)
-
+- [auto commit 여부 확인](#180819_12)
 
 - [Error]
   - [버퍼풀 메모리 관련 오류](#bufferpoolmemoryisuue)
@@ -459,6 +459,48 @@ lower_case_table_names 를 1로 설정해도 기존에 생성한 데이타베이
 ※  lower_case_table_names=1 요 옵션의 의미가 명령어가 대문자로 들어오던 소문자로 들어오던 명령어를 소문자로 바꿔서 실행하게 하는 옵션인듯하다.
 
 
+
+
+
+
+-----------------------------------------
+
+###### 180819_12
+
+auto commit 여부 확인
+-
+
+SELECT @@AUTOCOMMIT;   // AUTOCOMMIT 여부 확인
+
+SET AUTOCOMMIT = TRUE;   // AUTOCOMMIT 설정
+SET AUTOCOMMIT = FALSE;   // AUTOCOMMIT 해제
+
+COMMIT; // 커밋
+ROLLBACK; // 롤백
+
+
+참고로 일반적으로 기본 DB Engine으로 지정되는 MyISAM 은 TRANSACTION 을 지원하지 않기 때문에 
+ROLLBACK이니 COMMIT이니 무의미 하다.
+TRANSACTION을 지원하지 않으면 무조건 AUTOCOMMIT된다고 보면 된다.
+
+그러므로 TRANSACTION기능을 사용하고자 한다면 TABLE을 생성할때 TRANSACTION을 지원하는 DB엔진을 사용하면 된다.
+TRANSACTION기능을 지원하지 않는 DB엔진을 사용하면 AUTOCOMMIT이 FALSE라도 바로바로 적용되니 주의하도록 하자.
+
+
+"나는 지금 MySQL 5.6  버전을 사용 중인데, AUTOCOMMIT 을 FALSE 로 하니, TRANSACTION 이 적용되었다. 나는 디폴트로 사용 중인데, Table Engine을 보니 InnoDB 로 되어 있었다. 지금은 디폴트가 InnoDB 로 되어 있나보다."
+
+( 기본 스토리지 엔진 확인)
+
+```
+mysql> SELECT engine, support FROM information_schema.engines WHERE support='DEFAULT';
+
++--------+---------+
+| engine | support |
++--------+---------+
+| InnoDB | DEFAULT |
++--------+---------+
+1 row in set (0.00 sec)
+```
 
 
 

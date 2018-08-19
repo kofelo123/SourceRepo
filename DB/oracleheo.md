@@ -879,3 +879,42 @@ SQL> SELECT
 ![](https://drive.google.com/uc?export=view&id=1i7nRIlBCepLsUbqEm20sqWLKGnIT_TSU)
 
 
+
+
+-----------------------------------------
+
+###### 180817_1
+
+분석함수
+-
+
+분석함수는 그룹단위로 값을 계산 한다는 점에서 그룹함수와 유사하지만, 행마다 1개의 행을 반환한다는 점에서 상당한 차이가 있다.
+
+분석함수를 윈도우라 부르기도 한다.
+
+
+순위 ,순서와 관련된 함수
+
+![](https://drive.google.com/uc?export=view&id=1EkuzJmzfmoJUjU5Jz5Pg6L9875NzWE29)
+
+가상순위와 분포
+
+![](https://drive.google.com/uc?export=view&id=1Q-Rs3PFtnO6relU36hV0wN4myD70fnRC)
+
+
+비율 함수
+
+![](https://drive.google.com/uc?export=view&id=1LCndlp_AEn5_qn63wowjxM7k622jLlvJ)
+
+분배함수
+
+![](https://drive.google.com/uc?export=view&id=1h5PPdQ9r6J1K-ipkALsUrZ-uyBiA-Wxg)
+
+LAG , LEAD
+
+![](https://drive.google.com/uc?export=view&id=1d5vNFXFwtKTCeNRxGcVMzV8S1hMvOs_w)
+
+'그외에 선형함수등 안쓸거같은 것들 생략'
+
+- [분석함수](#180817_1)
+

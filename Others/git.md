@@ -36,7 +36,7 @@
   - [브랜치상의 커밋을 하나로 모아 병합](#8629_91)  
 
 - [stash](#180806_10)
-
+- [git 유용한 설명 및 명령어](#180819_13)
 
 - [에러](#error)
   - [add - 줄바꿈관련에러](#adderror)
@@ -93,7 +93,7 @@ git push origin master
 
 순서로
 
-(remote: origin / branch: master)
+(remote: origin / branch: master) 
 
 (ReadMe 만드는거 필수다)
 ```
@@ -1573,5 +1573,148 @@ git stash clear
 
 [](http://wit.nts-corp.com/2014/03/25/1153)
 
+
+
+
+-----------------------------------------
+
+###### 180819_13
+
+git 유용한 설명 및 명령어
+-
+```
+개념 정리
+1. Git의 데이터는 파일 시스템의 Snapshot이라 할 수 있으며, 크기가 아주 작다. Git은 Commit 하거나 프로젝트의 상태를 저장할 때마다 파일이 존재하는 그 순간을 중요하게 여기며, 파일이 달라지지 않았으면 Git은 성능을 위해서 파일을 저장하지 않는다. 단지 이전 상태의 파일에 대한 링크만 저장한다. Git은 아래의 그림과 같이 동작한다.
+2. Git은 파일을 Commited, Modified, Staged 세가지 상태로 관리한다.
+  - commited : 데이터가 로컬 저장소에 안전하게 저장됐다는 것을 의미함
+  - modified : 수정한 파일을 아직 로컬 저장소에 commit하지 않은 것을 의미함
+  - staged : 현재 수정한 파일을 곧 Commit할 것이라고 표시한 상태를 의미함.
+
+3. Git은 Git Directory, Working Directory, Staging Area 세가지 영역으로 분리된다. 
+  - Git Directory : Git이 프로젝트의 메타데이터와 객체 데이터베이스를 저장하는 곳을 말한다.  (.git)
+  - Working Directory : 수정할 파일들이 있는 디렉토리
+  - Staging Area : Git Directory에 있으며, 단순한 파일이고 곧 commit할 파일에 대한 정보를 저장한다. 
+ 
+4. Working Directory의 모든 파일은 Tracked와 Untracked로 나뉜다.
+  - Tracked 파일은 이미 Snapshot에 포함돼 있던 파일이며, Unmodified, Modified, Staged 상태중 하나의 상태를 갖는다. 
+  - Tracked 파일이 아닌 모든 파일은 Untracked 파일이다.
+  - Git의 파일 라이브 사이클은 아래의 그림과 같다. 
+
+5. Git에서 branch는 커밋 사이를 가볍게 이동할 수 있는 어떤 포인터 같은 것이다. git은 기본적으로 master 브랜치를 만든다. Git은 최초로 커밋하면 master라는 이름의 브랜치를 만들고, 자동으로 master 브랜치가 가장 마지막 커밋을 가리키게 한다.
+
+6. Git은 HEAD라는 특수한 포인터를 갖고 있다. 이 포인터는 지금 작업하고 있는 로컬 브랜치를 가리킨다. "git branch <brnach명>" 명령은 브랜치를 만들기만 하고 브랜치를 옮기지는 않는다. "git checkout <branch명>"명령으로 HEAD가 가리키는 브랜치로 이동할 수 있다.
+
+7. Git의 commit Data 구조
+
+
+
+
+Git 설치 후 초기 환경 설정 (~/.gitconfig 파일 설정)
+1. gitconfig --global user.name dimdim  ==> 작업자 이름 설정
+2. gitconfig --global user.email dimdim@test.com  ==> 작업자 email 설정
+3. gitconfig --global --list ==> 설정값 확인
+
+GIT 저장소 만드는 방법
+1. 이미 존재하는 프로젝트 디렉토리에 git 저장소 생성
+   - git init 명령은 "master" 라는 이름을 갖는 local branch를 생성한다. 
+$ git init             // CWD에 ".git" 하위 디렉토리 생성
+$ git add *         // CWD의 모든 파일 및 하위 디렉토리를 staged 상태로 만든다.
+$ git  commit -m 'initail project version'    // stage된 파일을 commit 한다. (commit message가 반드시 필요함!!!)
+$ git commit -a -m 'commit message'     // 수정된 Tracked 파일들을 staging 단계 없이 바로 commit 함  
+
+ 2. 이미 존재하는 Repository로 부터 복사한다.
+   - git clone 명령은 "origin" 이라는 이름을 갖는 remote 와 "master" 라는 이름을 갖는 local branch를 생성한다.
+$ git clone  git://githuyb.com/schacon/grit.git   // CWD에 "grit"이라는 디렉토리를 만들고 그 안에 .git 디렉토리를 만든다.
+ 혹은
+$ git clone  git://githuyb.com/schacon/grit.git mygrit // CWD에 "mygrit"이라는 디렉토리를 만들고 그 안에 .git 디렉토리를 만든다. 
+
+Ignore 설정
+-".gitignore" 파일 생성 후 ignore 할 파일 목록을 기록 (라인 분리)
+- 예제(eclipse 설정파일 무시하기)
+/.classpath
+/.springBeans
+/.project
+/target/
+/.settings 
+
+용어 정리???
+- fast forward merge : A 브랜치에서 다른 B 브랜치를 Merge할 때 B가 A 이후의 커밋을 가리키고 있으면 A가 그저 B의 커밋을 가리키게 한다. 이런 머지를 Fast Forward 머지라고 한다.
+
+
+명령어 정리 
+git add [Directory|파일 경로] //Untracked 파일을 Tracked 파일로 변경하거나, Tracked&수정된 파일을 staging 한다.
+git status  //현재 상태 보기 
+
+git commit -m "commit message"  //로컬 저장소에 commit(저장)
+git commit -a -m "commit message"  // staging area 생략 commit (git add 과정 생략)
+git commit --amend //수정한 내용이 없으면 커밋 메세지만 변경하고 수정한 내용이 있으면 이전 커밋으로 수정내용을 포함하여 새로운 커밋으로 덮어쓴다.
+git rebase -i HEAD~2 // HEAD으로 부터 2개의(HEAD 포함) commit을 합친다.
+
+git rm <filename>  // 파일을 삭제한 후 staged 상태로 만든다. (work directory의 파일도 삭제됨)
+git rm --cached <filename> // 해당 파일을 untracked 상태로 변경한다. (work directory의 파일은 그대로 있는다. ignore를 빼먹은 경우 사용)
+git mv <origin_file> <target_file> // 히스토리를 유지한 상태로 파일이름을 변경하고, 해당 변경사항이 staged 상태가 된다. 
+     ==> "mv <origin_file> <target_file>; git rm <origin_file>; git add <target_file>" 과 동일하다.
+git log [-p] -5  [--pretty=online|short|full|fuller]  //commit 로그를 확인한다.(최근 5개의 로그 확인) (-p 옵션은 각 커밋의 diff 결과를 보여준다.)
+git log --pretty=format:"%h %s" --graph // 브랜치/머지 히스토리를 아스키 그래프로 보여준다.
+git log --stat // 히스토리 통계를 보여준다.
+
+git checkout <commit_id> // 특정 커밋시점으로 되돌린다. 
+git checkout <branch명>  //지정된 브랜치가 가리키는 커밋을 HEAD가 가리키게 한다. (작업 디렉토리의 파일은 그대로 유지됨)
+git checkout -b <branch명> //새로운 브랜치를 만들고  해당 브랜치를 checkout 한다.
+git checkout -b <new branch name> <server branch name> // 서버에서 생성되어 있는 브랜치 가져오기
+git checkout  <commit_id> -- <file> // 특정 커밋시점의 특정 파일만 되돌린다.
+git checkout -- <file>  // work directory의 변경된 unstaged 파일을 최신 커밋된 내용으로 덮어쓴다. (작업중이던 내용이 있으면 날라가며, 복구 불가!!!)
+git checkout -f // 현재 HEAD가 가리키는 커밋으로 작업 디렉토리의 파일을 되돌려 놓는다. (작업중이던 내용이 있으면 날라가며, 복구 불가!!!)
+git checkout -f <branch>//  branch가 가리키는 커밋으로 작업 디렉토리의 파일을 되돌려 놓는다. (작업중이던 내용이 있으면 날라가며, 복구 불가!!!)
+git reset HEAD <staged_file> // staged file을 unstaged로 변경한다.
+
+git reset HEAD^    // 최종 커밋을 취소. 워킹트리는 보존됨. (커밋은 했으나 push하지 않은 경우 유용)
+git reset HEAD~2     //마지막 2개의 커밋을 취소. 워킹트리는 보존됨.
+git reset --hard HEAD~2    // 마지막 2개의 커밋을 취소. index 및 워킹트리 모두 원복됨.
+git reset --hard ORIG_HEAD    // 머지한 것을 이미 커밋했을 때,  그 커밋을 취소. (잘못된 머지를 이미 커밋한 경우 유용)
+git revert HEAD    // HEAD에서 변경한 내역을 취소하는 새로운 커밋 발행(undo commit). (커밋을 이미 push 해버린 경우 유용)
+
+git diff  // work directory와 staged 영역 비교
+git diff --cached // staged 영역과 & 저장소 commit 간의 비교 ("git diff --staged" 명령과 동일)
+
+git branch <branch명> //새로운 branch를 만든다. 
+git branch [-a]  //branch 목록을 조회한다.
+git branch -m [old_branch] [new_branch]
+git branch -d <branch명> //브랜치 삭제
+
+git tag [-l] [v.1.4.*]   //Tag 목록조회 [v1.4 버전들의 목록만 조회]
+git tag -a <tag명> -m '[tag message]'  //주석 태그 추가   ex>git tag -a v1.0 -m 'add first release tag'
+git tag -s <tag명> -m'[tag message]' //서명된주석 태그 추가
+git tag <tag명>  //경량 버전 태그 추가 
+git tag -a <tag명> [commit hash]  // 특정 commit의 태그 추가
+git show <tag명>  // 태그정보와 해당 태그의 commit 정보를 확인한다. 
+
+git remote [-v] // 원격 저장소 정보 확인
+git remote show <remote명> //리모트 저장소 살펴보기 
+git remote add <remote명> <원격저장소URL> //원격 저장소를 추가한다.
+git remote rename <old_name> <new_name> //remote repository 이름 변경
+git remote rm <remote-name>  //remote repository 삭제 
+git fetch [remote명]  //Remote Repository의 최신 변경사항을 Local Respository로 가져옮
+git pull [remote명] [branch명]   //remote 저장소 브랜치에서 데이터를 가져와 자동으로 로컬 브랜치와 머지함
+git push [remote명] [branch명] //local branch의 내용을 remote 저장소에 push 한다. 
+git push [remote명] [tag명]  //local에 생성한 tag를 remote 에 추가한다.
+git push [remote명] --tags  //local에 존재하는 tag중에 remote에 존재하지 않는 모든 태그들을 push 한다.  
+git push <remote명> <local branch>:<remote branch> // 내가 최초로 서버에 브랜치 만들기
+
+git merge <from_branch> <to_branch> // from branch를 to branch와 머지한다.
+git mergetool // merge할 툴을 실행시켜 준다.
+
+git submodule add <Git Repository URL> <Directory Path>  // Git Submodule 추가
+git submodule init  // Git Submodule 초기화 [init -> update]
+git submodule update // Git Submodule 소스 코드 받아오기 [init -> update]
+
+git hash-object -w <filename> // 파일을 Git에 저장하고 해쉬코드를 출력한다.
+git cat-file -p <hashcode> // 해쉬코드에 해당하는 개체의 내용을 출력한다.
+git cat-file -t <hashcode> // 해쉬코드에 해당하는 개체의 타입을 출력한다.
+git cat-file -p master^{tree} // master 브랜치가 가리키는 Tree 개체의 내용을 출력한다.
+```
+
+
+[](http://dimdim.tistory.com/entry/GIT%EC%97%90-%EB%8C%80%ED%95%9C-%EB%82%B4%EC%9A%A9%EC%A0%95%EB%A6%AC-%EC%A0%95%EB%A6%AC%EC%A4%91)
 
 

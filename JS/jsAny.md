@@ -6,6 +6,11 @@
 - [split, substring, substr - 문자열자르기](#8727_4)
 - [문자열을 숫자형으로](#180730_3)
 - [confirm](#confirm)
+- [window.open() - 새창](#180819_6)
+- [close() 메소드](#180819_7)
+- [opener - 부모 창 컨트롤](#180819_8)
+- [Keyboard 이벤트 onkeydown, onkeyup, onkeypress - 키보드누를시, 키보드놓을시, 출력시](#180819_10)
+
 
 - [기타]
   - [onclick submit](#onclick-submit)
@@ -387,3 +392,130 @@ var result = confirm('Are you sure you want to do this?');
 }
 
 ```
+
+
+
+-----------------------------------------
+
+###### 180819_6
+
+@window.open() - 새창
+-
+
+@ window.open
+
+```
+<a href="#" onclick="window.open('windowopen.html','window팝업','width=300, height=300, menubar=no, status=no, toolbar=no');">window팝업1</a>
+
+
+a태그말고도 input 에도 사용하실 수 있습니다.
+<input type="button" value="팝업창" onclick="window.open('windowopen.html','window팝업','width=400, height=200, menubar=no, status=no, toolbar=no');">
+
+```
+//function으로사용
+```
+<script type="text/javascript">
+function windowopenPopup(){
+window.open('windowopen.html', 'window팝업', 'width=300, height=300, menubar=no, status=no, toolbar=no');
+}
+</script>
+<a href="javascript:windowopenPopup();">window팝업2</a>
+
+
+a태그말고도 input 에도 사용하실 수 있습니다.
+<input type="button" value="팝업창" onclick="windowopenPopup();">
+
+```
+
+```
+width : 팝업창 가로길이
+height : 팝업창 세로길이
+toolbar=no : 단축도구창(툴바) 표시안함
+menubar=no : 메뉴창(메뉴바) 표시안함
+location=no : 주소창 표시안함
+scrollbars=no : 스크롤바 표시안함
+status=no : 아래 상태바창 표시안함
+resizable=no : 창변형 하지않음
+fullscreen=no : 전체화면 하지않음
+channelmode=yes : F11 키 기능이랑 같음
+left=0 : 왼쪽에 창을 고정(ex. left=30 이런식으로 조절)
+top=0 : 위쪽에 창을 고정(ex. top=100 이런식으로 조절)
+```
+
+
+-----------------------------------------
+
+###### 180819_7
+
+close() 메소드
+-
+
+javascript - self.close()는 자신의 창을 닫는다.
+
+window.close() 윈도우에 현재 떠있는 창을 닫는다.
+
+
+
+-----------------------------------------
+
+###### 180819_8
+
+opener - 부모 창 컨트롤
+-
+
+![](https://drive.google.com/uc?export=view&id=1v4HiGqAixObqbq2XDVHLSI0aP7OurN-O)
+
+-----------------------------------------
+
+###### 180819_10
+
+Keyboard 이벤트 onkeydown, onkeyup, onkeypress - 키보드누를시, 키보드놓을시, 출력시
+-
+
+```js
+
+
+
+	1. <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+	2. <!-- 현재 작성하고 있는 파일은 UTF-8 DOS파일입니다.-->
+	3. <html xmlns="http://www.w3.org/1999/xhtml" lang="ko">
+	4.   <head>
+	5.     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	6.   </head>
+	7.   <body>
+	8.   <div id="ex_js_syntax">
+	9.       <script type="text/javascript" language="javascript">
+	10.       <!--
+	11.         /* Keyboard Events onkeydown onkeyup onkeypress */
+	12.         function onkeydown_event(){
+	13.           /* onkeydown 이벤트 */
+	14.           alert("onkeydown 실행되였어요");
+	15.         }
+	16.         function onkeyup_event(){
+	17.           /* onkeyup 이벤트 */
+	18.           alert("onkeyup 실행되였어요");
+	19.         }
+	20.         function onkeypress_event(){
+	21.           /* onkeypress 영문일때만 실행됨 */
+	22.           alert("onkeypress 실행되였어요");
+	23.         }
+	24.       //-->
+	25.       </script>
+	26.       <form name="input_type" id="input_type" method="post" >
+	27.       <!-- 예제 박스에선 안됨 => form태그안에 form태그있으면 지워짐~ㅠ.ㅠ -->
+	28.         <input type="text" value="키보드 누를때" onkeydown="onkeydown_event();">
+	29.         <br />
+	30.         <input type="text" value="키보드 놓을때" onkeyup="onkeyup_event();">
+	31.         <br />
+	32.         <input type="text" value="실제 글자가 써질때" onkeypress="onkeypress_event();">
+	33.         <br />
+	34.       </form>
+	35.     </div>
+	36.   </body>
+	37. </html>
+
+
+```
+
+
+

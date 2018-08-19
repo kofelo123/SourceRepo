@@ -73,9 +73,9 @@ drwx-w-r-x
 (2,3,4),(5,6,7),(8,9,10)
 소유자   그룹     방문자
 
-이를 권한 수정하는 방법 'chomod'
+이를 권한 수정하는 방법 'chmod'
 ```
-chomod 755 ./filename
+chmod 755 ./filename
 //( r w x )
 //  4 2 1
 
