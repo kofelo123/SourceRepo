@@ -504,3 +504,61 @@ mysql> SELECT engine, support FROM information_schema.engines WHERE support='DEF
 
 
 
+
+-----------------------------------------
+
+###### 180820_1
+
+우분투서버 - mybatis 값을 못가져올떄
+-
+
+양쪽 세팅을다 맞춰도 우분투서버쪽에서만 mybatis에서 db갑을 못가져 오는 경우가 있다.
+
+그떄는 mybatis에서 한글인코딩의 문제가 있는것.
+
+![](https://drive.google.com/uc?export=view&id=1k_SEnsbqpHhNVitP49bhA1H1JTgdZq-H)
+
+
+기본이 라틴으로 되어있다.(클라이언트는 utf로 되어있는데 아마 스키마 에서 설정한것이지 안을까..
+server는 라틴으로 되어있는데 이걸 수정해야할것
+
+한글 설정관련..참고 블로그
+[](https://nesoy.github.io/articles/2017-05/mysql-UTF8)
+
+설정파일 변경
+
+/etc/mysql/my.cnf 파일 변경하기
+```
+[client]
+default-character-set=utf8
+
+[mysql]
+default-character-set=utf8
+
+
+[mysqld]
+collation-server = utf8_unicode_ci
+init-connect='SET NAMES utf8'
+character-set-server = utf8
+```
+
+주의할 점은 기존의 만들어져있던 Database나 Table들의 Character-Set이 변경되는 것이 아니기 때문에 직접 변경을 해줘야 한다.
+
+```
+ALTER DATABASE [DB명] DEFAULT CHARACTER SET utf8;
+```
+
+현재 Character-Set 확인하기
+```
+show variables like ‘c%’
+status
+```
+
+
+세팅후
+![](https://drive.google.com/uc?export=view&id=1FqR9yLGkQUt2go3wtDfHH-R5qE8MZAaC)
+
+service mysql restart 해줘야함
+
+- [우분투서버 - mybatis 값을 못가져올떄](#180820_1)
+
