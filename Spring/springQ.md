@@ -101,8 +101,11 @@ public class LogAdvice{
 
 ![](https://drive.google.com/uc?export=view&id=1b46eoMNgsAPp5HpPqF2btgWSoVF4gOGs)
 
-![](https://drive.google.com/uc?export=view&id=1b46eoMNgsAPp5HpPqF2btgWSoVF4gOGs)
+![](https://drive.google.com/uc?export=view&id=1jY47c9LL0YnqJ4qgBHsbuRzLDUOJnt0L)
 
+(아래는 최범균책 참고)
+ ![](https://drive.google.com/uc?export=view&id=1w5vX3ojSV7sp4hkaocLvXiVxVs2hnQVf)
+ 
 
 어드바이스 - Around
 

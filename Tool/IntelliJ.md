@@ -16,6 +16,7 @@
 - [javadoc 관련](#180807_3)
 - [콘솔에서 검색 (find - replace)](#180808_1)
 - [서버실행시 Run - Redeploy](#180808_2)
+- [message tool 관련설정](#180823_4)
 
 
 -[에러](#)
@@ -722,4 +723,23 @@ run tab키(기본Alt+4-> Ctrl+R)로 수정
 Ctrl + R 두번 누르면 redeploy 된다
 
 Run 은 Ctrl + Alt + R
+
+
+
+-----------------------------------------
+
+###### 180823_4
+
+message tool 관련설정
+-
+
+인텔리제이에서 컴파일에 에러나 경고 등을 띄워주는 메세지툴이 있는데
+
+수시로 띄워지고, 코드를 다 작성하기전에도 띄워지고 하는 번거로움때문에 메세지 툴의 
+설정아이콘을 눌러서
+
+(Setting - Build,Excution,Deployment -> Compilier )에서 Automatically show first_error in editor체크를 해제했다.
+
+
+
 

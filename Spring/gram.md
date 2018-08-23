@@ -31,7 +31,7 @@
 	- [Cannot change version of project facet Dynamic Web Module to 3.0](#8728_1)
 	- [Error configuring application listener](#8728_2)
 	- [떄떄로 올바른 설정이나 객체를 인식못할떄](#8728_3)
-
+	- [스프링 컨텍스트 - 네임스페이스 관련에러](#180823_1)
 ---
 
 ### requestparam
@@ -762,4 +762,27 @@ return "redirect:/~"  -> jsp 파일이 아니라 Controller 의 requestMapping �
 
 
 
+
+-----------------------------------------
+
+###### 180823_1
+
+스프링 컨텍스트 - 네임스페이스 관련에러
+-
+
+메시지:
+
+일치하는 와일드 카드 문자가 엄격하게 적용되지만 ... 요소에 대한 선언을 찾을 수 없습니다.
+
+```
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+ xmlns:beans="http://www.springframework.org/schema/beans" 
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+  http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+
+와 같은 내용이 있는데 xmls 항목을 추가하면 xsi:schemaLocation의 내용도 추가해야 한다.
+즉 위와 같이 xmlns="http://www.springframework.org/schema/security" 항목을 추가하면
+http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd" 도 xsi:schemaLocation에 추가해 주어야 한다.
+```
 
