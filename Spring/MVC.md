@@ -2,6 +2,7 @@
 - [날짜(Date타입)변환처리](#datetimeformat)
 - [정규표현식](#regularexpression)
 - [mybatis-캐시 비사용](#8061162)
+- [파라미터 map으로 받아 처리하기.](#180824_4)
 
 - [유효성검사](#validation)
 - [Validator](#8622_111)
@@ -335,6 +336,10 @@ Neither BindingResult nor plain target object for bean name 'command' available 
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <form:form action="/thearc/user/loginPost" method="post" modelAttribute="dto">
+
+<!-- <input type="text" name='title' class="form-control" placeholder="제목을 입력해주세요"> -->
+	<form:input type="text" path="title" name="title" class="form-control" placeholder="제목을 입력해주세요" />
+	<form:errors path="title" class="error" style="color:red;"/>
 ```
 
 error message: An Errors/BindingResult argument is expected to be declared immediately after the model attribute, 
@@ -551,6 +556,38 @@ request.getRealPath("") 함수 =
 
 [return]         c:\project\webapps\projectname\
 
+
+
+
+-----------------------------------------
+
+###### 180824_4
+
+파라미터 map으로 받아 처리하기.
+-
+
+@GetMapping("read")
+	  public void read(@RequestParam("bno") int bno, Model model)throws Exception{
+		  model.addAttribute("list", service.listAll());
+	  };
+	  @GetMapping("zzzUpdate")
+	  public void zzz(@RequestParam Map<String,String> map, Model model)throws Exception{
+		  map.get("bno");
+		  model.addAttribute("list", service.listAll());
+	  };
+	  @GetMapping("zzzInsert")
+	  public void zzz2(@RequestParam Map<String,String> map, Model model)throws Exception{
+		  map.get("uid");
+		  model.addAttribute("list", service.listAll());
+	  };
+
+si에서는 첫번째 메소드처럼 @RequestParam("bno") int bno
+
+이런식으로 하지않고 아래처럼 Map map 이런식으로 @RequestParam을 받아서
+map.get("bno") 이런식으로 매핑되는걸 받아온다.
+그러면 @RequestParam 을 map으로 받아서 복사붙여넣기해서 빠르게 메소드를 생성한다.
+
+일종의 상위에서 인터페이스같은 타입으로 두고 하위에서 구체적모듈을 구현하는것과 같다.
 
 
 

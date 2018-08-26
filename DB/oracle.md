@@ -5,10 +5,12 @@
 - [concat](#concat)
 - [PK생성과 제약조건 이름변경](#pkconstraintrename)
 - [칼럼속성 수정](#modifycolumn)
-
+- [테이블 이름 변경](#180826_3)
+- [테이블 주석 설정](#180826_4)
 
 - [rownum과 orderby 사용-서브쿼리](#rownumorderbysubquery)
 - [다중정렬](#multisort)
+- [정렬의 null순서 임의변경](#180826_5)
 - [오라클 포트변경](#modifyport)
 - [기본 계정](#defaultuser)
 - [권한](#privilege)
@@ -1151,6 +1153,22 @@ Q. WHERE 절과 HAVING 절을 비교 설명
 왜냐하면, 테이블에서 조건에 맞는 것만 남기고 나은 결과로 집단화하고 연산을 수행한다.
 HAVING을 쓸경우 전체 데이터를 집단화하고 연산을 수행한후 그 결과에서 뒤늦게 필터링 처리하기 때문에 결과에 포함시키지 않는 데이터까지 집단화시키고 연산하는 작업을 하게 되므로 비효율적이다.
 
+###### 180826_6
+
+FROM -> WHERE -> GROUP BY -> SELECT -> ORDER BY
+
+FROM -> GROUP BY -> SELECT -> HAVING -> ORDER BY
+
+WGSH 잘생각해야 순서.
+
+WHERE 과 HAVING의 차이
+
+WHERE은 그룹함수를 쓸수없다.
+
+WHERE에서 거른후 GROUP BY->SELECT에서 그룹함수 연산이후
+
+HAVING에서 집단연산결과를 거른다.테이블 이름 변경 
+
 ---
 
 
@@ -1580,4 +1598,57 @@ HAVING MAX(EMP_ID) LIKE '1997%';
 group by 컬럼으로 표시되어야 한다.
 
 또, HAVING절에서도 MAX(EMP_ID)가 EMP_ID 로 표기할경우도 같은 에러 발생
+
+
+
+###### 180826_3
+
+테이블 이름 변경 
+-
+
+
+rename 테이블이름 to 변경테이블이름;
+
+-----------------------------------------
+
+###### 180826_4
+
+테이블 주석 설정
+-
+```
+commnet on table t_books 
+is '주석내용'
+```
+
+
+확인
+
+```
+select table_name, commnets
+from user_tab_commnets
+where table_name = '테이블명';
+```
+-----------------------------------------
+
+###### 180826_5
+
+정렬의 null순서 임의변경
+-
+
+오름차순(asc)정렬은 null이 마지막에
+내림차순(desc)정렬은 null이 처음나타남
+
+오름차순임에도 null이 먼저 나오게 할 수있다.
+
+ORDER BY colum nulls first;
+
+내림차순인데 null이 나중에 나타나도록
+
+ORDER BY column nulls last;
+
+//
+
+참고로 select절에 당장 없는 컬럼도 정렬가능하다.
+
+
 

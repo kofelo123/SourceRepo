@@ -127,7 +127,23 @@ JSON 데이터를 보내서 @RequestBody에서 객체로 처리할때 .post()로
 
 그리고 전송되는 데이터에는 JSON>stringify()를 이용해 JSON 데이터를 구성하므로 잘 전송이 된다.
 
+사용
+```js
+ $.ajax({
+                url:'/thearc/sboard/message/delMessage',
+                type:'post',
+                data : {mid: '${messageVO.mid}'} ,
+                dataType : 'text',
+                success:function(result){
+                    if(result=="SUCCESS") {
+                        console.log("SUCCESS~");
+                        $(location).attr("href","listMessage?uid=${login.uid }");
+                    }
+                }
 
+
+            });
+```
 ### success
 
 ```js

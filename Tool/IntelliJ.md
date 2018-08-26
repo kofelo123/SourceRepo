@@ -17,6 +17,7 @@
 - [콘솔에서 검색 (find - replace)](#180808_1)
 - [서버실행시 Run - Redeploy](#180808_2)
 - [message tool 관련설정](#180823_4)
+- [인텔리제이 "" (Double quotes) 자동 안되게 설정](#180826_8)
 
 
 -[에러](#)
@@ -741,5 +742,21 @@ message tool 관련설정
 (Setting - Build,Excution,Deployment -> Compilier )에서 Automatically show first_error in editor체크를 해제했다.
 
 
+
+
+-----------------------------------------
+
+###### 180826_8
+
+인텔리제이 "" (Double quotes) 자동 안되게 설정
+-
+
+편의를 위해 = 붙이면 자동으로 "" 큰따옴표 처리를 인텔리제이에서 지원해주는데
+
+다른 에디터와 달라서 자꾸 헷갈린다
+
+File - Settings- Editor -Code Style-HTML -Other tab -> Generated quote marks to None
+
+처리하면된다.
 
 

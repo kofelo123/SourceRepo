@@ -523,6 +523,8 @@ ArrayList vs LinkedList
 
 데이터의 개수가 변하지 않는 경우라면 ArrrayList가 최상의 선택이다. 변경이 잦다면 LinkedList를 사용하는것이 더 나은선택이다.
 
+(변경이 있을때는 배열보다 ArrayList가 좋지만 변경이 빈번할때는 ArrayList도 좋지만 LinkedList가 더좋다.순서대로는 ArrayList가 빠르다)
+
 Stack과 Queue
 
 스택: 마지막에 저장한 데이터를 가장 먼저 꺼내게 되는 LIFO(Last In First Out)구조로 되어 있다.
