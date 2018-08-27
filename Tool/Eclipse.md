@@ -5,6 +5,7 @@
 - [Archive for required library - maven에러](#8706_100)
 - [classpath와 웹루트path](#8726_99)
 - [서버 relaunch 설정수정](#8727_5)
+- [eclipse - todo](#180827_4)
 
 ---
 
@@ -125,6 +126,21 @@ classpath와 웹루트path
 
 Relaunch Application에 단축키 바인딩된게 없었는데 
 Ctrl+ Alt+ R 로 지정함(in Windows)
+
+
+
+
+-----------------------------------------
+
+###### 180827_4
+
+eclipse - todo
+-
+
+//TODO 해놓으면 tasks 탭에서 볼수있다.
+
+![](https://drive.google.com/uc?export=view&id=1OZ3dHtPGManZgqkEDfINBj46XjV2x19p)
+
 
 
 

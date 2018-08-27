@@ -1,5 +1,5 @@
 - [TDD 개요](#180815_1)
-
+- [Ch2.JUnit과 Hamcrest](#180827_2)
 
 -----------------------------------------
 
@@ -184,6 +184,113 @@ JUnit은 Before , After 이라는 개념으로 준비와 정리작업을 제공.
 
 이떄 @Before 의 메소드는 private 으로 하면 에러가 나니 public 으로 해야한다.
 
+
+
+
+
+
+
+-----------------------------------------
+
+###### 180827_2
+
+Ch2.JUnit과 Hamcrest
+-
+
+테스트 픽스처:
+
+테스트 기반이 되는 상태나 환경
+
+일관된 테스트 실행환경
+
+
+테스트 메소드 :
+
+테스트 작업에 대한 시나리오적 의미
+
+테스트 메소드:
+
+Junit 메소드를 지칭
+
+
+리플렉션을 사용해서 테스트 메소드 실행마다 테스트 클래스를 강제로 인스턴스화 한다.
+
+메소드마다 객체를 새로만듬.
+
+영향을 받지않는 독립적인 수행을 위한 원칙
+
+junit3의 경우
+
+try / catch문에서  예외처리 테스트를 했지만
+
+
+junit 4  에서는
+```
+@Test (exprected=NumberFormatException.class)
+메소드. ..
+```
+
+expted를 이용해 예외처리 테스트한다. 만일 테스트 메소드 내에서 해당 예외가 발생하지 않으면 테스트 메소드를 실패로 간주한다.
+
+
+테스트 제한시간
+
+@Test(timeout=5000)
+메소드 ..
+
+(밀리초 단위 시간으로 정함)
+
+@Ignore : 테스트 무시
+
+
+junit4부터 배열비교도 지원한다 
+그러나, 값 집합이 동일해도 순서가 다르면 테스트가 실패함.
+
+
+@RunWith
+
+:테스트 메소드 실행을 담당하는 클래스를 테스트 러너라고한다.
+
+@SuiteClasses 
+
+: 여러 테스트 클래스를 일괄적으로 수행가능.
+
+```
+@RunWith(Suite.class)
+@SuiteSclasses(ATest.class, BTest.class, CTest.class)
+public class ABCSuite{
+
+}
+
+```
+
+<Hamcrest>
+
+jMock이라는 Mock라이브러리 저자들이 참여해 만든 Matcher 라이브러리
+
+기본적으로 assertEquals 대신에 assertThat이라는 구문 사용을 권장
+
+```
+assertEquals("YoungJim",customer.getName());
+
+assertThat(customer,getName(), is("YoungJin"));
+
+```
+위 두문장만 봐도 좀더 hamcrest가 추구하는 자연스러운 문장흐름을 알 수 있다.
+
+
+assertThat("메시지(옵션)", 테스트대상,Matcher구문);
+
+(참고: JUnit 라이브러리 내에도 Hambcrest 라이브러리가 이미 들어있다 )
+~140
+
+![](https://drive.google.com/uc?export=view&id=1A57MZ7aCiUedGeA1WOOQfSqrT1_EBVkZ)
+
+![](https://drive.google.com/uc?export=view&id=1eGedNe-TeJPA9IM4ukVw4l6W4vdSwusw)
+
+![](https://drive.google.com/uc?export=view&id=12tO8PF653gyffEpWMuNGpP81Z9eZaHDC)
+
+![](https://drive.google.com/uc?export=view&id=1lBvTRBrXE9tWHzi_FDsZTYtVVzOwnoUg)
 
 
 
