@@ -42,6 +42,20 @@
     - [오라클조인에서](#threewayjoinbyoracle)
     - [ANSI조인에서](#threewayjoinbyansi)
 
+
+- [단일행 함수](#180828_1)
+- [DECODE](#180828_2)
+- [GREATEST](#180828_3)
+- [DUAL](#180828_4)
+- [VIZE - 바이트길이반환 , USER -현재유저 확인](#180828_5)
+- [NVL,NVL2,COALESCE,NULLIF](#180828_6)
+- [숫자함수](#180828_7)
+- [문자함수](#180828_8)
+- [숫자로만 되어있는 데이터만 반환하기](#180828_9)
+- [단어가 n개 이상인 이상인 행 찾기](#180828_10)
+- [날짜(시간)함수](#180828_11)
+- [변환 함수](#180828_12)
+
 - [조인사용예제](#joinex)
 - [집합연산자](#setoperator)
 - [서브쿼리](#subquery)
@@ -1772,7 +1786,7 @@ USER - 현재 유저를 확인 할떄 사용 함수
 NVL,NVL2,COALESCE,NULLIF
 -
 
-<NVL>
+@NVL
 
 NVL(식1, 식2)
 
@@ -1780,7 +1794,7 @@ NVL(식1, 식2)
 
 둘의 데이터타입이 같아야한다. 그렇지 않으면 식1의 타입으로 식2의 데이터를 자동적으로 변환하려고 시도하고 안되면 에러발생
 
-<NVL2>
+@NVL2
 
 아규먼트가 3개이다. 반환값의 데이터가 달라도 된다는 특징이 있다.
 
@@ -1793,13 +1807,13 @@ NVL2(식1,식2,식3)
 그러나 식 2, 식3의 데이터타입은 같아야함.
 
 
-<COALESCE>
+@COALESCE
 
 COALESCE(식1,식2[, ... , EXPRN])
 
 나열된 식에서 NULL이 아닌 첫번쨰 값을 반환
 
-<NULL IF>
+@ NULL IF
 
 두 식이 같지 않으면 첫 번째 식을 반환한다. 두 식이 같으면 NULL 값을 반환한다.
 
@@ -1813,11 +1827,11 @@ NULLIF(식1,식2)
 -
 
 
-<ABS>
+ABS
 
 인자로 받은 값의 절대값 반환
 
-<CEIL>
+@CEIL
 
 주어진 값보다 크거나 같은 정수를 반환
 
@@ -1871,13 +1885,437 @@ ROUND(123.456, -2)
 응용하면 어떤 값의 결과를 SIGN으로 해서 음수, 0 ,양수 여부에 따라서 DECODE함수 등으로로 뭔가 처리할 수 도 있다.
 
 
+-----------------------------------------
+
+###### 180828_8
+
+문자함수
+-
+
+<UPPER>
+
+문자열의 모든 문자를 대문자로 변경
+
+<LOWER>
+
+모든 문자를 소문자로 변경
+
+<INITCAP>
+
+모든 단어의 첫 글자를 대문자로 변경
+
+
+<CONCAT>
+
+첫 번쨰 문자열에 두번째 문자열을 연결
+
+연결 연산자(||)와 동일한 기능 수행
+
+(CONCAT안에 CONCAT 중첩해서 사용가능)
+
+<INSTR>
+
+찾고자 하는 문자열이 분석 대상 문자열의 어디에 위치하는지 알고자 할때 숫자로 반환가능
+
+INSTR(분석대상문자열, 찾고자 하는 문자열,[, 탐색 시작위치 [, 탐색된횟수]])
+
+```sql
+SELECT ename,
+	instr(ename, 'A') -- ename 컬럼에 A가 처음으로 나타나는 위치값
+FROM emp
+ORDER BY ename;
+```
+
+이를 3번째 자리부터 확인 할 경우 A가 나타나는 위치값은?
+
+```sql
+SELECT ename,
+	instr(ename, 'A',3) # ename 컬럼에 A가 처음으로 나타나는 위치값
+FROM emp
+ORDER BY ename;
+```
+여기서 A가 두번쨰 나타나는 위치가 어딘지 찾으려면 
+
+```sql
+SELECT ename,
+	instr(ename, 'A',1,2) 
+FROM emp
+ORDER BY ename;
+```
+1번째 문자부터 시작해서 A가 2번째 나타난 위치를 찾는다.
+
+
+<LENGTH>
+
+문자열 길이 반환
+
+LENGTH 함수를 이용해서 이름이 5자인 행을 반환해본다
+
+```SQL
+SELECT EMPNO, ENAME
+FROM EMP 
+WHERE length(ENAME) =5;
+```
+
+이는 like 연산자로 아래와 같이 변경 가능
+
+```sql
+SELECT EMPNO, ENAME
+FROM EMP 
+WHERE ename like '_____';
+```
+
+<LPAD>
+
+주어진 문자열 출력에서 문자를 우측 정렬하여 출력하고 남은 왼쪽 공간을 주어진 문자열로 채운다.
+
+LPAD(식1, N[,식2])
+
+식1의 길이를 N 길이로 조정하고 부족한 자리를 식2로 채운다.
+
+```SQL
+SELECT lpad('Page 1', 15, '*.') ret
+FROM dual;
+
+===
+*.*.*.*.*Page 1
+```
+
+<REVERSE>
+
+입력된 문자열의 좌우를 뒤집은 문자열을 반환
+
+<REPLACE>
+
+원하는 문자열을 찾아서 전부 대신할 문자열로 변경하는 함수
+
+찾은 문자열을 삭제하고 싶으면 대신할 문자열을 주지않으면 됨.
+
+<SUBSTR>
+
+문자열의 일부를 반환
+
+SUBSTR(char, position [, substring_length])
+
+char의 position 위치에서 substring_length 길이만큼 잘아서 결과를 반환
+
+```sql
+SELECT ename,
+       substr(ename, 1, 2) a, -- 첫 번째 위치에서 2자리 잘라서 반환
+       substr(ename,3) b -- 세번째 위치에서 끝가지 잘라서 반환
+FROM emp
+WHERE ename like 'A%'
+or ename like 'B%'
+ORDER BY ename;
+```
+
+두번쨰 매개변수를 음수로 둘 경우 뒤에서 부터 왼쪽으로 위치 찾음
+
+```sql
+SELECT ename,
+       substr(ename, -1, 1) a, -- 뒤에서 첫 번째 글자 반환
+       substr(ename, -3,2) b -- 뒤에서 세 번째부터 두 글자 반환
+FROM emp
+WHERE ename like 'A%'
+or ename like 'B%'
+ORDER BY ename;
+```
+
+<LTRIM>
+
+문자의 왼쪽에서 요구된 문자들을 제거(TRIM)해 나가다가 해당 문자가 아닌 문자가 나타나면 제거작업을 멈춘다.
+
+LTRIM(char [, set])
+
+set 설정하지 않으면 스페이스가 제거된다. 비슷한 기능의 함수로 RTRIM 기능이 있다.
+
+동시에 사용하려면 TRIM 함수를 사용할 수 있다.
+
+```sql
+SELECT ltrim('ABBBACD', 'AB') ret
+FROM dual;
+
+===
+
+CD
+```
+-> 좌측 첫번째 글자 기준으로  A또는 B인지 검사하여 삭제하고 계속 반복한다.
+
+A또는B가 아닌 C가 오는 순간 멈추고 출력
+
+
+<TRIM>
+
+```sql
+SELECT trim(leading 'S' FROM 'SOS')  -- SOS에서 왼쪽 S 제거
+FROM dual;
+
+SELECT trim(trailing 'S' FROM 'SOS')  -- SOS 에서 우측 S 제거
+FROM dual;
+
+SELECT trim(both 'S' FROM 'SOS') -- SOS 에서 양쪽 S 모두 제거
+FROM dual;
+```
+
+TRIM 의 한계: 
+
+한 글자(character)만 가능해서 'AB'이런식으로 못쓴다.
+
+그떄 LTRIM, RTRIM을 사용하면 'AB'로 지정하면 A또는 B라는 뜻이 된다.
+
+<TRANSLATE>
+
+문자를 찾아서 대응하는 문자로 변경
+
+TRANSLATE(식, FROM_string, to_string)
+
+FROM_string의 첫번째 문자를 to_string의 첫번쨰 문자로, 
+
+FROM_string의 두번 째 문자를to_String 의 두번쨰 문자로 변경한다.
+
+FROM_string의 대응되는 to_string이 없으면 식에서 FROM_string이 제거된다.
+
+
+```sql
+SELECT translate('ABCD', 'ABCD', '1122') 
+FROM dual;
+
+===
+1122
+
+
+SELECT translate('ABCD', 'ABCD', '11')
+FROM dual;
+
+====
+11
+
+```
+
+to_string에 빈문자열을''을 사용할수없다 -> 오라클에서 (빈문자열이) Null으로 취급된다 
+
+
+-----------------------------------------
+
+###### 180828_9
+
+숫자로만 되어있는 데이터만 반환하기
+-
+
+1. UPPER, LOWER 함수를 사용해서 숫자로만 되어있는 데이터만 반환할 수있다.
+
+```SQL
+SELECT 칼럼
+FROM 테이블
+WHERE UPPER(칼럼) = LOWER(칼럼);
+```
+
+
+2.  ltrim을 사용한 상법
+
+```sql
+SELECT col1,
+      ltrim(col1, '0123456789') -- 숫자로만 이루어진 행은 Null 반환
+FROM t1;
+```
+
+```sql
+SELECT col1
+FROM t1
+WHERE ltrim(col1, '0123456789') is null; 
+```
+-> null만 만 반환시키면 숫자로만 이루어진 행만 출력됨.
+
+
+3.translate 사용
+
+```sql
+SELECT col1
+FROM t1
+WHERE translate(col1, 'x0123456789' , 'x') is null;
+
+===
+
+40953
+48756
+```
+
+-----------------------------------------
+
+###### 180828_10
+
+단어가 n개 이상인 이상인 행 찾기
+-
+
+단어가 3개 이상인 것을 찾는다고 했을때, 다르게 표현하면 space가 두 개 이상이라고 볼수있다.
+
+instr 함수를 사용한다.
+
+space가 두번째 나타는 곳의 위치값을 확인해본다.
+
+```SQL
+SELECT col2
+FROM t1
+WHERE instr(col2, ' ' , 1 , 2 ) > 0;
+```
+
+단 주의점은 스페이스 연속 2개로 사용했을때 단어가 두개인데도 세개로 판별할 수있다는점..
+
+
+-----------------------------------------
+
+###### 180828_11
+
+날짜(시간)함수
+-
+
+SYSDATE, SYSTIMESTAMP, CURRENT_DATE, CURRENT_TIMESTAMP, ADD_MONTHS, MONTHS_BETWEEN, NEXT_DATY, LAST_DAY 함수 등이 있다.
+
+
+시간대
+
+한국 : +09: 00
+
+미국서부 : -07:00
 
 
 
-- [단일행 함수](#180828_1)
-- [DECODE](#180828_2)
-- [GREATEST](#180828_3)
-- [DUAL](#180828_4)
-- [VIZE - 바이트길이반환 , USER -현재유저 확인](#180828_5)
-- [NVL,NVL2,COALESCE,NULLIF](#180828_6)
-- [숫자함수](#180828_7)
+<SYSDATE>
+
+접속한 데이터베이스 서버가 위치한 운영체제의 날짜와 시간 반환
+
+반환 타입은 DATE타입 -> 초단위까지 표현가능
+
+초단위를 더 정밀하게 확인하려면 
+
+SYSTIMESTAMP 함수 사용하면 된다
+
+
+SYSTIMESTAMP 함수는 시간대(TIME ZONE)가지 반환한다.
+
+
+<CURRENT_DATE>
+
+접속한 사용자 자신의 날짜와 시간을 반환
+
+타입은 DATE . 초 단위를 더 정밀하게 확인하거나 시간대(TIMEZONE)까지 확인하고 싶으면 CURRENT_TIMESTAMP를 사용하면 됨.
+
+유저의 위치가 미국 서부 지역으로 인식되도록 하기
+
+```SQL
+ALTER SESSION SET TIME_ZONE='-7:00';
+```
+
+<ADD_MONTH>
+
+주어진 날짜에 N개월을 더하거나 뺴는 함수
+
+ADD_MONTHS(date, integer)
+
+integer가 양수면 n개월을 더하고 , 음수면 n개월을 뺀다
+
+```sql
+SELECT sysdate,
+      add_months(sysdate, 16) a,
+    	add_months(sysdate, -8) b
+FROM dual;
+```
+
+<MONTHS_BETWEEN>
+
+주어진 두 날짜의 간격을 개월로 표현한 숫자를 반환.
+
+두 날짜의 차이가 3개월 20일이면 3.64516129 처럼 소숫점으로 반환됨.
+
+MONTH_BETWEEN(DATE1, DATE2)
+
+```SQL
+SELECT MONTHS_BETWEEN(SYSDATE, HIREDATE) 
+FROM EMP;
+``
+
+<NEXT_DAY>
+
+주어진 날짜를 지나서 첫 번쨰로 오는 특정 요일의 날짜를 반환
+
+NEXT_DAY(DATE1, CHAR)
+
+```SQL
+SELECT NEXT_DAY(SYSDATE, '월') A,
+FROM DUAL;
+```
+
+<LAST_DAY>
+
+주어진 날짜가 포함된 달의 마지막 날짜 반환
+
+```SQL
+SELECT LAST_DAY(SYSDATE) A,
+	LAST_DAY(TO_DATE('2015/02/12')) B
+FROM DUAL;
+```
+
+이번달로 부터 남은 일수 구하기
+
+```SQL
+SELECT LAST_DAY(SYSDATE) - SYSDATE 
+FROM DUAL;
+```
+
+
+(참고 )
+
+날짜는 상식적인 합,차 연산 가능하나
+곱,나누기 는 에러.
+
+날짜에 날짜를 더하며 에러
+```
+SELECT SYSDATE + (SYSDATE + 1) A
+FROM DAUL;
+```
+
+메시지 : DATE + DATE NOT ALLOWED
+
+
+
+-----------------------------------------
+
+###### 180828_12
+
+변환 함수
+-
+
+TO_NUMBER , TO_DATE , TO_CHAR
+
+Format Element
+
+![](https://drive.google.com/uc?export=view&id=1bBpYXCirhtfXA7SicEZCAec_7Kf46Vr8)
+
+![](https://drive.google.com/uc?export=view&id=1zd3vKaeYG9YyDtEbOQpnqRbo1uNPsfCo)
+
+
+<TO_NUMBER>
+
+문자 데이터를 숫자 데이터로 변환한다.
+
+포맷이 설정된 문자를 변환할 경우 포맷 모델을 설정해야 한다.
+
+```SQL
+SELECT TO_NUMBER('-1234')
+FROM DUAL;
+```
+
+아래는 문제 데이터에 포맷이 있어서 위처럼 변환시 에러가 발생 하므로 적절한 포맷을 사용해야한다.
+
+```SQL
+SELECT TO_NUMBER('$12,345.67', '$999,999.999')
+FROM DUAL;
+```
+
+<TO_DATE>
+
+문자데이터 -> 날짜 데이터 변환
+
+
+
+
