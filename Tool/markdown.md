@@ -93,3 +93,17 @@ https://docs.emmet.io/abbreviations/syntax/ (레퍼런스)
 [Text](URI)     
 [Text](URI){:target="_blank"}
 ```
+
+
+-----------------------------------------
+
+###### 180829_1
+
+다른 파일로의 링크
+-
+
+```
+[a relative link](other_file.md)
+```
+
+- [다른 파일로의 링크](#180829_1)
