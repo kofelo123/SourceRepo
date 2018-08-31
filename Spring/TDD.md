@@ -1,5 +1,7 @@
 - [TDD 개요](#180815_1)
 - [Ch2.JUnit과 Hamcrest](#180827_2)
+- [CH3.좀더 나은 TDD](#180830_3)
+
 
 -----------------------------------------
 
@@ -291,6 +293,51 @@ assertThat("메시지(옵션)", 테스트대상,Matcher구문);
 ![](https://drive.google.com/uc?export=view&id=12tO8PF653gyffEpWMuNGpP81Z9eZaHDC)
 
 ![](https://drive.google.com/uc?export=view&id=1lBvTRBrXE9tWHzi_FDsZTYtVVzOwnoUg)
+
+
+
+
+
+
+-----------------------------------------
+
+###### 180830_3
+
+CH3.좀더 나은 TDD
+-
+
+
+[테스트 케이스 클래스 위치]
+
+폴더는 다르나 패키지는 동일, 컴파일된 클래스는 각각 다른곳으로 하는것이 가장 이상적이다.
+
+접근범위가 default나 protected로 선언된 메소드도 테스트 케이스로 작성 가능.
+
+서로 섞일 염려가 없고, 배포시에 분리가 쉽다.
+
+
+[테스트 메소드 작성 방식]
+
+'테스트 대상 메소드의 이름 뒤에 추가적인 정보를 기재' 
+
+테스트대상코드 {
+public void withdraw(int money){..}
+}
+
+테스트코드{
+```
+@Test
+public void testWithdraw_마이너스통장인출(){..}
+
+@Test
+public void tetWithdraw_잔고가0원일떄(){...}
+```
+}
+
+상세 케이스는 _ 를 통해 구분하며 한글을 사용해도 무방 (필자는 한글 사용 권장)
+
+테스트 목록을 뽑아서 엑셀엣서 _로 구분하면 자연스럽게 테스트 케이스 항목이 표로 만들어 지기 때문이라 함.
+
 
 
 

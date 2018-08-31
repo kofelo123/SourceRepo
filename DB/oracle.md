@@ -55,6 +55,8 @@
 - [단어가 n개 이상인 이상인 행 찾기](#180828_10)
 - [날짜(시간)함수](#180828_11)
 - [변환 함수](#180828_12)
+- [DECODE 함수와 CASE 표현식](#180830_2)
+
 
 - [조인사용예제](#joinex)
 - [집합연산자](#setoperator)
@@ -2312,9 +2314,125 @@ SELECT TO_NUMBER('$12,345.67', '$999,999.999')
 FROM DUAL;
 ```
 
-<TO_DATE>
+
+[TO_DATE]
 
 문자데이터 -> 날짜 데이터 변환
+
+```
+SELECT '2002/05/31' + 1
+FROM DUAL;
+```
+-> 에러난다 . 아래와같이 변환해야함.
+
+```SQL
+SELECT to_date('2002'/05/31') +1
+FROM dual;
+```
+
+- 포맷 모델에 의해 년 월일로 인식하기
+
+```SQL
+SELECT to_date('091011', 'YYMMDD')
+FROM dual;
+```
+('DDMMYY') 하면 일/월/년 으로 인식가능
+
+
+[TO_CHAR]
+
+숫자데이터나 날짜 데이터를 => 문자데이터로 변환
+
+```
+TO_CHAR(SAL, '$999,999.99') A -- 9는 값이 있는 부분만 표현
+
+TO_CHAR(SAL, 'L999,999.99') B -- L은 해당지역 화폐단위
+
+//
+
+SELECT TO_CHAR(21, '000000') RET  -- 0은 값이 없는 부분에 0을 채움
+FROM DAUL;
+
+```
+
+[날짜 데이터를 문제 데이터로 변환]
+
+
+```SQL
+TO_CHAR(HIREDATE, 'YYYY YYYY YYYY')
+```
+
+접미어 등을 통해 DATE 타입의 데이터를 추출하는게 있으나 생략.
+
+
+[날짜 타입에서 시,분,초 반환하기]
+
+```SQL
+SELECT to_char(sysdate, 'HH24:MI:SS') ret
+FROM dual;
+```
+
+-----------------------------------------
+
+###### 180830_2
+
+DECODE 함수와 CASE 표현식
+-
+
+DECODE와 동일 기능을 하는게 CASE표현식
+
+CASE표현식 의 두종류: SIMPLE CASE 표현식, SEARCHED CASE 표현식.
+
+Q. 10번 부서는 급여를 10% 인상, 20번 부서는 20% , 나머지는 급여를 변경X , 단 급여가 2000미만인 사원들을 대상으로 쿼리.
+
+
+1.DECODE 사용
+
+```SQL
+SELECT EMPNO,
+       SAL,
+       DECODE(DEPTNO,
+              10, SAL*1.1,
+              20, SAL*1.2,
+              SAL
+              ) AS UPSAL,
+      DEPTNO
+FROM EMP
+WHERE SAL < 2000;
+```
+
+2. SIMPLE CASE
+
+```SQL
+SELECT EMPNO,
+       SAL,
+       CASE DEPTNO
+              WHEN 10 THEN SAL*1.1      -- (콤마안찍는다)
+              WHEN 20 THEN SAL*1.2
+              ELSE SAL
+       END AS UPSAL,
+       DEPTNO
+FROM EMP
+WHERE SAL < 2000;
+            
+```
+
+3. SEARCHED CASE
+
+```SQL
+SELECT EMPNO,
+       SAL,
+       CASE 
+            WHEN DEPTNO = 10 THEN SAL*1.1
+            WHEN DEPTNO = 20 THEN SAL*1.2
+            ELSE SAL
+       END AS UPSAL,
+       DEPTNO
+FROM EMP
+WHERE SAL < 2000;
+            
+```
+
 
 
 

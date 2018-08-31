@@ -14,6 +14,8 @@
 - [DATETIME과 TIMESTAMP의 차이](#8728_5)
 - [mysql 대소문자구별](#180808_7)
 - [auto commit 여부 확인](#180819_12)
+- [우분투서버 - mybatis 값을 못가져올떄](#180820_1)
+- [mysql 유저생성(워크밴치)](#180830_5)
 
 - [Error]
   - [버퍼풀 메모리 관련 오류](#bufferpoolmemoryisuue)
@@ -560,5 +562,19 @@ status
 
 service mysql restart 해줘야함
 
-- [우분투서버 - mybatis 값을 못가져올떄](#180820_1)
+
+
+
+-----------------------------------------
+
+###### 180830_5
+
+mysql 유저생성(워크밴치)
+-
+
+mysql 유저생성(워크밴치)
+
+좌측 MANAGEMENT - Users and Privileges -> Add Account -> Schema Privileges에서 권한 주면됨
+
+
 
