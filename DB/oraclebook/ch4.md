@@ -157,7 +157,7 @@ DECODE
 SELECT시의 DECODE는 FROM 절 빼고 사용가능
 (SELECT시 DECODE 로  테이블을 동적으로 변경X)
 
-<DECODE의 사용 -(단순 등호 비교)
+<DECODE의 사용 -(단순 등호 비교) >
 
 IF A = B THEN
  RETURN 'T';

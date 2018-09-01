@@ -297,18 +297,19 @@ git add 파일1 파일2 파일3 이런식으로 가능
 원격 저장소의 주소는 이름으로 기록해 둘 수 있다.
 
 기록 해두면 push 할 때마다 긴 원격 저장소의 주소를 입력 할 필요가 없다.
-
+```
 git remote add <name> <url>
-
+```
 " 콘솔일 경우 push 나 pull 은 실행 시에 원격 저장소명을 생략하면, origin이라는 이름의 원격 저장소를 사용합니다. 그 때문에 원격 저장소에는 origin이라는 이름을 붙이는 것이 일반적입니다."
 
-<push>
+*push
 
 ```
  git push <repository> <refspec>...
 ```
+```
  <repository>는 push 경로의 주소, <refspec>은 push 할 브랜치를 지정
-
+```
 행 옵션에서 한번 -u를 지정하면, 이후에는 그 브랜치명 지정을 생략할 수 있다.
 
 단, 비어있는 원격 저장소에 최초로 push했을 때는 원격 저장소명과 브랜치명을 생략할 수 없다.
@@ -326,7 +327,7 @@ git clone <repository> <directory>
 git push
 ```
 
-<pull>
+*pull
 
 저장소명 생략시, origin으로 등록된 저장소 밑에 pull 수행함.
 ```
@@ -458,7 +459,8 @@ git 설치시 'master' 브랜치가 기본선택
 
 체크아웃시=> 브랜치 안의 마지막 커밋내용이 작업트리에 펼쳐짐.-> 브랜치가 전환되었으므로 이후의 커밋은 전환한 브랜치가 추가됨.
 
-<HEAD>
+*HEAD
+
 현재 사용중인 브랜치의 선두부분을 뜻한다.
 기본은 'master'의 선두 부분이다. 'HEAD'를 이동하면, 사용하는 브랜치가 변경됨.
 
@@ -471,7 +473,7 @@ git 설치시 'master' 브랜치가 기본선택
  ![](https://drive.google.com/uc?export=view&id=1HuFphblNalxwtGQ9Yn3Hvv3y6V3xgV5D)
 
 
-<stash>
+*stash
 
 커밋x - 변경내용 or 새 추가파일이 인덱스와 작업트리에 남은채로 다른브랜치로 전환(checkout)
 => 그 변경 내용은 전환된 브랜치에서 커밋 할 수있다.

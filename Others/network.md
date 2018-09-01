@@ -78,7 +78,7 @@ C 클래스 사설 ip : 192.168.0.0 ~ 192.168.~
 공유기가 공인 ip의 80포트로 들어오는 패킷을 사설 ip로 보내준다 -> 사설ip의 컴퓨터를 웹서버 컴퓨터로 사용가능
 
 
-<NAT> ( Network Address Translation)
+*NAT ( Network Address Translation)
 
 공유기가 하나의 공인 IP를 내부 사설 IP로 나누는 기술을 NAT 라고 한다.
 

@@ -441,7 +441,7 @@ SQL> SELECT to_number('$5,500.00', '$99,999.99') - 4000
 
 위 구문은 $ 기호를 포함시키고, 세자리마다 콤마 를 인식하며 , 소수점 이하 두자리까지 인식시키는 포맷을 지정한것.
 
-<TO_DATE>
+[TO_DATE]
 
 문자스트링 -> 날짜 형식으로 변환
 
@@ -466,7 +466,7 @@ Null 치환 함수 NVL, NVL2, COALESCE
 -
 
 
-<NVL>
+*NVL
 
 NVL(expr1, expr2)
 
@@ -636,11 +636,11 @@ SQL> SELECT employee_id, first_name
 UNION ALL의 경우 중복된 정보도 모두 출력한다.
 
 
-<INTERSECT>
+*INTERSECT
 
 중복된 행만 출력한다 ( 교집합처럼 )
 
-<MINUS>
+*MINUS
 
 두번째 쿼리에는 없고 첫번째 쿼리에만 있는 데이터를 보여준다. ( 차집합처럼 )
 

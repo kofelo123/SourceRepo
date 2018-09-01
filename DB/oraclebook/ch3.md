@@ -52,10 +52,10 @@
 UNION과 UNIONALL
 -
 
-<UNION>
+*UNION
 중복 ROW시 하나의 ROW만 포함(정렬O)
 
-<UNION ALL>
+*UNION ALL
 중복 ROW시 모두 포함(정렬X -> 빠르다)
 
 ```SQL
@@ -94,7 +94,7 @@ SELECT EMP_ID,0 SALARY,COMM FROM TCOM;
 ...
 ```
 
-<UNION ALL>
+*UNION ALL
 
 ```SQL
 SELECT EMP_ID FROM TEMP
@@ -558,13 +558,13 @@ SET A.BOSS_ID = (SELECT MIN (B.EMP_ID)
 UPDATE , INSERT 기본문법(알아두기)
 -
 
-<UPDATE>
+*UPDATE
 UPDATE table_name
 SET column_name1=변경값1,
        column_name2=변경값2
 	...
 
-<INSERT>
+*INSERT
 
 1.일부컬럼
 INSERT INTO table명(컬럼1,컬럼2)

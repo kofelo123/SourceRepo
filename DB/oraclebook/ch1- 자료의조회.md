@@ -32,12 +32,14 @@ NUMBER형 자료를 NULL과 연산시 항상 NULL이 된다.
 NULL이 우려 있을시 숫자는 NVL 함수로 치환, 문자는 ' '(스페이스)나 특정 문자값으로 치환하는 습관필요
 
 <같은지,다른지 비교>
+
 WHERE A = '1'
 WHERE A <> '1'  
 
 (NULL은 이런식으로 하면 x(다른결과 가능성))
 
 <NULL 인지,아닌지 비교>
+
 WEHRE a IS NULL
 WEHRE a IS NOT NULL
 
@@ -461,7 +463,7 @@ EMP_ID    EMP_NAME   DEPT_C
 
 '_A____'
 
-< BETWEEN >
+*BETWEEN
 
 상한 값과 하한 값을 주어 자료의 검색을 하고자 할 때 사용
 
@@ -483,7 +485,7 @@ WHERE EMP_NAME BETWEEN '가' AND '나';
 
 ```
 
-<IN>
+*IN
 
 OR 조건으로 연결된 조건을 한번에 기술 해 줄 수있는 기능을 제공
 

@@ -1839,18 +1839,18 @@ ABS
 
 반대는  FLOOR
 
-<FLOOR>
+*FLOOR
 
 주어진 값보다 작거나 같은 정수 반환
 
 
-<MOD>
+*MOD
 
 나눗셈의 나머지 반환
 
 MOD(값,나눌숫자)
 
-<POWER>
+*POWER
 
 거듭 제곱 값을 구할때 사용
 
@@ -1859,7 +1859,7 @@ POWER(A,B)
 A를 B로 거듭제곱함
 
 
-<ROUND>
+*ROUND
 
 반올림을 수행
 
@@ -1875,12 +1875,12 @@ ROUND(123.456, -2)
 
 -> 100
 
-<TRUNC>
+*TRUNC
 
 반올림 대신 버림을 수행 ROUND함수와 같은 방식으로 동작
 
 
-<SIGN>
+*SIGN
 
 1개의 매개변수를 가지며, 매개변수가 음수면 -1, 0이면 0, 양수면 1을 반환
 
@@ -1894,20 +1894,20 @@ ROUND(123.456, -2)
 문자함수
 -
 
-<UPPER>
+*UPPER
 
 문자열의 모든 문자를 대문자로 변경
 
-<LOWER>
+*LOWER
 
 모든 문자를 소문자로 변경
 
-<INITCAP>
+*INITCAP
 
 모든 단어의 첫 글자를 대문자로 변경
 
 
-<CONCAT>
+*CONCAT
 
 첫 번쨰 문자열에 두번째 문자열을 연결
 
@@ -1915,7 +1915,7 @@ ROUND(123.456, -2)
 
 (CONCAT안에 CONCAT 중첩해서 사용가능)
 
-<INSTR>
+*INSTR
 
 찾고자 하는 문자열이 분석 대상 문자열의 어디에 위치하는지 알고자 할때 숫자로 반환가능
 
@@ -1947,7 +1947,7 @@ ORDER BY ename;
 1번째 문자부터 시작해서 A가 2번째 나타난 위치를 찾는다.
 
 
-<LENGTH>
+*LENGTH
 
 문자열 길이 반환
 
@@ -1967,7 +1967,7 @@ FROM EMP
 WHERE ename like '_____';
 ```
 
-<LPAD>
+*LPAD
 
 주어진 문자열 출력에서 문자를 우측 정렬하여 출력하고 남은 왼쪽 공간을 주어진 문자열로 채운다.
 
@@ -1983,17 +1983,17 @@ FROM dual;
 *.*.*.*.*Page 1
 ```
 
-<REVERSE>
+*REVERSE
 
 입력된 문자열의 좌우를 뒤집은 문자열을 반환
 
-<REPLACE>
+*REPLACE
 
 원하는 문자열을 찾아서 전부 대신할 문자열로 변경하는 함수
 
 찾은 문자열을 삭제하고 싶으면 대신할 문자열을 주지않으면 됨.
 
-<SUBSTR>
+*SUBSTR
 
 문자열의 일부를 반환
 
@@ -2023,7 +2023,7 @@ or ename like 'B%'
 ORDER BY ename;
 ```
 
-<LTRIM>
+*LTRIM
 
 문자의 왼쪽에서 요구된 문자들을 제거(TRIM)해 나가다가 해당 문자가 아닌 문자가 나타나면 제거작업을 멈춘다.
 
@@ -2046,7 +2046,7 @@ CD
 A또는B가 아닌 C가 오는 순간 멈추고 출력
 
 
-<TRIM>
+*TRIM
 
 ```sql
 SELECT trim(leading 'S' FROM 'SOS')  -- SOS에서 왼쪽 S 제거
@@ -2065,7 +2065,7 @@ TRIM 의 한계:
 
 그떄 LTRIM, RTRIM을 사용하면 'AB'로 지정하면 A또는 B라는 뜻이 된다.
 
-<TRANSLATE>
+*TRANSLATE
 
 문자를 찾아서 대응하는 문자로 변경
 
@@ -2182,7 +2182,7 @@ SYSDATE, SYSTIMESTAMP, CURRENT_DATE, CURRENT_TIMESTAMP, ADD_MONTHS, MONTHS_BETWE
 
 
 
-<SYSDATE>
+*SYSDATE
 
 접속한 데이터베이스 서버가 위치한 운영체제의 날짜와 시간 반환
 
@@ -2196,7 +2196,7 @@ SYSTIMESTAMP 함수 사용하면 된다
 SYSTIMESTAMP 함수는 시간대(TIME ZONE)가지 반환한다.
 
 
-<CURRENT_DATE>
+*CURRENT_DATE
 
 접속한 사용자 자신의 날짜와 시간을 반환
 
@@ -2208,7 +2208,7 @@ SYSTIMESTAMP 함수는 시간대(TIME ZONE)가지 반환한다.
 ALTER SESSION SET TIME_ZONE='-7:00';
 ```
 
-<ADD_MONTH>
+*ADD_MONTH
 
 주어진 날짜에 N개월을 더하거나 뺴는 함수
 
@@ -2223,7 +2223,7 @@ SELECT sysdate,
 FROM dual;
 ```
 
-<MONTHS_BETWEEN>
+*MONTHS_BETWEEN
 
 주어진 두 날짜의 간격을 개월로 표현한 숫자를 반환.
 
@@ -2236,7 +2236,7 @@ SELECT MONTHS_BETWEEN(SYSDATE, HIREDATE)
 FROM EMP;
 ``
 
-<NEXT_DAY>
+*NEXT_DAY
 
 주어진 날짜를 지나서 첫 번쨰로 오는 특정 요일의 날짜를 반환
 
@@ -2247,7 +2247,7 @@ SELECT NEXT_DAY(SYSDATE, '월') A,
 FROM DUAL;
 ```
 
-<LAST_DAY>
+*LAST_DAY
 
 주어진 날짜가 포함된 달의 마지막 날짜 반환
 
@@ -2296,7 +2296,7 @@ Format Element
 ![](https://drive.google.com/uc?export=view&id=1zd3vKaeYG9YyDtEbOQpnqRbo1uNPsfCo)
 
 
-<TO_NUMBER>
+*TO_NUMBER
 
 문자 데이터를 숫자 데이터로 변환한다.
 
