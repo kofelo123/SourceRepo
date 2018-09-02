@@ -38,6 +38,11 @@
 - [stash](#180806_10)
 - [git 유용한 설명 및 명령어](#180819_13)
 
+--
+
+- [Git에서 특정 커밋을 삭제](#180902_5)
+
+
 - [에러](#error)
   - [add - 줄바꿈관련에러](#adderror)
   - [두개의 히스토리 가진 프로젝트병합](#refusingtomerge)
@@ -1718,5 +1723,34 @@ git cat-file -p master^{tree} // master 브랜치가 가리키는 Tree 개체의
 
 
 [](http://dimdim.tistory.com/entry/GIT%EC%97%90-%EB%8C%80%ED%95%9C-%EB%82%B4%EC%9A%A9%EC%A0%95%EB%A6%AC-%EC%A0%95%EB%A6%AC%EC%A4%91)
+
+
+
+-----------------------------------------
+
+###### 180902_5
+
+Git에서 특정 커밋을 삭제
+-
+
+![](https://drive.google.com/uc?export=view&id=1PT2S53Au6Zyfamdzq6srbWv8DB4yH19z)
+
+```
+git checkout 2
+git reset --hard HEAD^
+
+git push --force
+
+
+
+git checkout 1
+git reset --hard HEAD^
+
+git push --force
+
+
+```
+
+[](https://okky.kr/article/498353)
 
 
