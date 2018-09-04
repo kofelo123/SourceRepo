@@ -1591,9 +1591,10 @@ LAST_INSERT_ID()를 이용할 수 있다.
       dao.addAttach(fileName);
     }
   }
-````
+```
 
 ### template
+
 **첨부파일용 템플릿 추가하기**
 
 첨부파일을 보여주는 HTML 코드는 조금 복잡하기 때문에 handlebars를 이용해서 템플릿으로 작성한다.(이미지파일,일반파일)

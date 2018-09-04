@@ -928,7 +928,7 @@ userDao.setConnectionMaker(connectionMaker());
 	<property name = "connectionMaker" ref="connectionMaker" />
 </bean>
 
-````
+```
 
 
  ![](https://drive.google.com/uc?export=view&id=1TEUikjfdl0tjqJMn7f7MvyTABfc0kJPF)
@@ -1362,7 +1362,7 @@ public class UserDaoTest{
 	dao.setDataSource(dataSource); // 코드에 의한 수동DI
 }
 }
-````
+```
 이 방법의 장점은, XML 설정파일을 수정하지 않고도 테스트 코드를 통해 오브젝트 관계를 재구성할 수 있다는 것이다.
 
 applicationContext.xml 파일의 설정정보를 따라 구성한 오브젝트를 가져와 의존관계를 강제로 변형 했기 때문에 주의해서 사용해야한다.

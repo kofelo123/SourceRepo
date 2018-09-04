@@ -11,6 +11,8 @@
 - [opener - 부모 창 컨트롤](#180819_8)
 - [Keyboard 이벤트 onkeydown, onkeyup, onkeypress - 키보드누를시, 키보드놓을시, 출력시](#180819_10)
 - [언어,플랫폼 등 파악하기](#180830_4)
+- [localstorage, sessionstorage](#180903_2)
+
 
 - [기타]
   - [onclick submit](#onclick-submit)
@@ -541,6 +543,56 @@ Keyboard 이벤트 onkeydown, onkeyup, onkeypress - 키보드누를시, 키보�
 console.log(navigator.platform) //iPhone
 
 console.log(navigator.language) //ko-kr
+
+
+
+
+-----------------------------------------
+
+###### 180903_2
+
+localstorage, sessionstorage
+-
+
+로컬 스토리지와, 세션 스토리지는 HTML5에 추가된 저장소이다.
+
+key,value 형태로 저장한다.
+
+이 둘의 차이점은 영구성이다.
+
+로컬스토리지: 지우지않는 이상 브라우저에 남아있는다. (자동로그인 등에 사용)
+
+세션스토리지: 브라우저 탭을 닫을경우 제거 (일회성데이터에사용)
+
+둘다 window객체안에 있다.
+
+5mb~10mb
+
+
+값으로는 문자열, 불린, 숫자, null, undefined 등을 저장할 수 있지만, 모두 문자열로 변환. 키도 문자열로 변환
+
+
+```js
+localStorage.setItem('name', 'zerocho');
+localStorage.setItem('birth', 1994);
+localStorage.getItem('name'); // zerocho
+localStorage.getItem('birth'); // 1994 (문자열)
+localStorage.removeItem('birth');
+localStorage.getItem('birth'); // null (삭제됨)
+localStorage.clear(); // 전체 삭제
+```
+
+객체는 제대로 저장되지 않고 toString 메소드가 호출된 형태로 저장 .[object 생성자]형으로 저장되는 거. 객체를 저장하려면 두 가지 방법.
+
+그냥 키-값 형식으로 풀어서 여러 개를 저장할 수도 있다. 한 번에 한 객체를 통째로 저장하려면 JSON.stringify를 해야.
+
+객체 형식 그대로 문자열로 변환. 받을 때는 JSON.parse하면됨.
+
+```
+localStorage.setItem('object', JSON.stringify({ a: 'b' }));
+JSON.parse(localStorage.getItem('object')); // { a: 'b' }
+```
+이렇게 데이터가 지우기 전까지는 계속 저장되어 있기 때문에 유저 커스터마이제이션에 좋을 것 같다. 사용자의 설정(보안에 민감하지 않은)이나 데이터들을 넣어두면 된다.
 
 
 
