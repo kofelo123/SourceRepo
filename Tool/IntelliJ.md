@@ -18,6 +18,8 @@
 - [서버실행시 Run - Redeploy](#180808_2)
 - [message tool 관련설정](#180823_4)
 - [인텔리제이 "" (Double quotes) 자동 안되게 설정](#180826_8)
+- [maven dependency 추가](#180910_5)
+- [beans graph 보는방법](#180910_6)
 
 
 -[에러](#)
@@ -102,7 +104,7 @@ VCS -> Checkout from Version Control - Git
 
  2. 프로젝트 우클릭- Add Framework Support - Spring - Spring MVC 체크하기
 
- 3. Project Structure - Facts 에서 Spring - Spring Application Context의 위치를 조정(인텔리제이의 기본세팅은 WEB-INF등 위치가 이상해서 내가 원하는 위치에 폴더생성하고 Spring Context옮긴후 세팅에서 위치 지정)
+ 3. Project Structure - Facts 에서 Spring - Spring Application Context의 위치를 조정(인텔리제이의 기본세팅은 WEB-INF등 위치가 이상해서 내가 원하는 위치에 폴더생성하고 Spring Context옮긴후 세팅에서 위치 지정) -> (기본적으로 이설정은 auto detected 된다. 그러나 시도해보니 가끔 스프링 설정파일이 기본적으로 프로젝트 생성시 같이 생성되지 않은 경우가 있는데 이때는 root-context.xml servlet-context.xml 이런것을 원하는 디렉터리에 생성해주면 인텔리제이에서 auto detected된다.)))
 
  Facts의 Web의 경우 상단의 Deployment Descriptors에 web.xml path를 지정
  (변경 - 프로젝트 \src\main\webapp\WEB-INF\web.xml))
@@ -758,5 +760,29 @@ message tool 관련설정
 File - Settings- Editor -Code Style-HTML -Other tab -> Generated quote marks to None
 
 처리하면된다.
+
+
+
+-----------------------------------------
+
+###### 180910_5
+
+maven dependency 추가
+-
+
+우클릭 -> generate
+(keymap 추가 -> Ctrl + G)
+
+
+
+-----------------------------------------
+
+###### 180910_6
+
+beans graph 보는방법
+-
+
+Show UML Popup 기능
+(기본키 Ctrl+Alt+U -> 키맵 추가 Ctrl->U )
 
 

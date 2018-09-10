@@ -2435,7 +2435,17 @@ RedirectAttributes 사용
 
  ```
 
- * MyBatis 동적 SQL
+#MyBatis 동적 SQL
+
+화면에서의 검색 조건에 따라 검색해야하는 SQL 문이 달라지기 때문에
+이를 처리하기 위해 MyBatis의 Mapper에서 SQL을 상황에 맞게 처리할수 있는 기능이 필요
+
+MyBatis의 동적 SQL기능이 보편적인 해결책으로
+
+MyBatis는 내부적으로 몇 개의 태그와 표현식을 가지고있어서 상황에 맞는 SQL을 생성가능.
+
+
+##MyBatis가 가지는 표현식
 
  - if
  - choose(when,otherwise)
@@ -2444,7 +2454,7 @@ RedirectAttributes 사용
 
   ![](https://drive.google.com/uc?export=view&id=1i2i1CQS1rBhTA-xPi8Xm30GE3iXIEMR7)
 
-
+MyBatis의 표현식은 OGNL이라는 표준규약의 표현식을 활용한다.
 
   ---
 

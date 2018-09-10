@@ -1,3 +1,9 @@
+- [ch1](#180910_4)
+
+
+---
+
+
 - [settings](#settings)
 - [lombok 라이브러리](#lombok)
 ---
@@ -155,3 +161,125 @@ DataSource의 DriverClassname() , JdbcUrl 부분 수정
 많은양 로그 - 불편할떄
 
 log4j.propeties 수정하여 좀더 높은 레벨의 로그로 조절
+
+
+
+-----------------------------------------
+
+###### 180910_3
+
+
+
+
+- [환경구축 관련](#180910_3)
+
+-----------------------------------------
+
+###### 180910_4
+
+ch1
+-
+
+환경구축 관련
+-
+
+#실행환경편집
+
+이클립스가 기본적으로 JDK가 아닌 JRE를 이용해서 실행되므로 이후에 설치하는 Lombok 등의 사용에 지장이 있을수 있따. 이러한 문제를 미리 막기 위해 이클립스 폴더 내의 sts.ini 를수정함.
+
+```
+-vm
+C:\Program Files\Java\jdk1.8.0_91\bin\javaw.exe
+```
+
+
+
+Java Configuration
+-
+
+web.xml 파일 삭제 및 스프링 관련 설정 xml 파일삭제
+
+pom.xml 하단부에 <plugins> 내에 아래 설정 추가
+
+```xml
+ <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-war-plugin</artifactId>
+            <version>3.2.0</version>
+            <configuration>
+                <failOnMissiingWebXml>false</failOnMissiingWebXml>
+            </configuration>
+        </plugin>
+```
+
+#@Configuration
+
+해당 클래스가 설정파일이라는 어노테이션
+
+RootConfig 클래스를 생성하고 @Configuration을 붙인다.
+
+
+#WebConfig 클래스생성
+
+web.xml역할을 대신한다.
+
+AbstractAnnotationConfigDispatcherServletInitializer 클래스를 상속받아서 사용
+
+3개의 추상 메소드를 오버라이드 하도록 되어있다.
+
+- getRootConfigClasses()
+
+- getServletConfigClasses()
+
+- getServletMappings()
+
+
+getRootConfigClasses()메소드는 이름처럼 root-context.xml을 대신한다. 	
+```java
+@Override
+    protected Class<?>[] getRootConfigClasses() {
+        return new Class[0];
+    }
+```
+책에서 RootConfig 클래스를 사용하므로 아래와 같이 내용을 변경
+
+```java
+@Override
+    protected Class<?>[] getRootConfigClasses() {
+        return new Class[] {RootConfig.class};
+    }
+```
+
+#ComponentSacn
+
+```java
+@Configuration
+@ComponentScan(basePackages= {"org.zerock.sample"})
+public class RootConfig {
+
+}
+```
+
+
+
+의존성 주입 테스트
+-
+
+#lombok관련
+
+롬복의 @Data -> setter, 생성자, toString() 자동생성
+
+```
+    @Setter(onMethod_ = @Autowired)
+    private Chef chef;
+```
+
+@Setter는 자동으로 setChef()를 컴파일시 생성
+
+onMethod 속성은 생성되는 setChef()에 @Autowired 어노테이션을 추가하도록 한다.
+
+
+
+
+
+
