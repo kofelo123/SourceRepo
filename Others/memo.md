@@ -57,6 +57,8 @@ hlw123@naver.com
 Gj~(+pw)o
 
 
+local oracle / system - oracle
+
 ## jenkins
 
 jeongwon heo

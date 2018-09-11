@@ -9,6 +9,7 @@
 - [Maven Update, Reimport](#180730_5)
 
 
+
 - [오토 퍼블리싱 세팅](#180730_6)
 - [인텔리제이 전체화면 키변경](#180806_29)
 - [분할창생성](#180806_30)
@@ -18,8 +19,11 @@
 - [서버실행시 Run - Redeploy](#180808_2)
 - [message tool 관련설정](#180823_4)
 - [인텔리제이 "" (Double quotes) 자동 안되게 설정](#180826_8)
+- [double quotes ""  xml에서  자동으로 안되도록 수정](#180911_9)
 - [maven dependency 추가](#180910_5)
 - [beans graph 보는방법](#180910_6)
+- [외부 jar 파일 넣기](#180911_6)
+- [maven dependency 추가검색관련](#180911_11)
 
 
 -[에러](#)
@@ -784,5 +788,66 @@ beans graph 보는방법
 
 Show UML Popup 기능
 (기본키 Ctrl+Alt+U -> 키맵 추가 Ctrl->U )
+
+
+-----------------------------------------
+
+###### 180911_6
+
+외부 jar 파일 넣기
+-
+
+ojdbc 같은경우 11버전까지 메이븐 지원안하므로 직접 넣어줘야..
+
+인텔리제이에서 Project Structure -> Libraries 의 좌측창의 + 로 add해준다.
+
+추가) 외부 jar 넣을때 그 로컬의 환경이 달라졌거나 로컬의 jar파일이 사라졌을때 문제가 생긴다
+
+-> 프로젝트 내부의 lib폴더에 jar파일 넣고 그 경로로 위의 설정을 지정하는 방법을 사용하는게 맞지않을까 생각한다.
+
+
+
+-----------------------------------------
+
+###### 180911_9
+
+double quotes "" xml에서 자동으로 안되도록 수정
+-
+
+Editor -> smart keys -> xml/html -> add quotes ... 체크해제
+
+html의 경우 code style에 해당 설정있었으나 
+xml은 code style에 없어서 검색해보고 찾음
+
+-----------------------------------------
+
+###### 180911_11
+
+maven dependency 추가검색관련
+-
+
+인텔리제이에서 
+
+
+```xml
+  <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-tx</artifactId>
+        <version>5.0.7.RELEASE</version>
+    </dependency>
+
+```
+와 같은 의존을 검색하면
+
+org.springframework:spring-tx:5.0.7.RELEASE
+
+이렇게 등록되어있는걸 검색해야하는데
+
+검색시 spring-tx , *spring-tx 이런식으로 검색해도 잘안된다.
+
+org.springframework:spring-tx 이렇게 길게 검색해야하는 상황이 생기는데
+
+* spring-tx 이렇게 애스터리크 이후 공백하나를 주고 검색하니 검색이 된다.
+
 
 

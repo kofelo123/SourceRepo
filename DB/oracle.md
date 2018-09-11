@@ -331,6 +331,20 @@ create user jwprac identified by tiger;
 grant connect,resource to jwprac;
 ```
 
+(추가) sqldeveloper
+
+oracle 사용자생성 180911_5
+-
+
+
+system계정에 접속한후 다른사용자 우클릭 -> 사용자생성
+
+![](https://drive.google.com/uc?export=view&id=1IInTzHpMqNiEZG1V58eHmNZRvWcBP74Y)
+
+![](https://drive.google.com/uc?export=view&id=1ZYPogX5icymz2K0ncfDr0NFA71KrPt2f)
+
+
+
 -
 ## tableprivilege
 
