@@ -1184,7 +1184,7 @@ jQuery session plugin
 
 jquery session plugin 을 통해 jquery에서 세션을 편하게 사용
 
-[](https://github.com/AlexChittock/JQuery-Session-Plugin)
+https://github.com/AlexChittock/JQuery-Session-Plugin
 
 
 

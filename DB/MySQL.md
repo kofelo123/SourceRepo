@@ -525,7 +525,7 @@ mysql> SELECT engine, support FROM information_schema.engines WHERE support='DEF
 server는 라틴으로 되어있는데 이걸 수정해야할것
 
 한글 설정관련..참고 블로그
-[](https://nesoy.github.io/articles/2017-05/mysql-UTF8)
+https://nesoy.github.io/articles/2017-05/mysql-UTF8
 
 설정파일 변경
 

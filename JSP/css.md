@@ -38,7 +38,7 @@ css 글자 자르기
 
 
 
-[](http://webdir.tistory.com/483)
+http://webdir.tistory.com/483
 
 
 

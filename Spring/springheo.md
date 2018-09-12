@@ -928,10 +928,21 @@ ojdbc-6.jar 이름으로 복사한다.
 
 그리고 의존성 추가 (ojdbc)
 
+```xml
+<dependency>
+	<groupId>com.oracle</groupId>
+	<artifactId>ojdbc</artifactId>
+	<version>6</version>
+</dependency>
+```
+
+
 (안될경우 프로젝트에서 직접 빌드 패스에서 add external jars 해서
 추가해야한다.)
 
->'이 책에서도 설정정보에 properties를 사용하는데 egov에서 봤던 내 코드랑 조금 다른게 <context:~ 를 사용한다는점 , xml경로..'
+>'이 책에서도 설정정보에 properties를 사용하는데 egov에서 봤던 내 코드랑 조금 다른게 
+
+```<context:~ 를 사용한다는점 , xml경로..' ```
 
 ```
 

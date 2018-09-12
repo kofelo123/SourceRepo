@@ -54,7 +54,7 @@ aws 신규  kofelo123@nate.com
 
 hlw123@naver.com
 
-Gj~(+pw)o
+(대문자)Gj~(+pw)o
 
 
 local oracle / system - oracle

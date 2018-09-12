@@ -8,7 +8,7 @@
 -
 
 
-[](https://www.youtube.com/watch?v=pQCCysli1Ds)
+ttps://www.youtube.com/watch?v=pQCCysli1Ds
 
 여기서 7~10분쯤에 .. 포토샵 사용 필요하면 볼것
 

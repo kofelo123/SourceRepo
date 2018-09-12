@@ -36,7 +36,7 @@ Failure to transfer org.apache.commons:commons-compress:jar:1.9 from https://rep
 			<optional>true</optional>
 		</dependency>
 ```
-[](https://stackoverflow.com/questions/28310964/project-lombok-the-method-is-undefined-for-the-type-geofence)
+https://stackoverflow.com/questions/28310964/project-lombok-the-method-is-undefined-for-the-type-geofence
 
 -----------------------------------------
 

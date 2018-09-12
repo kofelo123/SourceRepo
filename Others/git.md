@@ -249,7 +249,7 @@ doc/**/*.pdf
 ```
 
 
-[](https://www.gitignore.io/) 에 들어가서 ide, os , 언어 등에 따라 기본 ignore 세팅된 것을 가져올수있다.
+https://www.gitignore.io/ 에 들어가서 ide, os , 언어 등에 따라 기본 ignore 세팅된 것을 가져올수있다.
 
 gitignore 파일 생성 안될때 .gitignore. 으로 생성하면 만들어진다(윈도우)
 
@@ -1578,7 +1578,7 @@ git stash clear
 전체 stash list를 삭제
 
 
-[](http://wit.nts-corp.com/2014/03/25/1153)
+http://wit.nts-corp.com/2014/03/25/1153
 
 
 
@@ -1722,7 +1722,7 @@ git cat-file -p master^{tree} // master 브랜치가 가리키는 Tree 개체의
 ```
 
 
-[](http://dimdim.tistory.com/entry/GIT%EC%97%90-%EB%8C%80%ED%95%9C-%EB%82%B4%EC%9A%A9%EC%A0%95%EB%A6%AC-%EC%A0%95%EB%A6%AC%EC%A4%91)
+http://dimdim.tistory.com/entry/GIT%EC%97%90-%EB%8C%80%ED%95%9C-%EB%82%B4%EC%9A%A9%EC%A0%95%EB%A6%AC-%EC%A0%95%EB%A6%AC%EC%A4%91
 
 
 
@@ -1751,6 +1751,6 @@ git push --force
 
 ```
 
-[](https://okky.kr/article/498353)
+https://okky.kr/article/498353
 
 

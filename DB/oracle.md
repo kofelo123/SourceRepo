@@ -1012,12 +1012,13 @@ sqldeveloper가 깔려있다면
 폴더안에 ojdbc6.jar가 이미 들어있다.
 
 -> dependency에 ojdbc6 정보넣어주면
+```
 <dependency>
 		    <groupId>oracle</groupId>
 		    <artifactId>ojdbc6</artifactId>
 		    <version>11.2.0.3</version>
 </dependency>
-
+```
 빨간줄 나면서 apache-maven 디렉터리의 oracle repository쪽에 jar파일이 없다고
 하는데 그쪽(maven의 repository)에다가 jar파일을 버전에 맞게 이름맞춰서 넣어주고 maven-update project해주면된다.
 

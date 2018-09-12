@@ -197,7 +197,7 @@ data-toggle="tooltip" data-placement="left" title="좋아요"
 
 이 플러그인은 부스스트랩의 개별 tootop.js파일이 포함되어 있어야 하거나, boostrap.js 가 있어야한다.
 
-[](https://www.w3schools.com/bootstrap/bootstrap_tooltip.asp)
+https://www.w3schools.com/bootstrap/bootstrap_tooltip.asp
 
 
 

@@ -450,7 +450,7 @@ context(UserDao)를 사용하는 클라이언트(UserDaoTest)는 context가 사�
 
 >'뒤에서 한번 더 다룬다.'
 
-[](https://github.com/kofelo123/SourceRepo/blob/master/SourceRepo/Spring/toby.md#214)
+https://github.com/kofelo123/SourceRepo/blob/master/SourceRepo/Spring/toby.md#214
 
 즉 UserDao는 개방폐쇄원칙을 따르고 있으며, 응집력이 높고 결합도는 낮으며, 전략패턴을 적용했음을 알 수 있다.
 
