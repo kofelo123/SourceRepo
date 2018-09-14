@@ -10,6 +10,7 @@
 - [validError](#validError)
 - [Valid - 메시지 처리](#8716_3)
 
+- [maven 수동추가와 내부파일](#180913_2)
 
 - [자바단에서 js - alert 사용하기](#8718_2)
 - [spring stopwatch](#8719_1)
@@ -673,5 +674,75 @@ Session Hijacking(세션 탈취)이라는 공격기법이 있는데 실제 사�
 단 브라우저에서 "Cookie 사용안함" 시 세션이 유지되지 않습니다.
 
 
+
+
+-----------------------------------------
+
+###### 180913_2
+
+maven 수동추가와 내부파일
+-
+
+maven의 특정 dependency가 이름이 꼭 정해져있다고 볼순없는것같다.
+
+물론 mvn repository 웹에서 받아올떄는 이름이 정해진대로 해야겠지만
+
+적어도 로컬에서 jar를 수동으로 넣을떄만큼은..
+
+groupId 가 com.oracle 이든 oracle이든 아무튼
+repository에 해당 디렉터리로 , 내부파일로 제대로 구성되어있으면 pom.xml에서 에러안나는것으로 보인다.
+
+그러나 네이밍 규칙이 있는데
+
+만약 oracle
+
+```xml
+<dependency>
+        <groupId>oracle</groupId>
+        <artifactId>ojdbc6</artifactId>
+        <version>11.2.0.3</version>
+    </dependency>
+```
+
+이런 dependency가 있을때 
+
+메이븐 repository\oracle\ojdbc6\11.2.0.3 경로에 해당 jar파일과 기타 _remote.repositories,  lastupdate 등의 파일이 있을것이다.
+
+해당 jar파일의 이름은 artifactId-version.jar 형식의 이름이 맞아 떨어져야 하는것으로 보인다.
+
+
+jar파일을 수동으로 넣을때, jar파일만 가지고 있다면 그것을 경로를 만들어 넣는다 한들 jar 파일을 넣는것 안되는것으로 보인다.
+
+메이븐 저장소의 정상적인 설치 폴더를 보면 jar를 포함해서 _remote.repositories , .pom 파일 등이 들어있는데 이것들이 있어야 에러가 안난다.
+
+jar파일만 가지고 있을때는 mvn으로 해당 jar를 인스톨하는 과정을 거쳐야한다.
+
+
+
+시작 -> 실행 -> cmd
+
+
+ojdbc.jar 가 있는곳으로 이동한다
+
+mvn install:install-file "-Dfile=ojdbc6.jar(jar파일 이름)" "-DgroupId=com.oracle.ojdbc(dependency추가시 groupId의 식별자와 같다)" "-DartifactId=ojdbc6(dependency추가시 artifactId의 식별자와 같다)" "-Dversion=6.0(ojdbc 6 이므로 )" "-Dpackaging=jar(라이브러리가 jar 이므로)"
+
+ 
+최종은 아래와 같이
+
+> mvn install:install-file "-Dfile=ojdbc6.jar" "-DgroupId=com.oracle.ojdbc" "-DartifactId=ojdbc6" "-Dversion=6.0" "-Dpackaging=jar"
+
+자신의 Local repository 에 com\oracle\ojdbc 의 하위 폴더에 추가 된걸 볼수 있을것이다.
+
+ 
+라이브러리를 사용하기 위해 porm.xml 에 추가시킨다
+```xml
+<dependency>
+    <groupId>com.oracle.ojdbc</groupId>
+    <artifactId>ojdbc6</artifactId>
+    <version>6.0</version>
+</dependency>
+```
+
+http://neoty.tistory.com/62 
 
 

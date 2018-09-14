@@ -1,19 +1,20 @@
 - [ch1](#180910_4)
-- [1장 정리](#180911_2)
-- [sqlSession](#180911_17)
-- [테스트 - 자바설정](#180911_3)
-- [묵시적 자동주입](#180911_4)
-- [log4j 없을떄 log메소드 에러](#180911_7)
-- [커넥션 풀 - 히카리](#180911_8)
-- [빈에러 빈생성 못할떄](#180911_10)
-- [Mapper 인터페이스](#180911_12)
-- [XML 매퍼와 같이쓰기](#180911_13)
-
-- [log4jdbc-log4j2 설정](#180912_3)
-- [스프링mvc](#180912_4)
-- [javaConfig 기본환경설정](#180912_5)
-- [Web Deployment Assembly](#180912_6)
-
+    - [1장 정리](#180911_2)
+    - [sqlSession](#180911_17)
+    - [테스트 - 자바설정](#180911_3)
+    - [묵시적 자동주입](#180911_4)
+    - [log4j 없을떄 log메소드 에러](#180911_7)
+    - [커넥션 풀 - 히카리](#180911_8)
+    - [빈에러 빈생성 못할떄](#180911_10)
+    - [Mapper 인터페이스](#180911_12)
+    - [XML 매퍼와 같이쓰기](#180911_13)
+    - [log4jdbc-log4j2 설정](#180912_3)
+- [2장 스프링mvc](#180912_4)
+    - [javaConfig 기본환경설정](#180912_5)
+    - [Web Deployment Assembly](#180912_6)
+    - [@InitBinder](#180913_4)
+    - [@DateTimeFormat](#180913_5)
+    - [@ModelAttrbute](#180913_6)
 
 
 - [log4j 설정파일 없어서 나는 에러](#180911_1)
@@ -861,7 +862,7 @@ Javaconfig
 
 ###### 180912_4
 
-스프링mvc
+2장 스프링mvc
 -
 
 스프링 MVC는 스프링의 서브 프로젝트중 하나이다.
@@ -871,6 +872,129 @@ Javaconfig
  ![](https://drive.google.com/uc?export=view&id=1i-1RNXPHnzXSpiWKWcnSJlog0JoJOnuP)
 
 JavaConfig 등을 이용하려면 서블릿 3.0이상의 dependency를 사용하는것이 좋다.
+
+프로젝트 구동 시 관여하는 xml
+
+web.xml : 톰캣
+
+sevlet-context.xml , root-context.xml : 스프링 관련설정
+
+HandlerMapping은 Request의 처리를 담당하는 컨트롤러를 찾기 위해 존재
+
+이 인터페이스를 구현한 여러 객체중 RequestMappingHandlerMapping 같은 경우 개발자가 @RequestMapping 이 적용된 것을 기준으로 판단.
+
+적절한 컨트롤러가 찾아졌다면 handlerAdapter를 이용해서 해당 컨트롤러를 동작시킴
+
+
+ViewResolver는 컨트롤러가 반환하는 결과를 어떤veiw를 통해서 처리하는지 해석.
+
+servlet-context.xml에 정의된 InternalResourceViewResolver을 가장 흔하게 사용.
+
+
+view는 실제로 응답보낼 데이터를 jsp등을 이용해서 생성하는 역할을 한다. 만들어진 응답은 DispatcherServlet을 통해 전송
+
+모든 Request는 DispatcherServlet을 통하도록 설계 -> Front-Controller 패턴
+
+
+
+[GetMapping][PostMapping]
+
+스프링 4.3 부터 @RequestMapping의 축약형으로 사용
+
+@RequestMapping의 경우 get,post 모두 지원해야할 경우 배열로 처리가능하다는 장점이 있다.
+
+@GetMapping은 편하긴 하지만 기능에 대한 제한은 많은편이다 (최근에 PUT, DELETE 방식 등도 점점 많이 사용되고 있으므로)
+
+
+
+[@Data]
+
+VO, DTO의 경우 @Data를 클래스 위에 붙여서 변수만 적는 간단한형태로 작성 가능
+
+@Data -> getter/setter , equals(), toString() 등이 자동생성
+
+
+[동일 이름의 여러 파라미터가 여러개 전달되는 경우]
+
+ArrayList<> 을 사용해서 처리가능하다
+
+```java
+    @GetMapping("/ex02List")
+    public String ex02List(@RequestParam("ids")ArrayList<String> ids){
+
+        log.info("ids: " + ids);
+
+        return "ex02List";
+    }
+```
+
+ArrayList의 경우 @RequestParam 생략 못한다.
+
+
+배열도 가능 
+```
+@ReuqestPram("ids")String[] ids ~
+
+log.info("ids:" + Arrays.toString(ids));
+```
+
+
+*객체 리스트
+
+전달하는 데이터가 DTO같은 객체이고 여러개 처리시 한번에 처리가능
+
+SampleDTO를 여러개 받아서 처리하고 싶으면 SampleDTO의 리스트를 포함하는 SampleDTOList 클래스를 설계한다.
+
+```java
+@Data
+public class SampleDTOList {
+
+    private List<SampleDTO> list;
+
+    public SampleDTOList(){
+        list = new ArrayList<>();
+    }
+}
+```
+
+http://localhost:8080/sample/ex02Bean?list[0].name=aaa&list[2].name=bbb
+
+-> 
+```
+INFO : org.zerock.controller.SampleController - list dtos: SampleDTOList(list=[SampleDTO(name=aaa, age=0), SampleDTO(name=null, age=0), SampleDTO(name=bbb, age=0)])
+```
+
+톰캣은 버전에 따라 문자열에서 '[ ]' 문자를 허용하지 않을 수 있다.
+
+js를 사용할 경우 encodeURIComponent()와 같은 방법으로 해결가능하나
+
+'[' 는 '%5B'로 ']' 는 '%5D"로 변경하는 방법도 있다.
+
+
+[ResponseEntity 타입으로 헤더다루기]
+
+스프링mvc는 HTTP 프로토콜의 헤더를 다룰때 HttpServletRequest나 HttpServletResponse를 직접 핸들링 하지않아도 이런 작업이 가능하도록 작성되었다.
+
+ResponseEntity에서 원하는 헤더정보나 데이터를 전달 가능하다.
+
+```java
+
+@GetMapping("/ex07")
+    public ResponseEntity<String> ex07(){
+        log.info("/ex07........");
+
+        // {"name": "홍길동"}
+        String msg = "{\"name\": \"홍길동\"}";
+
+        HttpHeaders header = new HttpHeaders();
+        header.add("content-Type","application/json;charset=UTF-8");
+
+        return new ResponseEntity<>(msg, header, HttpStatus.OK);
+    }
+```
+
+
+
 
 -----------------------------------------
 
@@ -891,12 +1015,166 @@ pom.xml 하단부에 ```<plugins>``` 내에 아래 설정 추가
             <artifactId>maven-war-plugin</artifactId>
             <version>3.2.0</version>
             <configuration>
-                <failOnMissiingWebXml>false</failOnMissiingWebXml> //이부분이 에러나는데 이유를 모르겠음..+ 이 전체 plugin 없어도 돌아는 간다.
+                <failOnMissiingWebXml>false</failOnMissiingWebXml> 
             </configuration>
         </plugin>
 ```
 
-Root
+[RootConfig] 클래스 생성
+
+```java
+@Configuration
+public class RootConfig {
+
+
+}
+
+```
+
+
+[ServletConfig] 클래스 생성
+
+@EnableWebMvc 와 WebMvcConfigurer 인터페이스를 구현하는 방식    
+(과거에는 WebMvcConfigurerAdapter 추상클래스 사용했으나, 스프링 5.0버전부터
+Deprecated(사용x) 되었으므로 주의)
+
+@Configuration과 WebMvcConfigurationSupport 클래스를 상속하는 방식 - 일반 @Configuration 우선순위가 구분되지 않는 경우에 사용
+
+책에서는 @EnableWebMvc 사용. 기존의 servlet-context.xml을 ServletConfig에서 구현
+
+```java
+@EnableWebMvc
+@ComponentScan(basePackages= {"org.zerock.controller"})
+public class ServletConfig implements WebMvcConfigurer {
+
+    @Override
+    public void configureViewResolvers(ViewResolverRegistry registry){
+
+        InternalResourceViewResolver bean = new InternalResourceViewResolver();
+            bean.setViewClass(JstlView.class);
+            bean.setPrefix("/WEB-INF/Views/");
+            bean.setSuffix(".jsp");
+            registry.viewResolver(bean);
+
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry){
+
+        registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
+    }
+
+    
+
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> list) {
+
+    }
+
+    @Override
+    public void addReturnValueHandlers(List<HandlerMethodReturnValueHandler> list) {
+
+    }
+
+    @Override
+    public void configureMessageConverters(List<HttpMessageConverter<?>> list) {
+
+    }
+
+    @Override
+    public void extendMessageConverters(List<HttpMessageConverter<?>> list) {
+
+    }
+
+    @Override
+    public void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> list) {
+
+    }
+
+    @Override
+    public void extendHandlerExceptionResolvers(List<HandlerExceptionResolver> list) {
+
+    }
+
+    @Override
+    public Validator getValidator() {
+        return null;
+    }
+
+    @Override
+    public MessageCodesResolver getMessageCodesResolver() {
+        return null;
+    }
+
+    @Override
+    public void configurePathMatch(PathMatchConfigurer pathMatchConfigurer) {
+
+    }
+
+    @Override
+    public void configureContentNegotiation(ContentNegotiationConfigurer contentNegotiationConfigurer) {
+
+    }
+
+    @Override
+    public void configureAsyncSupport(AsyncSupportConfigurer asyncSupportConfigurer) {
+
+    }
+
+    @Override
+    public void configureDefaultServletHandling(DefaultServletHandlerConfigurer defaultServletHandlerConfigurer) {
+
+    }
+
+    @Override
+    public void addFormatters(FormatterRegistry formatterRegistry) {
+
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry interceptorRegistry) {
+
+    }
+
+
+    @Override
+    public void addCorsMappings(CorsRegistry corsRegistry) {
+
+    }
+
+    @Override
+    public void addViewControllers(ViewControllerRegistry viewControllerRegistry) {
+
+    }
+
+}
+
+```
+
+[WebConfig] 클래스 생성
+
+```java
+public class WebConfig extends AbstractAnnotationConfigDispatcherServletInitializer {
+
+
+    
+    @Override
+    protected Class<?>[] getRootConfigClasses() {
+        return new Class[] {RootConfig.class};
+    }
+
+    @Override
+    protected Class<?>[] getServletConfigClasses() {
+        return new Class[] {ServletConfig.class};
+    }
+
+    @Override
+    protected String[] getServletMappings() {
+        return new String[] { "/"};
+    }
+    
+}
+```
 
 
 -----------------------------------------
@@ -968,3 +1246,537 @@ ojdbc jar파일 문제일 가능성이 높다고 생각되었다.
 원인을 알고나니 인텔리제이에서는 그냥 간단하게 Project Structure의 Artifacts에서 Available Elements의 ojdbc jar파일을 이동시켜주기만 배포시에 알아서 된다.
 
 
+-----------------------------------------
+
+###### 180913_4
+
+@InitBinder
+-
+
+파라미터수집시 변환 가능한 데이터는 자동 변환되지만, 경우에 따라 변환해서 처리해야하는 경우가 있다.
+
+'2018-01-01' 문자열을 java.util.Date 타입으로 변환하는 작업도 그렇다.
+
+```java
+@Data
+public class TodoDTO {
+
+    private String title;
+    private Date dueDate;
+}
+
+```
+```java
+//Controller 
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        binder.registerCustomEditor(java.util.Date.class, new CustomDateEditor(dateFormat, false));
+    }
+
+    @GetMapping("/ex03")
+    public String ex03(TodoDTO todo){
+        log.info("todo: " + todo);
+        return "ex03";
+    }
+```
+
+호출  http://localhost:8080/sample/ex03?title=test&dueDate=2018-01-01
+
+로그
+
+INFO : org.zerock.controller.SampleController - todo: TodoDTO(title=test, dueDate=Mon Jan 01 00:00:00 KST 2018)
+
+@InitBinder 처리가 되지 않는다면 브라우저는 400에러 발생.
+
+-----------------------------------------
+
+###### 180913_5
+
+@DateTimeFormat
+-
+
+@InitBinder를 이용해서 날짜를 변환 할 수있지만
+
+파라미터로 사용되는 인스턴스 변수에 @DateTimeFormat을 적용해도 변환가능
+
+이를 사용할때는 @InitBinder는 필요 x
+
+```java
+@Data
+public class TodoDTO {
+
+    private String title;
+    
+    @DateTimeFormat(pattern = "yyyy/MM/dd")
+    private Date dueDate;
+}
+```
+
+요청
+
+http://localhost:8080/sample/ex03?title=test&dueDate=2018/01/01
+
+로그
+
+INFO : org.zerock.controller.SampleController - todo: TodoDTO(title=test, dueDate=Mon Jan 01 00:00:00 KST 2018)
+
+
+-----------------------------------------
+
+###### 180913_6
+
+@ModelAttrbute
+-
+
+스프링 mvc는 기본적으로 JavaBeans 규칙에 맞는 객체는 다시 화면으로 전달한다.
+
+좁은 의미에서 javaBeans규칙은 단순히 생성자가 없거나 빈 생성자를 가져야 하며, getter/setter를 가진 클래스 객체를 의미
+
+전달될때는 클래스명의 앞글자는 소문자로 처리.
+
+
+반면에 기본자료형의 경우는 파라미터로 선언되더라도 기본적으로 화면까지 전달되지는 않는다.
+
+
+```java
+@GetMapping("/ex04")
+public String ex04(SampleDTO dto, int page){
+
+}...
+//위에서 dto만 화면에 전달, page는 전달x
+```
+
+@ModelAttribute는 전달받은 파라미터를 강제로 Model에 담아서 전달하도록 할때 필요한 어노테이션.
+
+파라미터 타입에 관계없이 무조건 Model로 담아서 전달된다.
+
+파라미터로 전달된 데이터를 다시 화면에서 사용해야할때 유용하게 사용됨.
+
+주의) 기본자료형에 @ModelAttribute 적용할경우
+
+반드시 @ModelAttriibute("page")와 같이 값을 지정해야한다.
+
+>'나는 이것이 뷰에 전달될 이름때문에만 사용하는줄 알았는데 기본자료형의 경우 저렇게 하지않으면 500 에러가났다.
+
+``` 
+.NoSuchMethodException: int.<init>()
+
+
+org.springframework.beans.BeanInstantiationException: Failed to instantiate [int]: No default constructor found; nested exception is java.lang.NoSuchMethodException: int.<init>()
+```
+
+디폴트 생성자가 없는 경우 에러가 날수있는것같다.
+
+
+
+
+-----------------------------------------
+
+ch3 (정리)
+-
+
+xml의 dtd같은 (xmlx:xsi=http:// wer~"
+		xsi:schemaLocation ~)
+
+것들도 dependecy가 없으면 못가져 온다.
+
+
+Mapper 인터페이스로 sql작성시 ';' 이 없도록 작성해야함.
+
+sql에서 where bno > 0 과 같은 조건은 테이블 검색시 bno라는 컬럼조건을 주어서 Primary Key를 사용하도록 유도하는 조건이다.
+
+
+-----------------------------------------
+
+###### 180914_1
+
+파일 업로드 처리
+-
+
+Servlet 3.0전까지는 common의 파일업로드를 사용하거나 cos.jar 등을 이용해서 처리했다.
+
+servlet3.0 이후(톰캣7.0) 기본적으로 업로드되는 파일을 처리할 수 있는 기능이 추가되어서 라이브러리가 따로 필요없다.
+
+그러나 Spring Legacy Project로 생성되는 프로젝트는 Sevlet 2.5기준이므로 3.0이후 지원설정을 사용하기 어렵다.
+
+그러므로 일반적으로 많이 사용하는 commons-fileupload를 사용한다.
+
+```xml
+<dependency>
+        <groupId>commons-fileupload</groupId>
+        <artifactId>commons-fileupload</artifactId>
+        <version>1.3.3</version>
+    </dependency>
+```
+```xml
+//servlet-context.xml
+
+
+<beans:bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<beans:property name="defaultEncoding" value="utf-8"></beans:property>
+		//1024 * 1024 * 10 bytes = 10MB , 한번의 Request로 전달될 수있는 최대크기
+		<beans:property name="maxUploadSize" value="104785760"></beans:property>
+		// 2014 * 2014 * 2 bytes = 2MB , 하나의 파일 최대크기
+		<beans:property name="maxUploadSizePerFile" value="2097152"></beans:property>
+		//절대 경로를 사용하기 위해 URI 형태로 제공해야하므로 'file:/'로 시작하도록 함
+		<beans:property name="uploadTempDir" value="file:/C:/upload/tmp"></beans:property>
+		//메모리상에서 유지하는 최대의 크기 , 이 이상의 크기의 데이터는  uploadTempDir에 임시파일의 형태로 보관됨.
+		<beans:property name="maxInMemorySize" value="10485756"></beans:property>
+	</beans:bean>
+```
+
+```html
+<form action="/sample/exUploadPost" method="post"
+      enctype="multipart/form-data">
+
+    <div>
+        <input type='file' name='files'>
+    </div>
+    <div>
+        <input type='file' name='files'>
+    </div>
+    <div>
+        <input type='file' name='files'>
+    </div>
+    <div>
+        <input type='file' name='files'>
+    </div>
+    <div>
+        <input type='file' name='files'>
+    </div>
+    <div>
+        <input type='submit'>
+    </div>
+</form>
+```
+
+```java
+  @GetMapping("/exUpload")
+    public void exUpload(){
+        log.info("exUpload...........");
+    }
+
+    @PostMapping("/exUploadPost")
+    public void exUploadPost(ArrayList<MultipartFile> files){
+
+        files.forEach(file -> {
+            log.info("----------------------");
+            log.info("name: " + file.getOriginalFilename());
+            log.info("size:" + file.getSize());
+        });
+    }
+```
+
+스프링 mvc는 전달되는 파라미터가 동일한 이름으로 여러개 -> 배열로 처리가능 -> MultipartFIle의 배열타입으로 작성
+
+이 위 코드는 최종업로드를 위해 byte[] 처리해야하는데 아직 처리하지않은 상태.
+
+
+JavaConfig
+---
+
+```java
+  @Bean(name = "multipartResolver")
+    public CommonsMultipartResolver getResolver() throws IOException{
+
+        CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+
+        //10MB
+        resolver.setMaxUploadSize(1024 * 1024 * 10);
+
+        //2MB
+        resolver.setMaxUploadSizePerFile(1024 * 1024 * 2);
+
+        //1MB
+        resolver.setMaxInMemorySize(1024 * 1024);
+
+        //temp upload
+        resolver.setUploadTempDir(new FileSystemResource("C:\\upload\\tmp"));
+
+        resolver.setDefaultEncoding("UTF-8");
+
+        return resolver;
+    }
+```
+
+
+-----------------------------------------
+
+###### 180914_2
+
+Controller의 Exception 처리
+-
+
+스프링 MVC에서의 처리
+
+- @ExceptionHandler , @ControllerAdvice 이용한 처리
+
+- @ResponseEntity를 이용하는 예외 메시지 구성
+
+
+[@ControllerAdvice]
+
+AOP를 이용한 방식이다
+
+```java
+@ControllerAdvice //스프링컨트롤러에서 발생한 예외를 처리하는 존재임을 명시
+@Log4j
+public class CommonExceptionAdvice {
+
+    @ExceptionHandler(Exception.class) //해당 메서드가 파라미터에 명시된 예외타입을 처리한다는 의미
+    public String except(Exception ex, Model model){
+
+        log.error("Exception ......" + ex.getMessage());
+        model.addAttribute("exception", ex);
+        log.error(model);
+        return "error_page";
+
+    }
+}
+```
+
+```xml
+//servlet-context.xml
+
+<context:component-scan base-package="org.zerock.exception" />
+```
+
+```html
+<body>
+
+    <h4><c:out value="${exception.getMessage()}"></c:out></h4>
+
+    <ul>
+        <c:forEach items="${exception.getStackTrace() }" var="stack">
+            <li><c:out value="${stack}"></c:out></li>
+        </c:forEach>
+
+    </ul>
+</body>
+```
+
+[404에러페이지]
+
+404와 500 에러코드가 가장 흔한에러일것이다.
+
+500에러는 Internal Server Error이므로 @Exceptionhandler를 이용해서 처리되지만
+
+잘못된 URL으로 인한 404에러는 좀 다르게 처리하는게 좋다.
+
+서블릿,jsp 당시 개발은 web.xml으로 별도의에러페이지를 지정할 수 있으나, 에러 발생시 추가작업을 하기 어렵기때문에 스프링을 이용해서 404와 같이 WAS 내부에서 발생하는 에러를 처리하는 방식을 알아두면 좋다.
+
+
+스프링 mvc의  모든 요청은 DispatcherServlet을 이용해서 처리되므로 404에러도 같이 처리할 수 있또록 web.xml을 수정한다.
+
+```xml
+<servlet>
+        <servlet-name>appServlet</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:spring/servlet-context.xml</param-value>
+        </init-param>
+        <!-- 추가된 부분 -->
+        <init-param>
+            <param-name>throwExceptionIfNoHandlerFound</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+```
+
+```java
+@ControllerAdvice //스프링컨트롤러에서 발생한 예외를 처리하는 존재임을 명시
+@Log4j
+public class CommonExceptionAdvice {
+
+    @ExceptionHandler(Exception.class) //해당 메서드가 파라미터에 명시된 예외타입을 처리한다는 의미
+    public String except(Exception ex, Model model){
+
+        log.error("Exception ......" + ex.getMessage());
+        model.addAttribute("exception", ex);
+        log.error(model);
+        return "error_page";
+
+    }
+
+    //추가된 부분
+    @ExceptionHandler(NoHandlerFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String handle404(NoHandlerFoundException ex){
+
+        return "custom404";
+    }
+
+
+}
+```
+
+JavaConfig
+---
+
+web.xml에 설정했던 throwExceptionIfNoHandleFound를 설정하기 위해서 서블릿 3.0이상을 이용해야만 하고 WebConfig 클래스를 아래와 같이 수정해야한다.
+
+
+```xml
+//(기본적으로 있던 servlet-api는 3.0 알파버전이 lastest버전인데 안되는걸로 보이고(예전모델) , 최근까지 버전이 나오고있는 javax.servlet-api의 3.1.0버전 사용.
+
+<dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>javax.servlet-api</artifactId>
+        <version>3.1.0</version>
+        <scope>provided</scope>
+    </dependency>
+```
+
+
+```java
+
+public class WebConfig extends AbstractAnnotationConfigDispatcherServletInitializer {
+
+
+    @Override
+    protected Class<?>[] getRootConfigClasses() {
+        return new Class[] {RootConfig.class};
+    }
+
+    @Override
+    protected Class<?>[] getServletConfigClasses() {
+        return new Class[] {ServletConfig.class};
+    }
+
+    @Override
+    protected String[] getServletMappings() {
+        return new String[] { "/"};
+    }
+
+	//추가된부분(servlet 3.0밑으로는 지원안됨)
+    @Override
+    protected void customizeRegistration(ServletRegistration.Dynamic registration){
+
+        registration.setInitParameter("throwExceptionIfNoHandlerFound","true");
+        
+    }
+}
+```
+
+
+-----------------------------------------
+
+###### 180914_5
+
+Mapper 인터페이스 빈 의존주입못받을떄
+-
+
+org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'org.zerock.mapper.BoardMapperTests': Unsatisfied dependency expressed through method 'setMapper' parameter 0; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'org.zerock.mapper.BoardMapper' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}
+
+Mapper를 주입 못받을때 주의사항으로
+
+mapper 인터페이스 는 component-scan이 아닌 mybatis-scan이 되어야 한다는점..
+
+```xml
+<mybatis-spring:scan base-package="org.zerock.mapper"></mybatis-spring:scan>
+```
+
+
+- [Mapper 인터페이스 빈 의존주입못받을떄](#180914_5)
+
+-----------------------------------------
+
+###### 180914_6
+
+driverClassName 프로퍼티 에러
+-
+
+ Error creating bean with name 'hikariConfig' defined in ServletContext resource [/WEB-INF/spring/root-context.xml]: Error setting property values; nested exception is org.springframework.beans.PropertyBatchUpdateException; nested PropertyAccessExceptions (1) are:
+PropertyAccessException 1: org.springframework.beans.MethodInvocationException: Property 'driverClassName' threw exception; nested exception is java.lang.ExceptionInInitializerError
+
+```xml
+<property name="driverClassName"
+				  value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"></property>
+```
+
+log4jdbc를 쓸떄 빈을 생성할수없고 driverClassName 에 대한 에러가있을떄
+
+단순히 root-context에 driverClassName의 value가 오타가 아니라면
+
+log4j를 위한 설정인
+
+log4jdbc.log4j2.properties의 내용관련 오타일 문제가 크다.
+
+// log4jdbc.log4j2.properties
+```
+log4jdbc.spylogdelegator.name=net.sf.log4jdbc.log.slf4j.Slf4jSpyLogDelegator
+```
+
+
+-----------------------------------------
+
+###### 180914_3
+
+Incompatible types. Found 
+-
+
+```
+Incompatible types. Found: 'java.lang.Class<org.springframework.web.servlet.NoHandlerFoundException>', required: 'java.lang.Class<? extends java.lang.Throwable>[]'
+```
+
+타입관련 에러가 났는데,
+
+404에러 관련 	
+@ExceptionHandler(NoHandlerFoundException.class)	
+
+위코드에 대한 에러인데 
+
+Servlet-api에 대한 dependency가 잘못되었다.
+
+이유는 모르겠으나 이 프로젝트만  servlet-api의 버전이 변경되어있었다.
+
+javax.servlet » servlet-api
+
+3.1.0 버전 -> 2.5 버전으로 내렸다.
+
+servlet-api가 작동이 안되서 에러가 난것..
+
+STS에서는 pom.xml이 바로 에러가 났는데
+(Missing artifact javax.servlet:servlet-api:jar:3.1.0)
+
+intellJ에서 그런 에러가 안뜬게좀 아쉽다.
+
+실제로 해당경로에 들어가면 디렉터리는 있지만 안에 jar가 없었다.
+
+아마 jar를 못불러 오는걸봐서 해당버전이 현재 mvn repository에서 지원안되고 있는 상황인가 하는생각이 든다.
+
+-----------------------------------------
+
+###### 180914_5
+
+Mapper 인터페이스 빈 의존주입못받을떄
+-
+
+org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'org.zerock.mapper.BoardMapperTests': Unsatisfied dependency expressed through method 'setMapper' parameter 0; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'org.zerock.mapper.BoardMapper' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}
+
+Mapper를 주입 못받을때 주의사항으로
+
+mapper 인터페이스 는 component-scan이 아닌 mybatis-scan이 되어야 한다는점..
+
+```xml
+<mybatis-spring:scan base-package="org.zerock.mapper"></mybatis-spring:scan>
+```
+
+
+
+
+
+
+
+
+
+- [ch3 (정리)](#180914_3)
+- [파일 업로드 처리](#180914_1)
+- [Controller의 Exception 처리](#180914_2)
+- [driverClassName 프로퍼티 에러](#180914_6)
+- [Incompatible types. Found](#180914_3)
+- [Mapper 인터페이스 빈 의존주입못받을떄](#180914_5)

@@ -5,12 +5,13 @@
 ### imgScalr
 
 > 이미지를 꺠끗하게 축소하는 라이브러리다
-
+```
 <dependency>
 			<groupId>org.imgscalr</groupId>
 			<artifactId>imgscalr-lib</artifactId>
 			<version>4.2</version>
 		</dependency>
+```
 ---
 
 ### multipartResolver
