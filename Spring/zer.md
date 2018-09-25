@@ -2317,6 +2317,9 @@ Spring MVC - Controller의 Exception처리방법
 RedirectAttributes 사용
 -
 
+RedirectAttribute는 일회성으로 데이터를 전달하때 유용하다.
+(내부적으로는 HttpSession을 이용해서 처리한다고한다.)
+
 ```java
   @RequestMapping(value = "/removePage/{category}", method = RequestMethod.POST)
 	  public String remove(@RequestParam("bno") int bno, SearchCriteria cri, RedirectAttributes rttr,@PathVariable("category")String category) throws Exception {

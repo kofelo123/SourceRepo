@@ -48,6 +48,8 @@
 
 - [LifeSoft - Jquery](#180907_6)
 
+- [jquery - 숫자,영문,특수문자만 넣고 나머지 지우기(정규식)](#180918_3)
+
 ---
 
 ### Form control
@@ -1640,6 +1642,100 @@ console.log(parseInt($("#slidemenu").css("top")));
 //결과 :50  (50px -> int형으로 바꾸면서 50만출력);
 
 
+
+
+
+
+-----------------------------------------
+
+###### 180918_3
+
+jquery - 숫자,영문,특수문자만 넣고 나머지 지우기(정규식)
+-
+
+```jsp
+<!DOCTYPE html>
+<html>
+<head>
+<title>Insert title here</title>
+
+
+
+<form name="formm">
+    <input  type="text" id="searchKeyword" >
+    <button type="submit" id="submit" ></button>
+</form>  
+
+
+
+
+</body>
+</html>
+
+<script
+  src="https://code.jquery.com/jquery-3.3.1.js"
+  integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+  crossorigin="anonymous"></script>
+<script>
+$(function(){
+
+    $("#searchKeyword").focus();
+    
+    
+    $("#searchKeyword").blur(function(event){
+	
+        var searchKeyword = $("#searchKeyword").val();
+		
+        var regexp = /[0-9a-zA-Z.;\-]/; // 숫자,영문,특수문자
+		// var regexp = /[0-9]/; // 숫자만
+        // var regexp = /[a-zA-Z]/; // 영문만
+        
+		var searchKeyword2=searchKeyword;
+		
+		 for( var i=0; i<searchKeyword.length; i++){
+			<!-- 영문,숫자,특수문자 제외하고는 한글같은것은 문자열에서 지워낸다  -->
+			if(searchKeyword.charAt(i) != " " && regexp.test(searchKeyword.charAt(i)) == false ){
+				$("#searchKeyword").val($("#searchKeyword").val().replace(searchKeyword.charAt(i),''));		
+			}
+		}
+		
+        var url="https://주소url?파라미터="+$("#searchKeyword").val();
+        window.open(url,'_blank')
+    });
+    
+
+
+});
+</script>
+
+</html>
+```
+
+제대로 짰는지 나중에 다시 해봐야 겠지만, 일단 구현한것 올림
+
+
+이와 같이 폼의 특정 input에 체크하는경우 
+
+1.타이핑으로 들어오는 키 이벤트를 뽑아 각 문자를 charCodeAt함수를 사용해 문자의 유니코드 값을 뽑아내서 검사하는 방법이 있고
+
+대략 아래와같이..
+```
+<!-- for(var i=0;i<searchKeyword.length; i++){
+			var unicode = searchKeyword.charCodeAt(i);
+			
+			if(!(unicode >= 48 && unicode <= 57) ||
+				 unicode >= 65 && unicode <= 90) ||
+				 unicode >= 97 && unicode <= 122)){
+					alert("숫자와 영문이 아님");
+				 }
+				 
+			
+		} -->
+```
+2.지금 구현한것처럼 문자열이나 각 문자에 정규식을 통해서 걸러내는 방법이있다.
+
+
+참고(http://beans9.tistory.com/154 )
 
 
 
