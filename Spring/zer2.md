@@ -4663,6 +4663,515 @@ security-context.xml 에서 빈을 추가해주고 로그인 성고후 처리를
 		<security:form-login login-page="/customLogin"
 							 authentication-success-handler-ref="customLoginSuccess" />
 
+## 로그아웃 처리와 LogoutSuccessHandler
+
+로그인과 마찬가지로 특정한 URI를 지정하고 , 로그아웃 처리후 직접 로직을 처리할 수있는 핸들러를 등록할 수 있다.
+
+```
+security-context.xml
+
+	<security:logout logout-url="/customLogout"
+			invalidate-session="true" />
+
+```
+
+
+
+로그아웃시 세션을 무효화 시키는 설정이나 특정 쿠키를 지우는 작업을 지정할 수 있다.
+
+
+
+로그아웃이 POST방식으로 이루어지기 때문에 CSRF 토큰값을 아래아 같이 지정해준다.
+
+
+
+```jsp
+
+<form action="/customLogout" method='post'>
+<input type="hidden"name="${_csrf.parameterName}"value="${_csrf.token}"/>
+<button>로그아웃</button>
+</form>
+
+
+```
+
+
+## JDBC를 이용하는 간편 인증/권한 처리
+
+
+인증,권한에 대한 처리는 크게보면 Authentication Manager를 통해 이루어지는데 이때 인증이나 권한 정보를 제공하는 존재(Provider)가 필요하고  다시 이를 위해 UserDetailService 라는 인터페이스를 구현한 존재를 활용하게 됨
+
+
+이 장에서 기존에 DB가 존재하는 상황에서 MyBatis나 기타 프레임워크 없이 사용하는 방법을 익혀본다
+
+기존의 `<security:user-service>` 에서 아래같이 변경
+
+```xml
+security-context.xml
+
+<security:jdbc-user-service data-source-ref="dataSource" /> 
+
+
+### Jdbc를 이용하기 위한 테이블 설정
+
+JDBC를 이용해서 인증/권한을 체크하는 방식은 크게
+
+1.지정된 형식으로 테이블생성해서 사용
+
+2. 기존에 작성된 DB를 이용하는 방식
+
+
+
+```xml
+//security-context.xml
+
+<security:authentication-manager>
+
+		<security:authentication-provider
+			user-service-ref="dataSource" />
+		</security:authentication-provider>
+
+	</security:authentication-manager>
+```
+
+문제는 시큐리티 5부터 기본적으로 PasswordEncoder를 지정해야하는데, 앞에서 임시로 '{noop}' 접두어를 통해 피해서 진행했지만,
+
+DB등을 이용하는경우는 PasswordEncoder를 이용해야한다.
+
+문제는 패스워드 인코디을 처리하고 나면 사용자 계정을 입력할떄부터 인코딩작업이 추가되어야 하기 때문에 할일이 많다는 점.
+
+스프링 시큐리티의 PasswordEncoder는 인터페이스로 설계되어있고 , 이미 여러 종류의 구현클래스가 존재한다.
+
+4버전부터는 별도의 PasswordEncoder를 이용하고싶지 않을떄 NoOpPasswordEncoder를 이용해서 처리했지만, 5버전부터는 사용못한다.
+
+직접 암호화 없는 PasswordEncoder를 구현해서 사용한다.
+
+CustomNoOpPasswordEncoder 클래스 생성
+
+```java
+@Log4j
+public class CustomNoOpPasswordEncoder implements PasswordEncoder {
+
+	public String encode(CharSequence rawPassword) {
+
+		log.warn("before encode :" + rawPassword);
+
+		return rawPassword.toString();
+	}
+
+	public boolean matches(CharSequence rawPassword, String encodedPassword) {
+
+		log.warn("matches: " + rawPassword + ":" + encodedPassword);
+
+		return rawPassword.toString().equals(encodedPassword);
+	}
+
+}
+
+```
+
+PasswordEncoer인터페이스의 encode()와 matches 메서드를 직접 처리했다.
+
+
+빈등록
+
+```xml
+//security-context.xml
+
+<bean id="customAccessDenied"
+		class="org.zerock.security.CustomAccessDeniedHandler"></bean>
+	<bean id="customLoginSuccess"
+		class="org.zerock.security.CustomLoginSuccessHandler"></bean>
+
+<bean id="customPasswordEncoder" class="org.zerock.security.CustomNoOpPasswordEncoder"></bean> 
+
+...
+
+
+<security:authentication-manager>
+
+		<security:authentication-provider>
+			<security:jdbc-user-service data-source-ref="dataSource" />
+
+		<security:password-encoder
+		ref="customPasswordEncoder" /> 
+
+		</security:authentication-provider>
+
+	</security:authentication-manager>
+
+
+```
+
+
+## 기존의 테이블을 이용하는 경우
+
+시큐리티가 기본적으로 이용하는 테이블 구조를 그대로 생성해서 사용하는 방식도 나쁘지않지만, 기존테이블을 사용할 수도 있다.
+
+<security:jdbc-user-service> 태그에 여러 속성이 있다.
+
+그 중 'user-by-username-query' 와 'authorities -by-user-name-query'속성에 적당한 쿼리문을 지정해주면 JDBC를 이용하는 설정을 그대로 사용할 수있다.
+
+# 인증/권한을 위한 테이블 설계
+
+
+이전과 달리 인코딩된 패스워드를 활용하여 좀 더현실적인 예제를 작성한다.
+
+
+## BCryptPasswordEncoder 클래스를 이용한 패스워드 보호
+
+시큐리티에서 제공되는 BCryptPasswordEncoder  클래스로 암호화처리를 해본다.
+
+bcrypt는 태생자체가 패스워드를 저장 하는 용도로 설계된 해시 함수로 특정 문자열을 암호화하고, 체크하는 쪽에서는 암호화된 패스워드인지만 확인하고 다시 원문으로 되돌리지는 못한다.
+
+
+```xml
+	<bean id="customAccessDenied"
+		class="org.zerock.security.CustomAccessDeniedHandler"></bean>
+	<bean id="customLoginSuccess"
+		class="org.zerock.security.CustomLoginSuccessHandler"></bean>
+
+	<!-- <bean id="customPasswordEncoder" class="org.zerock.security.CustomNoOpPasswordEncoder"></bean> -->
+
+	<bean id="bcryptPasswordEncoder"
+		class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+
+...
+
+	<security:authentication-manager>
+
+		<security:authentication-provider>
+			<security:jdbc-user-service data-source-ref="dataSource" /> 
+
+			<security:password-encoder
+				ref="bcryptPasswordEncoder" />
+
+		</security:authentication-provider>
+
+	</security:authentication-manager>
+	
+```
+
+(생략-테스트 아이디,권한 생성, 쿼리이용한 인증)
+
+
+
+# 커스텀 UserDetailsService 활용
+
+
+JDBC 이용방식 -> 편리 but  사용자의 여러 정보중 제한적 내용만 이용 (username)
+
+실제 프로젝트의 사용자이름이나 이메일등의 자세한 정보를 이용하기에 충분하지 못함.
+
+이를위해 UserDetailsService를 구현하는 방식을 이용하는 것이 좋다.
+
+흔히 커스텀 UserDetailsService라고 하는데, 이를 이용하면 원하는 객체를 인증과 권한 체크에 활용할 수 있기떄문에 많이 사용된다.
+
+
+UserDetailService 인터페이스는 loadUserByUsername()이라는 하나의 메서드만 가진다.
+
+반환되는 UserDetail 타입은 여러 추상메소드를 가지므로 직접 구현할지 UserDetails 인터페이스를 구현해둔 시큐리티의 여러 하위클래스를 사용할지 결정해야한다.
+
+일반적으로는 그 하위 클래스들 중 org.springframework.security.core.userdetails.User  클래스를 상속하는 형태이다.
+
+
+## 회원 도메인, 회원 Mapper 설계
+
+두개의 테이블 (member,auth) 테이블을 MemberMapper에서 사용한다. Member 객체를 가져오는경우 한번에 두 테이블을 조인해서 처리할수 있는 방식으로 MyBatis의 ResultMap을 사용
+
+```xml
+//MemberMapper.xml
+
+  <resultMap type="org.zerock.domain.MemberVO" id="memberMap">
+    <id property="userid" column="userid"/>
+    <result property="userid" column="userid"/>
+    <result property="userpw" column="userpw"/>
+    <result property="userName" column="username"/>
+    <result property="regDate" column="regdate"/>
+    <result property="updateDate" column="updatedate"/>
+    <collection property="authList" resultMap="authMap">
+    </collection> 
+  </resultMap>
+  
+  <resultMap type="org.zerock.domain.AuthVO" id="authMap">
+    <result property="userid" column="userid"/>
+    <result property="auth" column="auth"/>
+  </resultMap>
+  
+  <select id="read" resultMap="memberMap">
+SELECT 
+  mem.userid,  userpw, username, enabled, regdate, updatedate, auth
+FROM 
+  tbl_member mem LEFT OUTER JOIN tbl_member_auth auth on mem.userid = auth.userid 
+WHERE mem.userid = #{userid} 
+  </select>
+```
+
+
+```xml
+//security-context.xml
+
+...
+
+	<bean id="customUserDetailsService"
+		class="org.zerock.security.CustomUserDetailsService"></bean>
+
+...
+
+		<security:authentication-provider
+			user-service-ref="customUserDetailsService">
+
+		class="org.zerock.security.CustomUserDetailsService"></bean>
+
+```
+
+Mapper로 CustomUserDetailsService를 사용한다.
+
+
+...
+
+
+# 스프링 시큐리티를 JSP에서 사용하기
+
+
+/sample/admin 같은 경로는 로그인+권한 필요
+
+로그인 사용자 접근시 사용자의 여러 정보를 보여줄 필요가있다.
+
+시큐리티 관련 정보 출력하거나 사용시 JSP 상단에 시큐리티 관련 태그라이브러리를 선언하고 <sec:authentication> 태그와 principal이 라는 이름의 속성을 사용
+
+```jsp
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+    
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>    
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
+    
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<h1>/sample/admin page</h1>
+
+
+<p>principal : <sec:authentication property="principal"/></p>
+<p>MemberVO : <sec:authentication property="principal.member"/></p>
+<p>사용자이름 : <sec:authentication property="principal.member.userName"/></p>
+<p>사용자아이디 : <sec:authentication property="principal.username"/></p>
+<p>사용자 권한 리스트  : <sec:authentication property="principal.member.authList"/></p>
+
+
+<a href="/customLogout">Logout</a>
+
+
+</body>
+</html>
+
+```
+
+
+## 표현식을 이용하는 동적 화면 구성
+
+
+hasRole([role]) , hasAuthority([authority])
+-> 해당 권한이 있으면 true
+
+hasAnyRole([role,role2]), hasAnyAuthority([authority]) 
+-> 여러 권한들 중에서 하나라도해당하는 권한이 있으면 true
+
+principal : 현재 사용자 정보
+
+permitAll : 모든사용자에게 허용
+
+denyAll : 모든 사용자에게 거부
+
+isAnonymous() : 익명의 사용자의 경우(로그인을 하지 않은경우도 해당)
+
+isAuthenticated() : 인증된 사용자면 true
+
+isFullyAuthenticated() : Remember-me로 인증된 것이 아닌 인증된 사용자인 경우 true
+
+표현식은 거의 대부분 rue/false를 리턴한다.
+
+```jsp
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>    
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>    
+    
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<!-- all or member or admin -->
+<h1>/sample/all page</h1>
+
+
+<sec:authorize access="isAnonymous()">
+
+  <a href="/customLogin">로그인</a>
+
+</sec:authorize>
+
+<sec:authorize access="isAuthenticated()">
+
+  <a href="/customLogout">로그아웃</a>
+
+</sec:authorize>
+
+</body>
+</html>
+
+```
+
+
+# 자동로그인
+
+대부분 쿠키를 이용해서 구현된다.
+
+
+시큐리티의 경우 메모리상에서 처리하거나 , DB를 이용하는 형태로 약간의 설정만으로 구현이 가능하다.
+
+security-context.xml에서는 <security:remember-me> 태그를 이용해서 기능을 구현한다.
+
+주 속성은 다음과같다.
+
+key: 쿠키에 사용되는 값을 암호화하기위한 키(key)값
+
+data-source-ref: DataSource를 지정하고 테이블을 이용해서 기존 로그인 정보를 기록(옵션)
+
+remember-me-cookie: 브라우저에 보관되는 쿠기의 이름을 지정한다. 기본값은 'remember-me'
+
+remember-me-parameter: 웹 화면에서 로그인할때 'remember-me' 는 대부분 체크박스를 이용해서 처리한다. 이때 체크박스 태그는 name 속성을 의미
+
+token-validity-seconds: 쿠키의 유효시간을 지정
+
+
+## 데이터베이스를 이용하는 자동 로그인
+
+자동로그인 구현시 가장많이 사용하는 방식은
+
+정보를 DB저장 -> 사용자 재방문시 세션에 정보가 없으면 DB를 조회해서 사용하는 방식
+
+서버의 메모리상에만 데이터 저장하는것보다 좋은점은 DB에 정보가 공유되어 좀더 안정적 운영 가능
+
+따로 테이블을 생성하여 사용한다.
+
+```sql
+create table persistent_logins(
+username varchar(64) not null,
+series varchar(64) primary key,
+token varchar(64) not null,
+last_used timestamp not null);
+```
+
+자동 로그인에서 DB 사용하는 설정은 별도의 설정없이 data-source-ref 만 지정하면 된다.
+
+
+```xml
+<security:http>
+
+...
+
+	<security:remember-me
+			data-source-ref="dataSource" token-validity-seconds="604800" />
+
+```
+
+
+
+
+
+## 로그인 화면에 자동로그인 설정
+
+자동로그인은 로그인 화면에서 선택해서 처리되므로, 체크박스 형태로 구현하고 <input> 태그의 name 속성값은 'remember-me' 이다.
+
+
+```jsp
+<form role="form" method='post' action="/login">
+							<fieldset>
+								<div class="form-group">
+									<input class="form-control" placeholder="userid"
+										name="username" type="text" autofocus>
+								</div>
+								<div class="form-group">
+									<input class="form-control" placeholder="Password"
+										name="password" type="password" value="">
+								</div>
+								<div class="checkbox">
+									<label> <input name="remember-me" type="checkbox">Remember
+										Me
+									</label>
+								</div>
+								<!-- Change this to a button or input when using this as a form -->
+								<a href="index.html" class="btn btn-lg btn-success btn-block">Login</a>
+							</fieldset>
+							<input type="hidden" name="${_csrf.parameterName}"
+								value="${_csrf.token}" />
+						</form>
+
+```
+
+remember-me 이름으로 생성된 쿠키는 유효기간이 있으므로, 사용자는 브라우저를 완전히 종료한후 다시 /sample/admin 과 같이 로그인이 필요한 페이지에 접근해보면 정상적으로 로그인되는것을 확인할 수 있다.
+
+
+
+## 로그아웃시 쿠키 삭제
+
+자동 로그인 기능을 이용하는 경우에 사용자가 로그아웃을 하면 기존과 달리 자동 로그인에 사용하는 쿠키도 삭제 해주도록 
+
+쿠키를 삭제하는 항목을 security-context.xml에 지정한다.
+
+```xml
+
+<security:http>
+...
+
+	<security:logout logout-url="/customLogout"
+			invalidate-session="true" />
+
+...
+
+		<security:logout logout-url="/customLogout"
+			invalidate-session="true" delete-cookies="remember-me,JSESSION_ID" />
+
+</security:http>
+
+
+
+```
+
+별도의 설정이 없었다면 자동로그인에서 사용한 쿠키의 이름은 'remember-me' 였을거고, 톰캣을 통해 실행되고있으면 WAS가 발행하는 쿠키의 이름은 JSESSION_ID 이다. 
+
+톰캣이 발행하는 쿠키는 굳이 지정할 필요가 없지만 관련된 모든 쿠키를 같이 삭제해주는것이 좋다.
+
+-----------------------------------------
+
+###### 180925_2
+
+Java설정을 이용하는 경우의 스프링 시큐리티 설정
+-
+
+
+
+- [Java설정을 이용하는 경우의 스프링 시큐리티 설정](#180925_2)
+
+-----------------------------------------
+
+###### 180925_3
+
+어노테이션을 이용하는 스프링 시큐리티 설정
+-
+
+
+
+- [어노테이션을 이용하는 스프링 시큐리티 설정](#180925_3)
 
 
 -----------------------------------------
