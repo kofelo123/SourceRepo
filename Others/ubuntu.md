@@ -21,6 +21,7 @@
 - [Mysql 설치](#mysqlinstall)
 - [패키지 파일 삭제](#packagedelete)
 - [mv - 파일이동,파일이름 변경](#mv)
+- [우분투 터미널에서 sqlplus 접속](#181004_2)
 
 - [에러]
   - [write error in swap file](#error1)
@@ -996,4 +997,21 @@ hi.txt 파일을 이동시키는데 hello.txt로 파일이름까지 바꿔보자
 
 
 
+
+
+-----------------------------------------
+
+###### 181004_2
+
+우분투 터미널에서 sqlplus 접속
+-
+
+```
+$ cd /u01/app/oracle/product/11.2.0/xe/bin
+$ . ./oracle_env.sh
+$ sqlplus "/as sysdba"
+```
+참고 (오라클 설치할때 봤었던 블로그)
+
+https://sarc.io/index.php/oracledatabase/506-linux-oracle-database-11g-express-edition-oracle-xe-11-2-0-1-0-x86-64
 

@@ -1,5 +1,8 @@
 - [대문자->소문자 +문자 추가 (정규표현식 Pattern,Matcher 클래스 사용)](#8061991)
 - [자바 크롤링](#8062192)
+- [정리되어있는 lombok 사용법](#181006_4)
+
+- [롬복 toString 에러 ](#181006_5)
 
 ---
 
@@ -197,4 +200,87 @@ public class test {
 
 
 ```
+
+
+-----------------------------------------
+
+###### 181006_4
+
+정리되어있는 lombok 사용법
+-
+
+```java
+
+
+//lombok 사용법
+@Data
+@Getter @Setter
+@ToString
+public class TestDto {
+    private String id;
+    private String name;
+}
+  
+@Slf4j
+@log4j
+public class TestController {
+    public String test() {
+        log.info("긋");
+    }
+}
+  
+@Data = getter, setter, tostring, hashcode 등등을 자동으로 만들어준다.
+@Getter = getter를 자동으로 만들어준다.
+@Setter = setter를 자동으로 만들어준다.
+@ToString = toStirng을 자동으로 만들어준다.
+이클립스의 outline에 보면 메소드들이 만들어진걸 확인 할수 있다.
+  
+  
+@Slf4j = logback을 사용할 경우 logback은 slf4j를 기반으로 로그를 사용한다.
+@log4j = lo4j를 로그로 사용할경우
+  
+  
+lombok을 사용 하지 않을 경우 아래와 같이 logger클래스를 만들어서 사용을 하였을것이다.
+private final Logger logger = Logger.getLogger(this.getClass());
+  
+  
+하지만 lombok을 사용하면
+@Slf4j 어노테이션 하나로 인해 간편하게 로거를 사용할수 있다.
+  
+  
+ex)
+@Slf4j
+class AbcController {
+  public tmpMethod() {
+     log.info("so good!!")
+  }
+}
+ 
+@EqualsAndHashCode
+이퀄과 해시코드를 만들어줍니다.
+@NoArgsConstructor
+매개변수가 없는 생성자를 만들어줍니다.
+@AllArgsConstructor
+모든필드가 매개변수에 들어간 생성자를 만들어줍니다.
+@Builder
+클래스를 빌더패턴으로만들수 있게 해줍니다.
+
+```
+출처: http://pstree.tistory.com/122 [Hello World!! PsTree]
+
+
+
+
+-----------------------------------------
+
+###### 181006_5
+
+롬복 toString 에러 
+-
+
+커스텀이 getter등이 있을때는 
+
+롬복의 toString을 사용하면 에러가났다.
+
+405 같은 에러가 뜨고 메시지도 딱히 안떠서 곤혹스러웠다.
 

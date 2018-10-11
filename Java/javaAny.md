@@ -35,9 +35,10 @@
 - [자바 5대원칙](#180819_2)
 - [50% 확률로 발생시키기](#180823_2)
 
+- [자바 람다식에 대해](#181004_1)
 
 - [error]
-  
+  - [에러처리가 안되어있다는 메시지](#181009_4)
 
 ### replaceAll
 > //모든 \n을 <b.r/>으로 변경한다.(textarea에서 개행시 \n으로 되는것을 변환하는 코드에서)  
@@ -945,5 +946,51 @@ DIP(의존 역전 원칙): 자신보다 변하기 쉬운 것에 의존하지 마
 
 if(Math.random() < 0.5)
 
+
+
+
+-----------------------------------------
+
+###### 181004_1
+
+자바 람다식에 대해
+-
+
+
+OOP 언어인 자바에서 함수형 코드를작성 할 수있게 해준다.
+
+간결하고 명확한 코드로 그 의도를 표현가능
+
+놀라운 코드 생산성을 보임
+
+### for-each의 람다표현
+
+```
+
+ArrayList arrayList= new ArrayList<>(); 
+for(int i=1; i<=100; i++) 
+arrayList.add(i); 
+ 
+//일반적인 for-loop 문 
+for(Integer i: arrayList)
+{ System.out.println(i); 
+} 
+ 
+//lambda식으로 표현한 for-loop문 
+arrayList.forEach( i -> {System.out.println(i);});
+```
+
+-----------------------------------------
+
+###### 181009_4
+
+에러처리가 안되어있다는 메시지
+-
+
+Unhandled exception: java.lang.Exception
+
+에러처리가 안되어있다는 메시지
+
+try catch나 exception 던지는 처리가 안될때 위와같이 에러난다.
 
 

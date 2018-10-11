@@ -1,7 +1,12 @@
 - [ZipException: invalid LOC header](#8623_94)
-
-
+- [프로젝트 전체가 404에러 날떄](#8624_111)
+- [Removing obsolete files from server..](#0623_100)
 ---
+
+###### 0623_100
+
+Removing obsolete files from server..
+-
 
 Removing obsolete files from server..
 Could not clean server of obsolete files: null
@@ -17,12 +22,6 @@ java.lang.NullPointerException
 
 이쪽에서 실제로 배포되는 수행되는 server.xml이  롤백이 안되고 오류코드 그대로 수정안되고있었다.
 
-
-
-
-
-
----
 
 ---
 
@@ -43,7 +42,7 @@ maven repository 내부 삭제하고 maven update project해주면 된다.
 
 
 ---
-- [프로젝트 전체가 404에러 날떄](#8624_111)
+
 
 ###### 8624_111
 

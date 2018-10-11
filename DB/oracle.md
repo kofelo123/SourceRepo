@@ -66,6 +66,10 @@
 - [뷰](#view)
 - [테이블삭제관련](#tabledrop)
 
+
+- [오라클 비밀번호 유요기간 만료](#181004_3)
+
+
 - [Error]
   - [null for parameter](#nullforparameter)
   - [value too large](#valuetoolarge)
@@ -2448,6 +2452,71 @@ SELECT EMPNO,
 FROM EMP
 WHERE SAL < 2000;
             
+```
+
+
+
+
+
+-----------------------------------------
+
+###### 181004_3
+
+오라클 비밀번호 유요기간 만료
+-
+
+ORA-28001: the password has expired
+
+오라클의 계정은 보통 보안을 위해 유효기간이 180일로 설정되었는데 이 유효기간이 지났을 경우에 이 에러가 발생함.
+
+
+이같은 경우 우분투에 직접 들어가서 로그인을 하면 다시 비밀번호 재설정 하도록 
+
+```
+Enter user-name: momstouch
+Enter password:
+ERROR:
+ORA-28001: the password has expired
+
+
+Changing password for momstouch
+New password:
+Retype new password:
+Password changed
+
+```
+
+이렇게 되긴한데, 애초에 그 설정을 아래와같이 변경
+
+
+해결방안) DEFAULT (유효기간)로 설정되어 있는 유효기간을 UNLIMITIED로 수정 해준다.
+
+('아래는 시도해 보진않았다')
+
+
+```
+-- UNLOCK ACCOUNT  
+
+alter user <username> identified by <password> account unlock;
+
+
+
+-- GET PROFILE OF THE ACCOUNT
+
+SELECT USERNAME, PROFILE, ACCOUNT_STATUS FROM DBA_USERS;
+
+
+
+-- SET PROFILE PASSWORD TO UNLIMITED
+
+alter profile DEFAULT limit password_life_time UNLIMITED;
+
+
+
+-- CHECK SETTING
+
+select resource_name,limit from dba_profiles where profile='DEFAULT';
+
 ```
 
 

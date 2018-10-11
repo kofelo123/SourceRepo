@@ -41,12 +41,20 @@
 - [ch6. 파일업로드 방식](#180918_12)
 - [ch7. 스프링 웹 시큐리티](#180918_13)
 - [log 사용안될떄](#180918_14)
+- [Java설정을 이용하는 경우의 스프링 시큐리티 설정](#180925_2)
+- [어노테이션을 이용하는 스프링 시큐리티 설정](#180925_3)
+- [기존 프로젝트에 스프링 시큐리티 접목하기](#180929_1)
+
+
 ---
 
 
 - [settings](#settings)
 - [lombok 라이브러리](#lombok)
 ---
+
+
+- [Mapper인터페이스와 @Param ](#181009_5)
 
 
 ###### settings
@@ -5160,7 +5168,6 @@ Java설정을 이용하는 경우의 스프링 시큐리티 설정
 
 
 
-- [Java설정을 이용하는 경우의 스프링 시큐리티 설정](#180925_2)
 
 -----------------------------------------
 
@@ -5169,9 +5176,66 @@ Java설정을 이용하는 경우의 스프링 시큐리티 설정
 어노테이션을 이용하는 스프링 시큐리티 설정
 -
 
+xml이나 java 설정도 괜찮지만, 매번 필요한  URL에 따라 설정을 변경하는 일이 번거롭다.
+
+시큐리티 역시 다른 기능들처럼 어노테이션으로 필요한 설정을 추가할 수있다.
+
+@Secured: 스프링 초기부터 사용, () 안에 'ROLE_ADMIN' 과 같은 문자열 혹은 문자열 배열을 이용한다.
+
+@PreAuthorize, @PostAuthorize: 3버전부터 지원되며, () 안에 표현식을 사용할 수 있으므로 최근에는 더 많이 사용됨
+
+```java
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MEMBER')")
+  @GetMapping("/annoMember")
+  public void doMember2() {
+    
+    log.info("logined annotation member");
+  }
+  
+  
+  @Secured({"ROLE_ADMIN"})
+  @GetMapping("/annoAdmin")
+  public void doAdmin2() {
+
+    log.info("admin annotaion only");
+  }
+```
+
+@Secured에는 단순 값만을 추가할 수있으므로 여러 개를 사용할떄는 배열로 표현한다.
 
 
-- [어노테이션을 이용하는 스프링 시큐리티 설정](#180925_3)
+주의사항으로 컨트롤러에 사용하는 스프링 시큐리티의 어노테이션을 활성화 하기 위해서는 
+
+security-context.xml이 아닌, servlet-context.xml에 관련설정이 추가되어야 한다.
+
+
+servlet-context.xml 에 security 네임스페이스를 추가하고 (자동으로 추가되는 5.0 말고, 4.2나 버전정보를 없애야한다.)
+
+```xml
+//servlet-context.xml
+	
+    <security:global-method-security
+		pre-post-annotations="enabled" secured-annotations="enabled" />
+
+```
+
+기본으로 disabled 되어있는 것을 enabled 해준다.
+
+
+
+### Java Config 를 사용하는 경우는
+
+```java
+//ServletConfig.xml
+@EnableWebMvc
+@ComponentScan(basePackages = { "org.zerock.controller" })
+@EnableGlobalMethodSecurity(prePostEnabled=true, securedEnabled=true)
+public class ServletConfig implements WebMvcConfigurer {
+```
+
+
+
+
 
 
 -----------------------------------------
@@ -5198,5 +5262,81 @@ log 가 안될때
 
 
 
+----------------------------
 
+###### 180929_1
+
+기존 프로젝트에 스프링 시큐리티 접목하기
+-
+
+## Ajax와 스프링 시큐리티 처리
+
+Ajax를 시큐리티에서 처리할때 약간 추가적인 설정이 필욯다.
+
+시큐리티가 적용되면 POST, PUT, PATCH, DELETE와 같은 방식으로 데이터 전송시 반드시 추가적으로
+
+'X-CSRF-TOKEN' 와 같은 헤더정보를 추가해서 CSRF 토큰값을 전달하도록 수정해야 한다.
+
+Ajax는 JavaScript를 이용하기 때문에 브라우저에서는 CSRF 토큰과 관련된 값을 변수로 선언하고, 전송 시 포함시켜주는 방식으로 수정한다.
+
+
+```js
+
+  var csrfHeaderName ="${_csrf.headerName}"; 
+  var csrfTokenValue="${_csrf.token}";
+
+  
+  $("input[type='file']").change(function(e){
+
+    var formData = new FormData();
+    
+    var inputFile = $("input[name='uploadFile']");
+    
+    var files = inputFile[0].files;
+    
+    for(var i = 0; i < files.length; i++){
+
+      if(!checkExtension(files[i].name, files[i].size) ){
+        return false;
+      }
+      formData.append("uploadFile", files[i]);
+      
+    }
+    
+    $.ajax({
+      url: '/uploadAjaxAction',
+      processData: false, 
+      contentType: false,
+      beforeSend: function(xhr) { //추가적인 헤더지정해서 전송 
+          xhr.setRequestHeader(csrfHeaderName, csrfTokenValue);
+      },
+      data:formData,
+      type: 'POST',
+      dataType:'json',
+        success: function(result){
+          console.log(result); 
+		  showUploadResult(result); //업로드 결과 처리 함수 
+
+      }
+    }); //$.ajax
+    
+  });  
+  ```
+
+
+
+
+
+-----------------------------------------
+
+###### 181009_5
+
+Mapper인터페이스와 @Param 
+-
+
+org.apache.ibatis.binding.BindingException: Parameter 'cri' not found. Available parameters are [0, 1, 2, 3, param3, param4, param1, param2] 
+
+기존방식의 다중 파라미터를 Map에 담는 상황에서
+
+Mapper 인터페이스를 사용할때 파라미터로 @Param을 써줘야 한다.
 

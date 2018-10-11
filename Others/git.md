@@ -35,18 +35,23 @@
   - [rebase -i  - 커밋 이력 편집하기](#8629_82)
   - [브랜치상의 커밋을 하나로 모아 병합](#8629_91)  
 
+
 - [stash](#180806_10)
 - [git 유용한 설명 및 명령어](#180819_13)
+
+
 
 --
 
 - [Git에서 특정 커밋을 삭제](#180902_5)
 
 
+
+
 - [에러](#error)
   - [add - 줄바꿈관련에러](#adderror)
   - [두개의 히스토리 가진 프로젝트병합](#refusingtomerge)
-
+  - [체크아웃 이슈](#181006_1)
 
 ---
 
@@ -1752,5 +1757,38 @@ git push --force
 ```
 
 https://okky.kr/article/498353
+
+
+-----------------------------------------
+
+###### 181006_1
+
+체크아웃 이슈
+-
+
+your local changes to the following files would be overwritten by checkout
+
+A브랜치서 B브랜치로 체크아웃 할떄 A브랜치의 커밋이나 stash되지않은 변경사항이 B브랜치와 충돌하며 발생하는 것으로 보인다. ->커밋or stash 필요
+
+
+A브랜치에서 작업후 B브랜치로 이동하면 작업내용도 그대로 B로 가는 과정에서 충돌이 날수도 있다. A브랜치에서 커밋을 하고 B브랜치로 체크아웃을 하던지, 아니면 그외에 Stash에 저장하는 바법이 있다.
+
+즉 현재 진행중 작업을 git stash로 저장후 다른 브랜치로 이동하여 그쪽 작업한후 다시 돌아와 stash를 복구해서 작업을 계속 할 수있다.
+
+```
+git stash : 스테이시로 안전하게 보관
+
+git stash list : 스테이시 목록 조회
+
+git stash pop : 저장내용을 복구
+
+git stash apply : stash에 저장된 내용을 다른 브랜치에 적용
+
+git stash drop : stash에 저장된 내용 삭제
+
+```
+
+https://mylko72.gitbooks.io/git/content/_stash.html
+
 
 
