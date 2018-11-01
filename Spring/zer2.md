@@ -46,6 +46,12 @@
 - [기존 프로젝트에 스프링 시큐리티 접목하기](#180929_1)
 
 
+
+- [타 xml간의 빈사용](#181024_1)
+- [hasRole과 hasAuthority 차이](#181024_7)
+- [시큐리티로그인-default-target-url 설정](#181024_8)
+- [js에서 시큐리티에 로그인되어있는 유저 정보 가져오기](#181024_9)
+
 ---
 
 
@@ -55,7 +61,7 @@
 
 
 - [Mapper인터페이스와 @Param ](#181009_5)
-
+- [잘못 업로드된 파일 삭제](#181015_1)
 
 ###### settings
 
@@ -2032,6 +2038,8 @@ SelectKey
 MyBatis에서 SelectKey는 주로 값을 미리 SQL을 통해서 처리해두고 특정한 이름으로 결과를 보관하는방식.
 
 @Insert할떄 SQL문을 보면 #{bno}와 같이 미리 처리된 결과를 이용하는것을 알 수있다.
+
+('기존의 insert문에 seq_board.nextval 이런식으로만 처리하면 입력만되고 sql을 한번실행, selectkey 사용하면 sql문 2번 실행하는 대신 그 시퀀스값을 리턴해서 활용가능')
 
 ```java
 public void insertSelectKey(BoardVO board);
@@ -5339,4 +5347,217 @@ org.apache.ibatis.binding.BindingException: Parameter 'cri' not found. Available
 기존방식의 다중 파라미터를 Map에 담는 상황에서
 
 Mapper 인터페이스를 사용할때 파라미터로 @Param을 써줘야 한다.
+
+
+
+-----------------------------------------
+
+###### 181015_1
+
+잘못 업로드된 파일 삭제
+-
+
+Ajax 로 첨부파일 사용시 게시물 등록이전에 업로드되기 때문에, 첨부파일만 등록하고 게시물이 등록되지 않을때가 생긴다.
+
+업로드 -> 게시물등록(submit) 간의 시점차이로 인해서 업로드만 된 상태일때.
+
+파일은 업로드되어있고, DB에는 기록되지 않기때문에 이 둘을 비교하여 불필요한 파일을 삭제해주는 작업.
+
+반드시 오늘 날짜로 해서는 안된다(현재 작성중인 게시물의 업로드파일이 삭제될수있음)
+
+
+주기적 동작이 필요해서 스케줄링을 할 수있는 Spring-Batch나 Quartz 라이브러리를 사용할수있다.
+
+### Quartz 라이브러리 설정
+
+```xml
+//pom.xml
+
+	<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz-jobs</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+
+
+```
+
+```xml
+//root-context.xml
+
+xmlns:task="http://www.springframework.org/schema/task"
+
+//schemaLocation
+http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.3.xsd
+
+. . .
+
+<task:annotation-driven/>
+
+```
+
+
+```java
+
+//불필요한 파일 삭제 - task 작업때 파일들 불러오기 위해서 생성
+@Data
+public class BoardAttachVO {
+
+    private String fullName;
+    private int bno;
+    private Date regdate;
+    private int imgnum;
+    private boolean fileType;
+}
+
+```
+
+```java
+    @Select("SELECT * FROM " +
+            "tbl_attach " +
+            "WHERE DATE_FORMAT(regdate,'%y-%m-%d') = DATE_FORMAT(CURDATE() - INTERVAL 1 DAY,'%y-%m-%d')")
+    public List<BoardAttachVO> getOldFiles();
+```
+
+```java
+
+@Log4j
+@Component
+public class FileCheckTask {
+
+
+
+    @Setter(onMethod_ = { @Autowired})
+    private BoardMapper mapper;
+
+    private String getFolderYesterDay(){
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+        Calendar cal = Calendar.getInstance();
+
+        // 어제날짜 (ex 오늘이 16일이면 -> Mon Oct 15 11:58:55 KST 2018)
+        cal.add(Calendar.DATE, -1);
+
+        String str = sdf.format(cal.getTime());//2018-10-15
+
+        return str.replace("-", File.separator); // 2018\10\15
+
+    }
+
+    @Scheduled(cron="0 0 2 * * *") //매일 새벽 2시에 동작
+    public void checkFiles()throws Exception{
+
+        log.info("File Check Task run...........");
+        log.warn(new Date());
+
+        //파일리스트 in DB
+        List<BoardAttachVO> fileList = mapper.getOldFiles();
+
+        //썸네일이 아닌 파일
+        List<Path> fileListPaths = fileList.stream()
+                                    .map(vo -> Paths.get("C:\\zzz\\upload"
+                                                            ,vo.getFullName())).collect(Collectors.toList());
+
+        //이미지파일- 썸네일파일
+//        fileList.stream().filter(vo -> vo.isFileType() == true)
+            fileList.stream()
+                .map(vo -> Paths.get("C:\\zzz\\upload", vo.getFullName().substring(0,11).replace("/",File.separator)
+                        , "s_" + vo.getFullName())).collect(Collectors.toList())
+                                    .forEach(p -> fileListPaths.add(p));
+
+
+            log.warn("=================================");
+
+            fileListPaths.forEach(p -> log.warn(p)); //DB에 등록된파일
+
+            //어제날짜경로의 업로드된 모든파일(DB등록 안된것까지모두)
+            File targetDir = Paths.get("C:\\zzz\\upload",getFolderYesterDay()).toFile();
+
+            File[] removeFiles = targetDir.listFiles(file -> fileListPaths.contains(file.toPath()) == false); //모든파일 - DB에 있는 파일 = 지워야할 파일
+
+            log.warn("------------------");
+            for(File file : removeFiles ){
+                log.warn(file.getAbsolutePath());
+                file.delete();
+            }
+
+
+
+
+    }
+
+
+
+}
+
+
+```
+
+-----------------------------------------
+
+###### 181024_1
+
+타 xml간의 빈사용
+-
+
+```<security:remember-me data-source-ref="dataSource" token-validity-seconds="604800" />```
+
+security-context.xml 에서
+
+없는 빈인데 root-context.xml에 선언되어있는 빈을 바로 쓸수있는거같다.
+
+
+
+-----------------------------------------
+
+###### 181024_7
+
+hasRole과 hasAuthority 차이
+-
+
+If you use hasRole('ADMIN'), in your ADMIN Enum must be ROLE_ADMIN instead of ADMIN.
+If you use hasAuthority('ADMIN'), your ADMIN Enum must be ADMIN.
+In spring security, hasRole() is the same as hasAuthority(), but hasRole() function map with Authority without ROLE_ prefix.
+
+hasRole('ADMIN')은 실제 값으로써 ROLE_ADMIN 을 의미하고
+hasAuthority('ADMIN')는 실제 값으로써 ADMIN을 으미한다.
+
+- [hasRole과 hasAuthority 차이](#181024_7)
+
+-----------------------------------------
+
+###### 181024_8
+
+시큐리티로그인-default-target-url 설정
+-
+
+```<security:form-login login-page="/user/login" default-target-url="/sboard/main" />```
+
+여기서 default-target-url이란게 있는데 즉 목적지 없이 로그인된 녀석일경우 기본 url을 / 이 아닌 /sboard/main으로 해주는 녀석으로 보인다. 
+
+
+-----------------------------------------
+
+###### 181024_9
+
+js에서 시큐리티에 로그인되어있는 유저 정보 가져오기
+-
+
+```js
+->     var replyer = '';
+    
+    <sec:authorize access="isAuthenticated()">
+    
+    replyer = '<sec:authentication property="principal.username"/>';   
+    
+</sec:authorize>
+```
+
 

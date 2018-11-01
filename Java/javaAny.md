@@ -38,7 +38,11 @@
 - [자바 람다식에 대해](#181004_1)
 
 - [error]
-  - [에러처리가 안되어있다는 메시지](#181009_4)
+    - [ZipException: invalid LOC header](#8623_94)
+    - [프로젝트 전체가 404에러 날떄](#8624_111)
+    - [Removing obsolete files from server..](#0623_100)
+    
+    - [에러처리가 안되어있다는 메시지](#181009_4)
 
 ### replaceAll
 > //모든 \n을 <b.r/>으로 변경한다.(textarea에서 개행시 \n으로 되는것을 변환하는 코드에서)  
@@ -963,6 +967,54 @@ OOP 언어인 자바에서 함수형 코드를작성 할 수있게 해준다.
 
 놀라운 코드 생산성을 보임
 
+
+메서드를 하나만 가지는 인터페이스를 함수형 인터페이스라고 한다.
+
+자바에서는 객체를 생성해야 메소드를 전달가능하기 때문에, 매번 객체새성->메소드 전달.
+
+이것을 해소하는게 람다
+
+객체 자체를 직접 생성하지않고, 메소드에 @Override, 메소드명 이런것들 정의부분을 빼고 실제 구현부만 남긴다.
+
+
+람다식은 다른말로 익명메서드라고 부르기도 한다.
+
+
+### 람다식문법
+
+(매개변수 목록) -> {실행문}
+
+
+
+일반클래스 -> 익명클래스 -> 람다
+
+
+
+일반 -> 익명
+
+클래스의 정의부분 생략가능
+
+인스턴스를 만들고 메소드를 호출하는것 밖에 안되지만, 그것을 생략하기 위해서 익명클래스
+
+
+ ![](https://drive.google.com/uc?export=view&id=1Ksxr2uY8a7_ybaHU6SYIMNZnXKwVucV1)
+
+
+익명 -> 람다
+
+코드를 확줄여주고, 그로인해 가독성도 높아진다.
+
+
+람다는 컴파일러가 유추할수 있는것들은 생략한다는 개념이다.
+
+
+
+책에서 forEach를 람다로 썻다기보다.
+
+Iterator.forEach() 라는게 람다식으로 쓸수있는 자바8부터 지원되는 메소드인것같다.
+
+Iterator만 가능한듯,.
+
 ### for-each의 람다표현
 
 ```
@@ -980,6 +1032,8 @@ for(Integer i: arrayList)
 arrayList.forEach( i -> {System.out.println(i);});
 ```
 
+
+
 -----------------------------------------
 
 ###### 181009_4
@@ -994,3 +1048,69 @@ Unhandled exception: java.lang.Exception
 try catch나 exception 던지는 처리가 안될때 위와같이 에러난다.
 
 
+
+
+---
+
+###### 0623_100
+
+Removing obsolete files from server..
+-
+
+Removing obsolete files from server..
+Could not clean server of obsolete files: null
+java.lang.NullPointerException
+
+이클립스의 server.xml을 수정했다가 에러나서 롤백 해놨는데
+
+이것이 작업환경인 이클립스가 아닌 실제 베포하는
+
+.metadata/.plugins/org.eclipse.wst.server.core 이쪽에서 실제로 수행되는 쪽인거같은데
+
+이클립스없이 서버로 배포할떄는 war가 풀리고 이클립스에서는 워크스페이스의 이쪽에서 풀리는것같다
+
+이쪽에서 실제로 배포되는 수행되는 server.xml이  롤백이 안되고 오류코드 그대로 수정안되고있었다.
+
+
+---
+
+
+###### 8623_94
+
+ZipException: invalid LOC header
+-
+
+error message:
+java.util.zip.ZipException: invalid LOC header (bad signature)
+
+pom.xml에 특정 dependency 추가할때 에러생길수있다.
+
+내부 dependency 의 jar파일 관련 에러
+
+maven repository 내부 삭제하고 maven update project해주면 된다.
+
+
+---
+
+
+###### 8624_111
+
+프로젝트 전체가 404에러 날떄
+-
+
+잘되던 프로젝트가 갑자기 실행시 모든 페이지에 404에러가 났다.
+
+path관련문제, maven update, 여러가지 해봐도 안될때 ..
+
+1. 톰캣서버에서 해당프로젝트를 삭제
+
+2. 톰캣을 Clean
+
+3. Project > Clean
+
+4. 톰캣에서 해당 프로젝트 다시 Add
+
+5. 톰캣 실행
+
+
+정확한 이유는 모르겠으나, 톰캣 서버 내부에서의 잘못된 문제가 계속 해결안되고 얽혀있는것같다.

@@ -16,10 +16,14 @@
 - [auto commit 여부 확인](#180819_12)
 - [우분투서버 - mybatis 값을 못가져올떄](#180820_1)
 - [mysql 유저생성(워크밴치)](#180830_5)
+- [제약조건 조회](#181024_4)
+- [외래키추가](#181024_6)
+
 
 - [Error]
   - [버퍼풀 메모리 관련 오류](#bufferpoolmemoryisuue)
   - [mysql접속 오류1045](#mysqlconnectissue)
+  - [부모,자식 외래키 간의 데이터 불이치 에러](#181024_5)
 
 ---
 
@@ -577,4 +581,43 @@ mysql 유저생성(워크밴치)
 좌측 MANAGEMENT - Users and Privileges -> Add Account -> Schema Privileges에서 권한 주면됨
 
 
+
+-----------------------------------------
+
+###### 181024_4
+
+제약조건 조회
+-
+
+mysql [test_db] > SELECT constraint_name, constraint_type
+    -> FROM information_schema.table_constraints
+    -> WHERE table_name = 'test05';
+
+
+
+
+
+-----------------------------------------
+
+###### 181024_5
+
+부모,자식 외래키 간의 데이터 불이치 에러
+-
+
+Cannot add or update a child row: a foreign key constraint fails 
+
+
+조금 더 확인해보니 참조테이블에 들어갈 수 있는 값은 부모테이블의 부모키에 
+존재하는 값만 들어갈 수 있더군요 (중복은 OK) 
+
+'외래키를 추가하려고 했는데 안된다. -> 이유는 두 테이블간의데이터 일치하지않았기 때문..'
+
+-----------------------------------------
+
+###### 181024_6
+
+외래키추가
+-
+
+ALTER TABLE tbl_member_auth ADD FOREIGN KEY (uid) REFERENCES tbl_user(uid);
 

@@ -3975,6 +3975,7 @@ handlerMethod
 세션과다 -> 서버 성능 영향 -> 세션 자동 정리 기능
 (web.xml에서 HttpSession의 timeout을 지정가능)
 
+```java
 public class LoginInterceptor extends HandlerInterceptorAdapter{
 	
 	private static final String LOGIN = "login";
@@ -4013,6 +4014,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter{
 		}
 	}
 }
+```
 
 ```xml
 //servlet-context.xml
@@ -4033,9 +4035,11 @@ public class LoginInterceptor extends HandlerInterceptorAdapter{
 
 ${login.uid} 와 같은형태로 사용할 수있다.
 
+```
 <c:if test="${login.uid == boardVO.writer}">
 /
 <c:if test="${not empty login}">
+```
 
 ---
 
@@ -4096,8 +4100,10 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 기존 URI 세션에 담아두기
 -
 
+(바로 윗부분과 연결되는 개념이니 같이본다.)
+
 ```java
-//AutoInterceptor.java
+//AuthInterceptor.java
 
 	//기존 URI 세션에 저장하기
 	private void saveDest(HttpServletRequest req) {
@@ -4116,6 +4122,26 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 		req.getSession().setAttribute("dest", uri + query);
 		}
 	}
+  //그래서 세션에 저장한후에 실제로 적용하는것은? 아래와 같이 LoginInterceptor의 후처리에있다.
+
+  ```java
+  . . .
+
+   Object dest = session.getAttribute("dest");
+      System.out.println("destTest:"+dest);///원래 가려고 했던 경로 (AuthInterceptoer로 부터 세션저장됨.)
+      
+      /*아래 ban체크용 */
+      UserVO uvo=(UserVO) userVO;
+      if(uvo.getAuthority().equals("ban")){
+    	  session.removeAttribute(LOGIN);
+   	   response.sendRedirect("/thearc/ban");
+      }else//원래 아래 코드만 있었는데 sendredirect 두번 처리하는 에러떄문에 여기서 분기문을 둠.
+      response.sendRedirect(dest != null ? (String)dest : "/thearc/sboard/main"); //로그인성공시 이부분 작동
+      
+     . . .
+    ```
+
+
 ```
 
 

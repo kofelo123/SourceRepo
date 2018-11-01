@@ -32,6 +32,7 @@
 	- [Error configuring application listener](#8728_2)
 	- [떄떄로 올바른 설정이나 객체를 인식못할떄](#8728_3)
 	- [스프링 컨텍스트 - 네임스페이스 관련에러](#180823_1)
+	- [log4j dependency 추가되지 않았을떄 에러](#181016_2)
 ---
 
 ### requestparam
@@ -785,4 +786,28 @@ return "redirect:/~"  -> jsp 파일이 아니라 Controller 의 requestMapping �
 즉 위와 같이 xmlns="http://www.springframework.org/schema/security" 항목을 추가하면
 http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd" 도 xsi:schemaLocation에 추가해 주어야 한다.
 ```
+
+
+-----------------------------------------
+
+###### 181016_2
+
+log4j dependency 추가되지 않았을떄 에러
+-
+
+Cannot resolve method 'warn 
+Cannot resolve method 'info 
+
+```xml
+//pom.xml
+
+    <dependency>
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+        <version>1.2.17</version>
+    </dependency>
+
+
+```
+
 
