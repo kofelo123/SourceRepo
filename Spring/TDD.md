@@ -3,6 +3,8 @@
 - [CH3.좀더 나은 TDD](#180830_3)
 - [Ch.4 Mock 사용](#180901_2)
 
+
+- [junit테스트에서 profile설정](#181201_16)
 -----------------------------------------
 
 ###### 180815_1
@@ -421,4 +423,36 @@ Mock 객체는 행위를 기반으로 테스트 케이스를 작성
 
 
 
+
+
+-----------------------------------------
+
+###### 181201_16
+
+junit테스트에서 profile설정
+-
+
+SpelEvaluationException ...
+
+
+Property or field 'config' cannot be found on object of type 'org.springframework.beans.factory.config.BeanExpressionContext' - maybe not public?
+
+
+junit 테스트에서 
+
+*///profile설정후 hikariconfig의 value "#{config.url}" 다른빈에서 값을 가져오는 부분을 못읽고 있다.
+
+web.xml의 프로파일을 못읽어오는것으로 추리 하고 있었다. 이를 어떻게 읽어오나 몰랐는데 여러 단어로 검색하다가 
+spring profile junit으로 검색하여
+stackoveflow에서 연관된 어노테이션의 흰트를 얻을수있었다.
+
+그러나 @ActiveProfiles(profiles = "local")
+
+로 해결함..(@ActiveProfiles는 profile지정하기, 테스트에서 많이사용)
+
+
+@Profile("")
+이 어노테이션은 직접 지정한다기보다
+
+이 프로필일때에만 구동되도록 된다.
 

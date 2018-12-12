@@ -17,6 +17,9 @@
 
 - [getRequestURI(), getContextPath() - url에서 path값 가져오기](#8719_4)
 - [세션에 대한설명](#180902_6)
+- [SP EL](#181201_4)
+- [log4j 커스텀 설정 에러](#181201_11)
+
 
 - [에러](#error)
     - [415에러-format not supported](#formatnotsupported)
@@ -745,4 +748,65 @@ mvn install:install-file "-Dfile=ojdbc6.jar(jar파일 이름)" "-DgroupId=com.or
 
 http://neoty.tistory.com/62 
 
+
+-----------------------------------------
+
+###### 181201_4
+
+SP EL
+-
+
+Spring 에서는 SP EL 이라는 강력한 커스텀 태그가 있다.
+
+그리고 자동으로 Properties 파일을 읽어서 JSP 파일이든 JAVA 파일이든
+
+읽어 줄 수 있다. (spring 3.0 이상 버전 기준)
+
+바로 사용 방법을 알아 보도록 하자.
+
+1. properties 파일 작성 (config.properties)
+
+css.path=/cms_developer_poc/css
+js.path=/cms_developer_poc/js
+root.path=/cms_developer_poc
+
+2. dispacher-servlet.xml 에 properties 파일 설정
+
+<!-- for config file load, using SpEL -->
+<util:properties id="config" location="classpath:conf/spring/config.properties" />
+
+3. JSP 파일에 사용
+
+<script src="<spring:eval expression="@config['js.path']"/>/jquery-1.7.1.js" type="text/javascript"></script>
+
+4. JAVA 파일 사용
+
+ @Value("#{config['root.path']}")
+ public String RootPath;
+
+출처: http://shonm.tistory.com/376 [정윤재의 정리노트]
+
+
+-----------------------------------------
+
+###### 181201_11
+
+log4j 커스텀 설정 에러
+-
+
+log4j:WARN Please initialize the log4j system properly. 해결방법
+
+아래와 같이 ContextLoaderListener 보다 위에 Log4jConfigListener가 있어야한다.
+
+```
+<listener>
+    <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+  </listener>
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+
+
+```
+출처: http://fordev.tistory.com/46 [개발자를 위하여...]
 

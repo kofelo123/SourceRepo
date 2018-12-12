@@ -45,10 +45,17 @@
 - [현재 URL, 경로 가져오는 방법](#180806_7)
 - [jQuery의 append(), appendTo() 메서드의 차이](#180808_3)
 - [include를 jquery 형태로 사용하는방법](#180906_5)
+- [nextAll()](#181112_2)
+- [Maximum call stack size exceeded](#181113_4)
+- [버튼눌렀을때 테이블의 특정 행(row)의 값 가져오기](#181118_1)
+- [select된 값 가져오기](#181112_15)
+
 
 - [LifeSoft - Jquery](#180907_6)
 
 - [jquery - 숫자,영문,특수문자만 넣고 나머지 지우기(정규식)](#180918_3)
+
+- [selected 된값을 자동입력](#181108_4)
 
 ---
 
@@ -1739,4 +1746,126 @@ $(function(){
 
 
 
+-----------------------------------------
+
+###### 181108_4
+
+selected 된값을 자동입력
+-
+
+```js
+	//mail selected 자동입력
+        $("[name=company]").change(function(){
+            if($(this).val() == '직접입력') {
+                $("#email2").val("");
+            }else{
+                $("#email2").val($(this).val());
+            }
+        });
+
+```
+
+
+
+-----------------------------------------
+
+###### 181112_2
+
+nextAll()
+-
+
+$("#" + id).nextAll("#successFail").first().html(message + "<br/>").css("color", color);
+
+next(), next(선택자) 만 사용하면 바로다음요소에서 찾지만 nextAll을 하면 모든범위에서 해당 #successFail를 찾는데 그중 first()로 첫번째것으로 적용시킬수있다.
+
+-----------------------------------------
+
+###### 181113_4
+
+Maximum call stack size exceeded
+-
+
+ Maximum call stack size exceeded
+
+
+무한 재귀호출  메소드에서 잘못된 반복 무한루프..
+
+동일한 스크립트(.js) 파일을 중첩되게 호출한 경우
+잘못된 코드로 인해 무한 루프를 도는 경우
+
+ex) 인터넷에서 찾은 상황예제
+
+//수정전
+```js
+// submit 이벤트 리스너
+$("#login_form").on("submit", login_proc);
+ 
+// 로그인 처리 함수
+function login_proc() {
+    // 필드 검즐 및 전처리
+    (..생략)
+    
+    // 폼 전송
+    $(this).submit();
+}
+```
+
+//수정후
+```js
+// submit 이벤트 리스너 : form이 아닌 로그인 버튼에 이벤트 처리
+$("#btn_login").on("click", login_proc);
+
+// 패스워드 입력 필드에서 엔터키를 누르면 로그인 되도록 키 이벤트 처리
+$("#login_passwd").on("keypress", function(event){
+    if(event.keyCode == 13) {
+        login_proc();
+    }
+});
+
+// 로그인 처리 함수
+function login_proc() {
+    // 필드 검즐 및 전처리
+    (..생략)
+    
+    // 폼 전송 : 폼에서 직접 발생하는 이벤트가 아니므로 this 대신 폼 ID를 지정
+    $("#login_form").submit();
+}
+
+```
+http://blog.freezner.com/archives/1205
+
+-----------------------------------------
+
+###### 181118_1
+
+버튼눌렀을때 테이블의 특정 행(row)의 값 가져오기
+-
+
+```js
+
+    $(".authoritymodify").click(function(){
+	        console.log("test");
+	        console.log($(this).parent().parent().children().eq(0).text());
+	        /* $(location).attr("href","/thearc/admin/authmodify?uid="+$("#uid").val()+"&authority="+$("#authoritySelect").val());*/
+		});
+
+```
+
+http://all-record.tistory.com/172
+
+
+-----------------------------------------
+
+###### 181112_15
+
+select된 값 가져오기
+-
+```js
+  var tdAuthority = $(this).parent().parent().children().eq(4).find("option:selected").val();
+```
+
+
+$("#ID option:selected").val(); $("#ID option:selected").text(); $("#ID").find(":selected").val(); $("#ID").find("option:selected").val(); $(":selected").val(); $("select option:selected").val(); $("select[name='NAME']").val();
+
+출처: http://dev81.tistory.com/ [프로그래머 메모장]
 

@@ -4,7 +4,7 @@
 - [border-collapse 속성 : 테이블의 선을 단선으로](#180819_9)
 - [overflow - 요소의 박스보다 내용이 더 길떄](#180819_4)
 - [z-index](#180819_5)
-
+- [이미지 중앙정렬](#181124_7)
 
 ---
 
@@ -141,5 +141,41 @@ border-collapse 속성 : 테이블의 선을 단선으로
 -
 
 ![](https://drive.google.com/uc?export=view&id=1GNcAD7sSwPZrMn5C-TIpzE53o3eW0fls)
+
+
+-----------------------------------------
+
+###### 181124_7
+
+이미지 중앙정렬
+-
+
+
+1. 이미지를 block 요소로 만들고, margin값으로 중앙 정렬
+
+
+```
+img
+
+{
+border: 3px solid red;
+width: 100px;
+height: 100px;
+display: block;
+margin-left: auto;
+
+margin-right: auto;
+}
+
+ 
+```
+
+
+
+사용코드
+```
+ <a href="/thearc/naverlogin2"><img src="/thearc/resources/bootstrap/image/네이버 아이디로 로그인_완성형_Green.PNG" style="width:250px;height:50px;display:block;margin-top:15px;margin-left:auto;margin-right:auto;text-align:center;"/></a>
+```
+http://aboooks.tistory.com/89
 
 

@@ -1,5 +1,6 @@
 - [젠킨스 설치 및 세팅](#installsetting)
 - [에러](#error)
+- [히카리풀-db설정 안맞으면 빌드배포시 에러](#181123_15)
 ######installsetting
 
 젠킨스 설치 및 세팅
@@ -43,7 +44,7 @@ Deploy to container Plugin 설치 (빌드후 톰캣에 배포하는 역할)
 
 
 tomcat-users.xml을 열고
-
+```
   <role rolename="manager-gui"/>
   <role rolename="manager-script"/>
   <role rolename="manager-jmx"/>
@@ -51,7 +52,7 @@ tomcat-users.xml을 열고
   <role rolename="admin-gui"/>
   <role rolename="admin-script"/>
   <user username="admin" password="admin" roles="manager-gui,manager-script,manager-jmx,manager-status,admin-gui,admin-script"/>
-
+```
 위 문구를 추가 하여 admin에게 권한을 부여 한다
 
 여기서의 username 의 "admin" 과 password의 "admin"을 위의 프로젝트세팅의 Cridentials항목 (인증관련)에 기입한다.
@@ -126,3 +127,29 @@ ConnectException: Connection refused: connect
 
 [참고1](http://hjw1456.tistory.com/21)
 [참고2](https://dukeom.wordpress.com/2017/03/20/jenkinsgithubmaven-%EC%9C%BC%EB%A1%9C-%EB%B9%8C%EB%93%9C%EB%B0%B0%ED%8F%AC%ED%95%98%EA%B8%B0-34/)
+
+
+-----------------------------------------
+
+###### 181123_15
+
+히카리풀-db설정 안맞으면 빌드배포시 에러
+-
+
+에러 중.. The Tomcat Manager responded "FAIL - Deployed application at context path
+
+Deploy 이후 에러가 발생했는데, 에러메시지가 되게 추상적이라 감이 안잡히는데 deploy도 되긴했고 문제는 딱히 없는데 
+
+젠킨스 빌드에러로 표시되니 이 문제를 해결하고자 하루종일 검색하고, 여러 경우의수로 추리하고 했으나, 뚜렷한 힌트가 될만한게 없었다.
+
+젠킨스 , 톰캣 설정관련 문제일거라고 확신하고 있었는데
+
+시큐리티 혹은 히카리풀로 변경하면서 인지 모르겠으나, 기존에는 db관련 config를 Local에 두고 성공적 빌드배포한후 
+
+따로 Server로 수동적으로 우분투접속후 xml수정후 톰캣 재시작 했는데 Server로 미리 바꿔놓고 깃허브에 push한후 젠킨스 빌드배포하니 에러가 안났다..
+
+서버 톰캣로그를 볼수있도록 해놓은다음 다시 테스트해보니, 히카리풀의 문제였다. 히카리는 기존의 내가썻던 스프링의 DriverManagerDataSource 와 달리 톰캣구동 과정에서 
+
+Local의 database와 Server의 database명이 다르니까(thearc,thearc2) 바로 에러를 뱉어낸것이다.
+
+

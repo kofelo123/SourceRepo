@@ -26,6 +26,8 @@
 - [maven dependency 추가검색관련](#180911_11)
 - [테스트실행 단축키](#180913_1)
 - [인텔리제이 xml등에서 노란색 영역의 hightling 끄는방법](#180918_6)
+- [인텔리제이 sql코드정리](#181120_5)
+- [터미널에서git-bash 띄우기](#181120_6)
 
 
 -[에러](#)
@@ -878,3 +880,30 @@ Alt + Enter -> Change dialect to .. => Edit inspection profile setting
 
 settings -> editor -> inspections -> sql dialect detection
 
+
+
+--------
+
+###### 181120_5
+
+인텔리제이 sql코드정리
+-
+
+ctrl +shift + enter => sql코드정리
+
+
+
+-----------------------------------------
+
+###### 181120_6
+
+터미널에서git-bash 띄우기
+-
+
+기본 터미널 -> c\windows\System32\cmd.exe
+
+터미널에서 git bash 띄우려면
+
+c\programfiles\bin\sh.exe 
+
+(git-bash.exe를 설정하면 새 창에서 git-bash를 실행하여 실행됨(git-bash실행하는것과 같음))

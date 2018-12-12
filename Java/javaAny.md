@@ -36,6 +36,9 @@
 - [50% 확률로 발생시키기](#180823_2)
 
 - [자바 람다식에 대해](#181004_1)
+- [자바에서 html코드 활용할떄](#181112_7)
+- [여러 테이블로 부터 return 되는 값을 위한 Map](#181112_11)
+- [indexOf( ), substring( )을 이용해 문자열 자르기](#181129_5)
 
 - [error]
     - [ZipException: invalid LOC header](#8623_94)
@@ -1114,3 +1117,113 @@ path관련문제, maven update, 여러가지 해봐도 안될때 ..
 
 
 정확한 이유는 모르겠으나, 톰캣 서버 내부에서의 잘못된 문제가 계속 해결안되고 얽혀있는것같다.
+
+-----------------------------------------
+
+###### 181112_7
+
+자바에서 html코드 활용할떄
+-
+
+
+/// 사용1
+@PostMapping("/admLogPost")
+	@PreAuthorize("hasRole('ADMIN')")
+	public String admLogPost(UserVO user,HttpServletResponse response,HttpSession session) throws Exception{
+		
+		UserVO vo=service.adminlogin(user);
+		
+		if(vo != null && vo.getUid().equals("admin")) {
+			
+			session.setAttribute("adminlogin", user);
+			
+			return "redirect:/admin/userlist";
+			
+		}else if(vo == null || !vo.getUid().equals("admin")){
+		response.setContentType("text/html; charset=UTF-8");
+		PrintWriter out = response.getWriter();
+		out.print("<script>alert('관리자 아이디혹은 비밀번호가 일치하지 않습니다.');location.href='/thearc/user/login';</script>");
+		out.flush();
+		}
+		return null;
+	}
+	
+/// 사용2
+```java
+response.setContentType("text/html; charset=UTF-8");
+            PrintWriter out = response.getWriter();
+         /*   out.print("<script>");
+            out.print("alert('해당 아이디의 비밀번호가 일치하지 않습니다.');");
+            out.print("</script>");
+            out.flush();*/
+            out.print("<script type='text/javascript' src='/thearc/resources/bootstrap/js/jquery-1.10.2.min.js'></script>");
+            out.print("<script>");
+            out.print("$(function(){");
+            out.print("var form = $('<form></form>');");
+            out.print("form.attr({action:'/thearc/login' , method:'post'});");
+            out.print("form.appendTo('body');");
+            out.print("$('<input></input>').attr({type:'hidden',name:'username',value:'"+userVO.getUid()+"'}).appendTo(form);");
+            out.print("$('<input></input>').attr({type:'hidden',name:'password',value:'"+userVO.getUpw()+"'}).appendTo(form);");
+            out.print("$('<input></input>').attr({type:'hidden',name:'${_csrf.parameterName}',value: '${_csrf.token}'}).appendTo(form);");
+            out.print("form.submit();");
+            out.print("});");
+            out.print("</script>");
+            out.flush();
+```
+
+-----------------------------------------
+
+###### 181116_11
+
+여러 테이블로 부터 return 되는 값을 위한 Map
+-
+
+join에서 return될때 기존의 VO의 경우 한테이블 기준으로 VO가 되는 경우니까
+
+두개의 테이블의 조인의 결과를 매핑할수없다. 그래서 이럴떄는 Map을 쓴다.
+
+그런데 VO를 List로 가져오는경우
+
+List<Map<String,String>>
+
+이렇게 맵을 리스트로 감싸서 쓰면된다.
+
+
+-----------------------------------------
+
+###### 181129_5
+
+indexOf( ), substring( )을 이용해 문자열 자르기
+-
+
+public class StringTest 
+{
+    public static void main(String args[])
+    {
+        
+        // @를 기준으로 문자열을 추출할 것이다.
+        String mail = "abced@naver.com";
+        
+        // 먼저 @ 의 인덱스를 찾는다 - 인덱스 값: 5
+        int idx = mail.indexOf("@"); 
+        
+        // @ 앞부분을 추출
+        // substring은 첫번째 지정한 인덱스는 포함하지 않는다.
+        // 아래의 경우는 첫번째 문자열인 a 부터 추출된다.
+        String mail1 = mail.substring(0, idx);
+        
+        // 뒷부분을 추출
+        // 아래 substring은 @ 바로 뒷부분인 n부터 추출된다.
+        String mail2 = mail.substring(idx+1);
+      
+        System.out.println("mail1 : "+mail1);
+        System.out.println("mail2 : "+mail2);
+    }
+}
+ 
+
+
+출처: http://all-record.tistory.com/118 [세상의 모든 기록]
+
+- [indexOf( ), substring( )을 이용해 문자열 자르기
+](#181129_5)

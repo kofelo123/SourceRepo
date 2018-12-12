@@ -1104,7 +1104,7 @@ src/main/resources/database/jdbc.properties 위치로둠.
 
  스프링 설정파일에서 properties를 암호화 하기위한 빈 설정을 추가한다.
 
- 기존의 프로퍼티 위치를 지정하는 <context:property>태그는 삭제하고 jasypt 라이브러리의 EncryptablePropertyPlaceholderconfigurer을 이용하여 설정파일 위치를 지정한다.
+ 기존의 프로퍼티 위치를 지정하는 ```<context:property>``` 태그는 삭제하고 jasypt 라이브러리의 EncryptablePropertyPlaceholderconfigurer을 이용하여 설정파일 위치를 지정한다.
 
  EnvironmentStringPBEConfig 빈을 정의할 때 algorithm과 passwordEnvname 속성을 설정할 수 있다.
  standardPGEStringEncrytor 빈을 설정할 때 password 속성에 설정하는 값은 인코딩할 키를 지정한다. 이 키는 JDBC 연결 정보를인코딩 할 떄 사용한다.

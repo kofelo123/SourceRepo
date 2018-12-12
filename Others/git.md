@@ -44,7 +44,7 @@
 --
 
 - [Git에서 특정 커밋을 삭제](#180902_5)
-
+- [rebase로 commit 합치기](#181120_4)
 
 
 
@@ -52,7 +52,7 @@
   - [add - 줄바꿈관련에러](#adderror)
   - [두개의 히스토리 가진 프로젝트병합](#refusingtomerge)
   - [체크아웃 이슈](#181006_1)
-
+  - [merge 에러](#181201_13)
 ---
 
 ### Pull request
@@ -1791,4 +1791,124 @@ git stash drop : stash에 저장된 내용 삭제
 https://mylko72.gitbooks.io/git/content/_stash.html
 
 
+
+-----------------------------------------
+
+###### 181120_3
+
+git rebase후 push 에러 해결
+-
+
+내 브랜치에서 메인 브랜치를 찝어서 rebase를 한 뒤 push하면 아래와 같은 에러가 뜰 때가 있다.
+
+1
+rebase Updates were rejected because the tip of your current branch is behind 어쩌구저쩌구
+
+
+
+뭐 내 브랜치 가리키는게 뒤에 있어서 샬라샬라 같은 문제인듯 하다.
+여기서 pull을 받고 push를 하거나 혹은 commit하면
+merge commit이 들어가거나 혹은 rebase해서 받아온 커밋이 복제되어서 두번 반복해서 들어가는 안예쁨이 있다.
+
+해결
+1
+git push -f origin
+로 포스 푸쉬를 하면 된다.
+그럼 깔끔히 rebase된 상태로 서버에 올라간다.
+
+may the force with you.
+
+https://milooy.wordpress.com/category/programming/git-2/
+
+refer
+http://stackoverflow.com/questions/15143042/cant-push-to-branch-after-rebase
+
+- [git rebase후 push 에러 해결](#181120_3)
+
+-----------------------------------------
+
+###### 181120_4
+
+rebase로 commit 합치기
+-
+
+의미없는 커밋이 있을때 , 이전의 커밋과 현재의 커밋을 합칠 수 있다.
+
+
+git rebase -i HEAD~N 명령을 이용하면 현재 commit으로부터 N개의 commit에 대해 commit 합침, 제거, 메세지 수정 등이 가능하다. 
+
+아래의 커밋에서 
+```
+$ git log --oneline
+ae53bdf second commit
+004644d first commit
+```
+
+아래의 명령어를 입력할시 
+$ git rebase -i HEAD~2
+
+
+다음과 같이 된다.
+```
+$ git rebase -i HEAD~2
+pick 004644d first commit
+pick ae53bdf second commit
+
+
+# Rebase f42adb4..ae53bdf onto f42adb4 (2 commands)
+#
+# Commands:
+# p, pick = use commit
+# r, reword = use commit, but edit the commit message
+# e, edit = use commit, but stop for amending
+# s, squash = use commit, but meld into previous commit
+# f, fixup = like "squash", but discard this commit's log message
+# x, exec = run command (the rest of the line) using shell
+# d, drop = remove commit
+#
+# These lines can be re-ordered; they are executed from top to bottom.
+#
+# If you remove a line here THAT COMMIT WILL BE LOST.
+#
+# However, if you remove everything, the rebase will be aborted.
+#
+# Note that empty commits are commented out
+```
+
+seconde commit을 first commit에 합치기 위해 squash 명령을 이용하여 적용한다.
+
+```
+pick 004644d first commit
+s ae53bdf second commit
+```
+:wq으로 저장 후 종료하면,
+
+이후 커밋메세지를 변경할 수있다.
+
+지우고싶은 커밋 메시지를 주석처리하거나 수정가능하다.
+
+https://cjh5414.github.io/git-rebase/
+
+
+
+
+
+-----------------------------------------
+
+###### 181201_13
+
+merge 에러
+-
+
+you have not concluded your merge (merge_head exists)
+
+실수로 리모트에 있는것을 merge했던거 같은데, 아무튼 충돌이 생겼다.
+
+머지를 취소하고 다시 pull 을 받음
+
+머지 취소
+git merge --abort
+충돌 해결 후 다시 pull 받음
+
+변경 내역을 커밋하고 다시 pull
 

@@ -18,6 +18,8 @@
 - [mysql 유저생성(워크밴치)](#180830_5)
 - [제약조건 조회](#181024_4)
 - [외래키추가](#181024_6)
+- [중복 값을 가지고 있는 필드를 조회](#181112_4)
+- [foreign key (외래키) 추가,삭제 확인](#181124_6)
 
 
 - [Error]
@@ -620,4 +622,48 @@ Cannot add or update a child row: a foreign key constraint fails
 -
 
 ALTER TABLE tbl_member_auth ADD FOREIGN KEY (uid) REFERENCES tbl_user(uid);
+
+-----------------------------------------
+
+###### 181114_6
+
+중복 값을 가지고 있는 필드를 조회
+-
+
+디비에서 중복 값을 가지고 있는 필드를 조회하기위해 아래의 쿼리를 입력한다.
+
+SELECT * FROM `테이블명` GROUP BY 필드 HAVING COUNT(필드) > 1
+
+이 값은 같은 필드가 2개 이상인 값을 보여준다.
+
+예) SELECT * FROM `Coupon` GROUP BY Code HAVING COUNT(Code) > 1
+
+
+-----------------------------------------
+
+###### 181124_6
+
+foreign key (외래키) 추가,삭제 확인
+-
+
+1.foreign key 추가
+alter table [추가할테이블명] add constraint [제약조건명] foreign key(컬럼명)
+references [부모테이블명] (PK컬럼명) [ON DELETE CASCADE / ON UPDATE CASECADE];
+
+ON DELETE CASCADE
+외래 키에서 참조하는 키가 포함된 행을 삭제하려고 하면 해당 외래 키가 포함되어 있는 모든 행도 삭제
+
+ON UPDATE CASCADE
+외래 키에서 참조하는 키 값이 포함된 행에서 키 값을 업데이트 하면 해당 외래 키를 구성하는 모든 값도 키에 지정된 새 값으로 업데이트되도록 지정 
+
+2. foreign key 삭제
+alter table [테이블명] drop foreign key [제약조건명];
+3. foreign key 확인 방법
+3.1 테이블 기준 확인
+select * from information_schema.table_constraints where table_name = '테이블명';
+3.2 데이터베이스 기준 확인
+select * from information_schema.table_constraints where constraint_schema = '데이터베이스명';
+
+
+출처: http://allg.tistory.com/37 [프로그래밍 해볼까]
 

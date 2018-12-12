@@ -1,3 +1,4 @@
+
 - [기타](#else)
 - [설치(apt-get)](#aptget)
 - [vim 에디터종료](#vimediterend)
@@ -11,7 +12,7 @@
   - [버전확인](#versionfind)
   - [DB서버쪽 한글세팅](#koreansetting)
   - [리눅스 인스턴스 mysql접속](#mysqlconnect)
-- [su](#su)
+- [su(sudo권한)](#su)
 - [파일찾기](#find)
 - [오라클 설치과정](#installoracle)
 - [메모리 실시간보기(sar,htop)](#memoryscan)
@@ -22,6 +23,7 @@
 - [패키지 파일 삭제](#packagedelete)
 - [mv - 파일이동,파일이름 변경](#mv)
 - [우분투 터미널에서 sqlplus 접속](#181004_2)
+- [vim 작업취소 Undo 하는 법](#181120_2)
 
 - [에러]
   - [write error in swap file](#error1)
@@ -197,6 +199,8 @@ mysql -uroot -pgj0(~+pw)
 ---
 
 ## su
+ 
+ (sudo권한)
 
 su -> superuser
 sudo -> superuser do (superuser권한으로 실행)
@@ -950,7 +954,7 @@ vim 관련
 바꿀 때마다 바꾸어도 좋은지 물어보기에 더 안전합니다. y를 누르면 바꾸고, n을 누르면 다음으로 건너뛰고, a를 누르면 모두 바꿉니다.
 
 
-:%s/\<foo\>/bar
+```:%s/\<foo\>/bar```
 
 이렇게 하면 정확하게 foo에 일치될 때만 바꿉니다. 즉 foo는 바꾸지만, foo 앞뒤로 다른 문자열이 붙어 있는 경우, 예를 들어
 fooZZZ
@@ -1014,4 +1018,26 @@ $ sqlplus "/as sysdba"
 참고 (오라클 설치할때 봤었던 블로그)
 
 https://sarc.io/index.php/oracledatabase/506-linux-oracle-database-11g-express-edition-oracle-xe-11-2-0-1-0-x86-64
+
+
+-----------------------------------------
+
+###### 181120_2
+
+vim 작업취소 Undo 하는 법 
+-
+
+ vim 작업취소 Undo 하는 법 
+
+윈도우에서 글을 이전으로 돌리고 싶을때는 Ctrl + Z 를 사용한다.  
+이에 대응 되는 Vim 명령어는
+
+명령 모드(ESC)로 들어가서 소문자 u 를 눌러주면 된다.
+
+  해당 줄에서만 취소하는 법 
+
+만약 현재 커서가 위치한 줄에서만 취소하고 싶다면,
+
+대문자 U를 눌러주면 해당 줄에서의 작업만 취소가 가능하다. (undo)
+
 

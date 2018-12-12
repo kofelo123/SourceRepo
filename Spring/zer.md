@@ -2280,10 +2280,12 @@ SqlSession에서 쓸수있는 기능
 RedirectAttribute  - addFlashAttribute()
 브라우저까지 전송하지만 uri상에서 보이지않는 숨겨진 데이터의 형태로 전송
 
+```jsp
 <c:forEach items="${list}" var="boardVO">
 	<tr>
 		<td><fmt:formatDate pattern="yyyy-MM-dd HH:mm" value="${boardVO.regdate}"/></td>
 </c:forEach>
+```
 
 충분한양의 데이터넣기
 

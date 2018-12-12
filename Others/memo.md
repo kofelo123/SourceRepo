@@ -86,3 +86,7 @@ hlw123@naver.com
 Gj(+pw)i
 
 key pro\memo\intellij.txt 기록
+
+//tong
+P160018387225
+//

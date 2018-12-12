@@ -52,6 +52,10 @@
 - [시큐리티로그인-default-target-url 설정](#181024_8)
 - [js에서 시큐리티에 로그인되어있는 유저 정보 가져오기](#181024_9)
 
+- [특정 url만 csrf 토큰 사용하지 않을때](#181108_3)
+- [시큐리티-bcrptEncoder의 단방향](#181124_3)
+
+
 ---
 
 
@@ -62,6 +66,10 @@
 
 - [Mapper인터페이스와 @Param ](#181009_5)
 - [잘못 업로드된 파일 삭제](#181015_1)
+
+- [Mapper scan](#181123_13)
+
+
 
 ###### settings
 
@@ -5560,4 +5568,122 @@ js에서 시큐리티에 로그인되어있는 유저 정보 가져오기
 </sec:authorize>
 ```
 
+
+-----------------------------------------
+
+###### 181108_3
+
+특정 url만 csrf 토큰 사용하지 않을때
+-
+```xml
+	<bean id="csrfMatcher" class="org.springframework.security.web.util.matcher.OrRequestMatcher">
+		<constructor-arg>
+			<bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+				<constructor-arg name="pattern" value="**/addrlink/**"/>
+				<constructor-arg name="httpMethod" value="POST"/>
+			</bean>
+		</constructor-arg>
+	</bean>
+
+<security:csrf request-matcher-ref="csrfMatcher"/>
+```
+
+참고 -> https://stackoverflow.com/questions/22524470/spring-security-3-2-csrf-disable-for-specific-urls
+이하
+
+```xml
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:util="http://www.springframework.org/schema/util"
+             xsi:schemaLocation="
+    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.1.xsd
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd">
+
+    <http pattern="/files/**" security="none" create-session="stateless"/>
+
+    <http>
+        <intercept-url pattern="/admin/**" access="hasAuthority('GenericUser')" />
+        <intercept-url pattern="/**" access="permitAll" />
+        <form-login 
+            login-page="/login" 
+            login-processing-url="/login"
+            authentication-failure-url="/login"
+            default-target-url="/admin/"
+            password-parameter="password"
+            username-parameter="username"
+        />
+        <logout delete-cookies="JSESSIONID" logout-success-url="/login" logout-url="/admin/logout" />
+        <http-basic />
+        <csrf request-matcher-ref="csrfMatcher"/>
+    </http>
+
+    <beans:bean id="csrfMatcher" class="org.springframework.security.web.util.matcher.OrRequestMatcher">
+        <beans:constructor-arg>
+            <util:list value-type="org.springframework.security.web.util.matcher.RequestMatcher">
+                <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+                    <beans:constructor-arg name="pattern" value="/rest/**"/>
+                    <beans:constructor-arg name="httpMethod" value="POST"/>
+                </beans:bean>
+                <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+                    <beans:constructor-arg name="pattern" value="/rest/**"/>
+                    <beans:constructor-arg name="httpMethod" value="PUT"/>
+                </beans:bean>
+                <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+                    <beans:constructor-arg name="pattern" value="/rest/**"/>
+                    <beans:constructor-arg name="httpMethod" value="DELETE"/>
+                </beans:bean>
+            </util:list>
+        </beans:constructor-arg>
+    </beans:bean>
+
+    //...
+
+</beans:bean>
+```
+
+
+-----------------------------------------
+
+###### 181123_13
+
+Mapper scan
+-
+```
+
+component scan base-package 와 다르니까 주의
+
+<mybatis-spring:scan base-package="com.thearc.mapper"></mybatis-spring:scan>
+```
+
+-----------------------------------------
+
+###### 181124_3
+
+시큐리티-bcrptEncoder의 단방향
+-
+
+bcryptEncoder는 encode할때마다 암호값이 바뀐다.(단방향) 그러면 로그인할때 어떻게 했나?
+
+-> 시큐리티 자체에서 loginpost기능을 자체적으로 지원하는게 있어서 내부로직을 알수가 없었다.(내생각.;)
+
+복호화도 안된다(단방향이므로)
+matches만있다.(암호되지않은 코드와 암호화된 코드간의 매칭이되는지)
+
+ 
+System.out.println("BCrypt 비교: " + passwordEncoding.matches(password, passwordEncoding.encode(password))); 
+
+
+출처: http://syaku.tistory.com/310 [개발자 샤쿠 (Syaku)]
+
+사용한코드
+
+```
+String pw=mapper.getPw(user.getUid());
+			if(pwencoder.matches(user.getUpw(),pw)){
+				System.out.println("matches-success");
+				user.setUpw(pw);
+			}
+```
 
