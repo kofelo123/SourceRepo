@@ -1225,5 +1225,3 @@ public class StringTest
 
 출처: http://all-record.tistory.com/118 [세상의 모든 기록]
 
-- [indexOf( ), substring( )을 이용해 문자열 자르기
-](#181129_5)

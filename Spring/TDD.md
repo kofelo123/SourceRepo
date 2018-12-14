@@ -3,8 +3,10 @@
 - [CH3.좀더 나은 TDD](#180830_3)
 - [Ch.4 Mock 사용](#180901_2)
 
+---
 
 - [junit테스트에서 profile설정](#181201_16)
+- [junit과 contextconfiguration](#181212_1)
 -----------------------------------------
 
 ###### 180815_1
@@ -455,4 +457,20 @@ stackoveflow에서 연관된 어노테이션의 흰트를 얻을수있었다.
 이 어노테이션은 직접 지정한다기보다
 
 이 프로필일때에만 구동되도록 된다.
+
+
+-----------------------------------------
+
+###### 181212_1
+
+junit과 contextconfiguration
+-
+ 
+몰랐는데 junit은 @ContextConfiguration으로 스프링 설정 context 없이는 아예 구동이 안되는걸로보인다.
+
+일단 테스트내에서 빈을 안쓰더라도 context 구동은 시켜야하는데,
+
+지금 thearc 프로젝트 상황이 
+
+root-context.xml , security-context.xml 두개는 꼭 구동시켜야 하는 상황이다(Profile bean을 위한 root-context.xml ,  그 root-context.xml의 userservice 빈의 자동주입 프로퍼티로 사용되는 bcryptencoder의 설정파일인 security-context.xml까지)
 

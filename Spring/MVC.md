@@ -19,6 +19,9 @@
 - [세션에 대한설명](#180902_6)
 - [SP EL](#181201_4)
 - [log4j 커스텀 설정 에러](#181201_11)
+- [gson 으로 json 파싱](#181208_4)
+- [스프링 프로파일 사용하기](#181211_7)
+- [@autowired된 변수를 다른변수에서 호출하면 null 되는 이유](#181211_8)
 
 
 - [에러](#error)
@@ -809,4 +812,342 @@ log4j:WARN Please initialize the log4j system properly. 해결방법
 
 ```
 출처: http://fordev.tistory.com/46 [개발자를 위하여...]
+
+
+-----------------------------------------
+
+###### 181208_4
+
+gson 으로 json 파싱
+-
+
+json은 기본적으로 key:value 타입으로 데이터를 표현하며, Object와 Array가 있다.
+
+### Object
+
+```
+{
+	"key1": "value1",
+	"key2": "value2"
+}
+```
+
+위와같이 key/value로 표현되며 {}중괄호로 시작과 끝을 나타낸다.
+
+
+### Array
+
+대괄호로 구분되고 각 요소는 기본 자료형이나 배열,객체가될 수 있다.
+
+```
+[
+	"value1",
+	"value2",
+	"value3"
+]
+```
+
+기본적으로 java의 JsonObject와 JsonArray로 파싱을 할 수 있다.
+
+
+```
+{
+    "name": "hello!",
+    "data": {
+        "name": "jspiner",
+        "age": 8,
+        "birth": 1996
+    },
+    "friends": [
+        "john",
+        "smith",
+        "sam"
+    ],
+    "books": [
+        {
+            "name": "book1",
+            "price": 10000
+        },
+        {
+            "name": "book2",
+            "price": 15000
+        },
+        {
+            "name": "book3",
+            "price": 7000
+        }
+    ]
+}
+
+```
+
+```java
+JsonParser jsonParser = new JsonParser();
+
+JsonObject jsonObject = (JsonObject) jsonParser.parse(json);
+System.out.print("name : " + jsonObject.get("name"));
+```
+결과값
+```
+name : hello!
+```
+
+위 예제는 root jsonobject에 있는 key인 ‘name’을 찾아 그 value를 가져왔습니다.
+
+object 안에 object가 있는 경우는 아래와 같이 파싱해 볼 수 있습니다.
+
+```java
+JsonParser jsonParser = new JsonParser();
+
+JsonObject jsonObject = (JsonObject) jsonParser.parse(json);
+JsonObject dataObject = (JsonObject) jsonObject.get("data");
+
+System.out.print("name : " + dataObject.get("name"));
+System.out.print("age : " + dataObject.get("age"));
+System.out.print("birth : " + dataObject.get("birth"));
+```
+```
+name : jspiner
+age : 8
+birth : 1996
+```
+
+
+
+
+참고)
+https://calyfactory.github.io/%EC%A0%9C%EC%9D%B4%EC%8A%A8%ED%8C%8C%EC%8B%B1/
+
+
+### 사용코드1
+
+```java
+  JsonParser parser = new JsonParser();
+
+//apiResult가 json데이터
+        JsonObject jsonObj = (JsonObject) parser.parse(apiResult);
+
+        JsonObject jsonObj2 =  (JsonObject)jsonObj.get("response");
+        userVO.setUpw(jsonObj2.get("id").toString().replaceAll("\"",""));
+        userVO.setUname(jsonObj2.get("name").toString().replaceAll("\"",""));
+        userVO.setEmail(jsonObj2.get("email").toString().replaceAll("\"",""));
+```
+
+### 사용코드2
+```java
+JsonParser parser = new JsonParser();
+
+            //Json 오브젝트 하위에 오브젝트가 있는 구조, 최하위의 item이라는 jsonArray 값들이 필요한데, 한번에 접근하는 방법을 모르겠어서 한 단계씩 접근해서 배열가져온것.
+            JsonObject jsonObj = (JsonObject) parser.parse(line);
+            JsonObject dataObject = (JsonObject) jsonObj.get("response");
+            JsonObject dataObject2 = (JsonObject) dataObject.get("body");
+            JsonObject dataObject3 = (JsonObject) dataObject2.get("items");
+
+            //필요한 json배열 값.
+            JsonArray jsonArray = (JsonArray) dataObject3.get("item");
+
+...
+
+  String fcstTime = jsonObject.get("fcstTime").toString().replace("\"","");
+                String category = jsonObject.get("category").toString().replace("\"","");
+                String fcstValue = jsonObject.get("fcstValue").toString().replace("\"","");
+
+```
+
+
+
+-----------------------------------------
+
+###### 181211_7
+
+스프링 Profile 사용하기
+-
+
+스프링 설정파일 내의 datasource 등 여러 세팅값에 대해 local, server를 매번 수정하기 번거롭다.
+
+그래서 .properties 에서 local,server값을 명시해놓고
+그 값을 가져온다.(정보은닉을 위해 프로퍼티에서는 메세지암호화를 사용한다.)
+
+어찌됬든, root-context.xml,servlet-context.xml 등에서 Local,Server에 따라 값을 바꿔주는 최소한의 작업은 해야한다.(value=${Local.~~~} , or value=${Server.~})
+
+그러나 스프링의 Profile을 사용하면 그것을 최소화 할 수 있다.
+
+아래의 spring.profiles.active의 값이 local이냐 server냐에 따라 모든 세팅값이 한번에 정해진다.
+
+```xml
+	<context-param>
+		<param-name>spring.profiles.active</param-name>
+		<param-value>local</param-value>
+	</context-param>
+
+```
+
+VO생성
+
+```java
+@Data
+public class ConfigProfile {
+
+    private String url;
+    private String userName;
+    private String password;
+
+    private String ipAddress;
+    private String uploadPath;
+    private String mailPw;
+
+    //naver sns login
+    private String naverClientId;
+    private String naverSecret;
+
+    //google sns login
+    private String googleClientId;
+    private String googleSecret;
+
+}
+```
+
+```xml
+//root-context.xml
+
+<beans xmls= ~>
+
+~~ 
+
+...
+
+
+    <!--<bean id="naverLoginBO" class="com.thearc.util.sns.NaverLoginBO" />-->
+	<beans profile="local">
+		<bean id="config" class="com.thearc.domain.ConfigProfile">
+			<property name="url" value="${Local.Url}"/>
+			<property name="userName" value="${Local.UserName}"/>
+			<property name="password" value="${Local.Password}"/>
+			<property name="ipAddress" value="${Local.IpAddress}"/>
+			<property name="uploadPath" value="${Local.UploadPath}"/>
+			<property name="mailPw" value="${MailPw}"/>
+			<property name="naverClientId" value="${Local.naverClientId}"/>
+			<property name="naverSecret" value="${Local.naverSecret}"/>
+			<property name="googleClientId" value="${Local.googleClientId}"/>
+			<property name="googleSecret" value="${Local.googleSecret}"/>
+		</bean>
+	</beans>
+
+	<beans profile="server">
+		<bean id="config" class="com.thearc.domain.ConfigProfile">
+			<property name="url" value="${Server.Url}"/>
+			<property name="userName" value="${Server.UserName}"/>
+			<property name="password" value="${Server.Password}"/>
+			<property name="ipAddress" value="${Server.IpAddress}"/>
+			<property name="uploadPath" value="${Server.UploadPath}"/>
+			<property name="mailPw" value="${MailPw}"/>
+			<property name="naverClientId" value="${Server.naverClientId}"/>
+			<property name="naverSecret" value="${Server.naverSecret}"/>
+			<property name="googleClientId" value="${Server.googleClientId}"/>
+			<property name="googleSecret" value="${Server.googleSecret}"/>
+
+		</bean>
+	</beans>
+
+
+
+</beans>
+```
+
+```xml
+//root-context.xml
+
+
+<bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
+			<property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"></property>
+			<property name="jdbcUrl" value="#{config.url}"></property>
+			<property name="username" value="#{config.userName}"></property>
+			<property name="password" value="#{config.password}"></property>
+		</bean>
+
+
+//'사실 이값은 지금생각해보니 프로파일빈으로 서비스단에서 바로 쓰는걸로 대체가능할것같긴하다. '
+	<bean id="ipAddress" class="java.lang.String">
+		<constructor-arg value="#{config.ipAddress}">
+		</constructor-arg>
+	</bean>
+	<bean id="mailPw" class="java.lang.String">
+		<constructor-arg value="#{config.mailPw}">
+		</constructor-arg>
+	</bean>
+
+
+```
+
+```
+//servlet-context.xml
+
+	<beans:bean id="uploadPath" class="java.lang.String">
+		<beans:constructor-arg value="#{config.uploadPath}">
+		</beans:constructor-arg>
+	</beans:bean>
+
+	<!--naver sns 로그인 연동 관련 -->
+	<!--<beans:bean id="naverLoginBO" class="com.thearc.util.sns.NaverLoginBO" />-->
+
+	<!-- google sns 로그인 연동 관련-->
+	<beans:bean id="googleConnectionFactory"
+				class="org.springframework.social.google.connect.GoogleConnectionFactory">
+		<beans:constructor-arg value="#{config.googleClientId}" />
+		<beans:constructor-arg value="#{config.googleSecret}" />
+	</beans:bean>
+	<!-- 승인된 자바스크립트 원본과 승인된 리디렉션 URI('scope를 plus.login에서 이메일이 안나와서 userinfo.email로 수정함' -->
+	<beans:bean id="googleOAuth2Parameters" class="org.springframework.social.oauth2.OAuth2Parameters">
+		<beans:property name="scope" value="https://www.googleapis.com/auth/userinfo.email" />
+		<beans:property name="redirectUri" value="http://#{config.IpAddress}:8080/thearc/googleSignInCallback" />
+	</beans:bean>
+```
+
+
+
+참고로 junit에서는 web.xml의 profile설정이 안먹히는 에러가 나는거같은데
+@ActiveProfiles("server") 이런식으로 지정하니 잘되었다.
+
+
+
+-----------------------------------------
+
+###### 181211_8
+
+@autowired된 변수를 다른변수에서 호출하면 null 되는 이유
+-
+
+```java
+@Autowired
+private ConfigProfile configProfile;
+
+
+private String var1=configProfile.getIpAddress();
+```
+위와같이 String 변수에서 호출했을때 해당코드에서 NullPointerException 에러가 나는데
+
+
+아래와같이 메소드에서 사용하면 에러가 안난다 그이유는?
+
+```java
+@Autowired
+private ConfigProfile configProfile;
+
+public void BBB() {
+    System.out.println(configProfile.getIpAddress());
+}
+```
+
+자동 주입을 실행하는 시점의 차이가 있기 때문이다.
+
+1.인스턴스를 초기화한후(여기서 값을 지정하지않고 선언시 default값or 레퍼런스 필드일경우니 null저장)
+
+2. 리플렉션을 이용해서 @autowired된 멤버에 대한 자동주입 시작
+
+위와 같은 문제로 시점차로 인해 변수에는 자동주입되지 않은 null값이 초기화된것이다.
+
+두번쨰 코드는 메소드내에서 실행하기 때문에 예외발생하지않는다.
+
+메소드는 1.인스턴스 생성 2. 자동주입 이후에 호출되는  그 이후의 단게인 3번째 단계이므로 자동주입된 값이 호출되는것.
+
 
