@@ -33,6 +33,7 @@
 	- [떄떄로 올바른 설정이나 객체를 인식못할떄](#8728_3)
 	- [스프링 컨텍스트 - 네임스페이스 관련에러](#180823_1)
 	- [log4j dependency 추가되지 않았을떄 에러](#181016_2)
+	- [servlet-api 버전으로 인한 에러](#181216_1)
 ---
 
 ### requestparam
@@ -809,5 +810,59 @@ Cannot resolve method 'info
 
 
 ```
+추문) 기본적으로 log4j가 pom.xml에 있는게 있는데
+```xml
+	<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.15</version>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.mail</groupId>
+					<artifactId>mail</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.jms</groupId>
+					<artifactId>jms</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.jdmk</groupId>
+					<artifactId>jmxtools</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.jmx</groupId>
+					<artifactId>jmxri</artifactId>
+				</exclusion>
+			</exclusions>
+			<scope>runtime</scope>
+		</dependency>
+		```
 
+		누가 질문 올리기를 나와 다르게 따로 log4j를 추가해줘도 여전히 안된다고 -> scope runtime을 지우니까 되더라고 한다.
+		-> 해보니 그것도 맞고(옳은 방법인지는 모름), log4j추가하는 내 방법도 맞는데 저 dependency 뒤에다 입력해야한다.
+
+-----------------------------------------
+
+###### 181216_1
+
+servlet-api 버전으로 인한 에러
+-
+
+ Cannot resolve method 'addListener(org.springframework.web.context.ContextLoaderListener)'
+
+(web.xml의 자바 config)
+에서 ServletContext의 메소드가 안되는게 있었는데, 버전때문에 지원안된것..
+2.5 -> 3.1.0
+
+```xml
+<!-- Servlet before-->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>3.1.0</version>
+			<scope>provided</scope>
+		</dependency>
+```
+
+(충돌나서 before ,after 있던거중에 뭐하러 둘다있는지도 모르곘고 하나 없앴음)
 

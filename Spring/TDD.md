@@ -7,6 +7,8 @@
 
 - [junit테스트에서 profile설정](#181201_16)
 - [junit과 contextconfiguration](#181212_1)
+
+- [Junit Test에서 resourceHandlerMapping 빈에러](#181223_2)
 -----------------------------------------
 
 ###### 180815_1
@@ -473,4 +475,21 @@ junit과 contextconfiguration
 지금 thearc 프로젝트 상황이 
 
 root-context.xml , security-context.xml 두개는 꼭 구동시켜야 하는 상황이다(Profile bean을 위한 root-context.xml ,  그 root-context.xml의 userservice 빈의 자동주입 프로퍼티로 사용되는 bcryptencoder의 설정파일인 security-context.xml까지)
+
+
+
+-----------------------------------------
+
+###### 181223_2
+
+Junit Test에서 resourceHandlerMapping 빈에러
+-
+
+
+ Error creating bean with name 'resourceHandlerMapping' defined in org.springframework.web.servlet.config
+
+
+-> ServletConfig 가 있을때만 나는 에러라는것을 비교하면서 알게되었다.
+
+그래서 ServletConfig를 사용하는 테스트를 책소스 코드에서 보다가 @WebAppConfiguration가 Controller단 테스트에 필요하다는걸 알게됨.
 

@@ -857,6 +857,8 @@ org.springframework:spring-tx 이렇게 길게 검색해야하는 상황이 생�
 
 * spring-tx 이렇게 애스터리크 이후 공백하나를 주고 검색하니 검색이 된다.
 
+추가) dependency에서 검색할때(인텔리제이) spring-web이면 spring web으로 '-' 빼야 검색이 잘됨
+
 
 
 -----------------------------------------

@@ -69,7 +69,10 @@
 
 - [Mapper scan](#181123_13)
 
+---
 
+- [xmlconfig->javaconfig 변경시](#181215_8)
+- [javaconfig - 메세지암호화](#181215_9)
 
 ###### settings
 
@@ -5576,6 +5579,25 @@ js에서 시큐리티에 로그인되어있는 유저 정보 가져오기
 특정 url만 csrf 토큰 사용하지 않을때
 -
 ```xml
+<security:http pattern="/user/jusoPopup" security="none"></security:http>
+```
+
+-> https://github.com/pravin-pp/wf-magicapp-spring/blob/15786fc9e7834003d5beed341a9675f3b3f7df71/wf-magicapp-spring-war/src/main/webapp/META-INF/spring/security-context/applicationContext-security.xml
+
+시큐리티 관련된 클래스로 검색해서 어떻게 쓰나 깃허브페이지에서 모르는 프로젝트들 검색해서 보다가 알게됨.
+
+javaconfig에서는
+
+```java
+http.csrf().ignoringAntMatchers("/user/jusoPopup","/login");
+```
+
+이후에 javaconfig 변경하면서 알게된 사실인데, 잘못 사용해서 그런것일 수도있지만, 기존에 사용하던 아래방법은
+
+csrf 모든 url이 적용안되게끔 되어버린다. 그래서 위의 방법을 사용하게됨.
+
+
+```xml
 	<bean id="csrfMatcher" class="org.springframework.security.web.util.matcher.OrRequestMatcher">
 		<constructor-arg>
 			<bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
@@ -5587,6 +5609,8 @@ js에서 시큐리티에 로그인되어있는 유저 정보 가져오기
 
 <security:csrf request-matcher-ref="csrfMatcher"/>
 ```
+https://okky.kr/article/433168
+
 
 참고 -> https://stackoverflow.com/questions/22524470/spring-security-3-2-csrf-disable-for-specific-urls
 이하
@@ -5687,3 +5711,70 @@ String pw=mapper.getPw(user.getUid());
 			}
 ```
 
+
+-----------------------------------------
+
+###### 181215_8
+
+xmlconfig->javaconfig 변경시
+-
+
+java config 수정시 인텔리제이에서는 Project 설정에서 해당 빈설정 다시 해주고 WEB설정에서는 WEBConfig가 있는 경로를 지정해줘야한다(web.xml -> WebConfig가 있는 config 패키지 경로로 바꿔줌)
+
+
+-----------------------------------------
+
+###### 181215_9
+
+javaconfig - 메세지암호화
+-
+
+```java
+    @Bean
+    public static EnvironmentStringPBEConfig environmentVariablesConfiguration() {
+        EnvironmentStringPBEConfig config = new EnvironmentStringPBEConfig();
+        config.setAlgorithm("PBEWithMD5AndDES");
+        config.setPasswordEnvName("APP_ENCRYPTION_PASSWORD");
+        return config;
+    }
+
+    @Bean
+    public static StandardPBEStringEncryptor configurationEncryptor() {
+        StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+        encryptor.setConfig(environmentVariablesConfiguration());
+        encryptor.setPassword("rktwlsrud");
+        return encryptor;
+    }
+
+    @Bean
+    public static EncryptablePropertyPlaceholderConfigurer propertyConfigurer() {
+        EncryptablePropertyPlaceholderConfigurer configurer = new EncryptablePropertyPlaceholderConfigurer(configurationEncryptor());
+        configurer.setLocations(new ClassPathResource("/spring/setting.properties"));
+        return configurer;
+    }
+```
+
+약간 코드가 변경되었다.
+
+
+-----------------------------------------
+
+###### 181223_1
+
+javaconfig - error처리
+-
+ 
+WebConfig에서 
+
+```
+  @Override
+   protected void customizeRegistration(ServletRegistration.Dynamic registration) {
+
+       registration.setInitParameter("throwExceptionIfNoHandlerFound", "true");
+   }
+
+```
+
+이후 AdviceController에서 처리
+
+- [javaconfig - error처리](#181223_1)

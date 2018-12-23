@@ -22,10 +22,14 @@
 - [gson 으로 json 파싱](#181208_4)
 - [스프링 프로파일 사용하기](#181211_7)
 - [@autowired된 변수를 다른변수에서 호출하면 null 되는 이유](#181211_8)
+- [스프링 프로퍼티 설정 주입](#181215_16)
 
 
 - [에러](#error)
     - [415에러-format not supported](#formatnotsupported)
+	- [requestMappingHandlerMapping 빈 관련 에러](#181216_4)
+	- [mvcValidator 빈 에러](#181216_5)
+	- [web,xml 액세스가 거부되었습니다.](#181216_6)
 
 ---
 
@@ -1150,4 +1154,102 @@ public void BBB() {
 
 메소드는 1.인스턴스 생성 2. 자동주입 이후에 호출되는  그 이후의 단게인 3번째 단계이므로 자동주입된 값이 호출되는것.
 
+
+
+-----------------------------------------
+
+###### 181215_16
+
+스프링 프로퍼티 설정 주입
+-
+
+@PropertySource를 선언.
+
+
+```java
+@Configuration
+@PropertySource("classpath:static/properties/common.properties")
+public class AppConfig {
+ 
+
+}
+
+```
+
+@PropertySource 어노테이션에 coommon.properties의 위치를 넣어주면, Enviroment객체에 프로퍼티 값이 자동으로 주입된다.
+
+Enviroment를 사용할 EnvUser
+```java
+  @Component
+  public class EnvUser {
+ 
+      @Autowired
+      Environment environment;
+ 
+      @PostConstruct
+      void init(){
+        System.out.println(environment.getProperty("my.name"));
+        System.out.println(environment.getProperty("my.phone","001-0023-2333"));//없을 경우 디폴트 값 설정: "001-0023-2333" 
+        System.out.println(environment.getProperty("my.age",Integer.class));//int 형으로 자동 캐스팅 
+        System.out.println(environment.getProperty("my.weight",Integer.class, 64));// 없을 경우 디폴트 값 설정: 64 
+        try{
+            environment.getRequiredProperty("my.money");//없을 경우 에러 발생 
+        }catch (IllegalStateException E){
+            System.out.println("에러 발생");
+        }
+        System.out.println(environment.containsProperty("my.name"));//프로퍼티가 존재하는지 유무 불리언 값 
+      }
+  }
+```
+Environment를 자동와이어한 후 getProperty를 통해서 프로퍼티값을 확인할 수 있다.
+
+http://ryudung.tistory.com/23
+
+
+-----------------------------------------
+
+###### 181216_4
+
+requestMappingHandlerMapping 빈 관련 에러
+-
+
+Error creating bean with name 'requestMappingHandlerMapping' defined in org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration: 
+
+
+스프링 버전에 연관된것이다. 정확히는 모르겠다. 이후에 버전을 몇번 바꾸게 되면서 해결되었다.
+
+-----------------------------------------
+
+###### 181216_5
+
+mvcValidator 빈 에러
+-
+
+javaconfig의 경우 버전이 낮은 dependency들과 충돌이 되기도 한다.
+
+에러만 보고는 어떤 라이브러리 때문인지 도저히 분간이 안되서 일일이 하나씩 다른프로젝트와 비교해가면서 찾았다.
+
+ Error creating bean with name 'mvcValidator' defined in org.springframework.web.servlet.config.annot
+
+
+```xml
+<dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator-annotation-processor</artifactId>
+            <version>4.1.0.Final</version>
+        </dependency>
+```
+유효성검사 할때 추가한건데
+4.1.0.Final -> 5.1.0.Final 수정.
+
+-----------------------------------------
+
+###### 181216_6
+
+web,xml 액세스가 거부되었습니다.
+-
+
+web,xml 액세스가 거부되었습니다.
+
+-> target 지우고 다시
 
