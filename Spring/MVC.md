@@ -23,6 +23,7 @@
 - [스프링 프로파일 사용하기](#181211_7)
 - [@autowired된 변수를 다른변수에서 호출하면 null 되는 이유](#181211_8)
 - [스프링 프로퍼티 설정 주입](#181215_16)
+- [resultMap resultType 차이](#181224_1)
 
 
 - [에러](#error)
@@ -1252,4 +1253,24 @@ web,xml 액세스가 거부되었습니다.
 web,xml 액세스가 거부되었습니다.
 
 -> target 지우고 다시
+
+
+-----------------------------------------
+
+###### 181224_1
+
+resultMap resultType 차이
+-
+ 
+resultType 은 맵핑될 클래스 명을 쓰는 것이고 resultMap 은 자기가 원하는 POJO 클래스에 매핑 시킬 수 있습니다.
+
+컬럽명과 POJO 에 있는 setXXX 이름이 다르면 resultMap 을 사용해서 XXX 명과 맞추어 줍니다.
+
+예로 setTitle(String text) 메소드가 있는데 컬럼명이 blog_title 이라면 blog_title 컬럼을 setTitle 에 맞아 들어가게 해주는 것이죠.
+
+자바 Naming convention 이 DB  와 달라서 종종 사용됩니다. 자바에서는 두 단어 사이에 "_"를 사용하지 않고 smallBigCamel 형식으로 쓰니요
+
+
+https://okky.kr/article/282645
+
 
